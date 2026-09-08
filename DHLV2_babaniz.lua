@@ -1,6 +1,6 @@
 --[[
     DHL V2 - by babaniz
-    Camlock Script — Multi-Select + FOV Circle
+    Camlock Script â€” Multi-Select + FOV Circle
     Executor uyumlu (Realius, Solara, Fluxus, vb.)
 ]]
 
@@ -194,7 +194,7 @@ SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 SelectCountLabel.Parent = MainFrame
 
 -- =============================================
--- LEFT PANEL — PLAYER LIST
+-- LEFT PANEL â€” PLAYER LIST
 -- =============================================
 local LeftPanel = Instance.new("Frame")
 LeftPanel.Size = UDim2.new(0, 220, 0, 345)
@@ -281,7 +281,7 @@ PlayerListLayout.Padding = UDim.new(0, 4)
 PlayerListLayout.Parent = PlayerScroll
 
 -- =============================================
--- RIGHT PANEL — CONTROLS
+-- RIGHT PANEL â€” CONTROLS
 -- =============================================
 local RightPanel = Instance.new("Frame")
 RightPanel.Size = UDim2.new(0, 255, 0, 345)
@@ -673,7 +673,7 @@ local function isVisible(targetPart)
 end
 
 -- =============================================
--- GET TARGET — secili oyunculardan en yakini
+-- GET TARGET â€” secili oyunculardan en yakini
 -- =============================================
 local function getClosestFromSelected()
     local closest = nil
@@ -857,7 +857,7 @@ end)
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz — TAMAMEN YUKLENDI! (Multi-Select + FOV)")
+print("[DHL V2] by babaniz â€” TAMAMEN YUKLENDI! (Multi-Select + FOV)")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] E = Secili hedefler arasi gecis")
 
