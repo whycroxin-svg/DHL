@@ -1,6 +1,6 @@
 --[[
     DHL V2 - by babaniz
-    Camlock Script â€” Multi-Select + FOV Circle
+    Camlock + ESP + Multi-Select + FOV Circle
     Executor uyumlu (Realius, Solara, Fluxus, vb.)
 ]]
 
@@ -22,7 +22,6 @@ local function getGuiParent()
         return gethui()
     end
     if syn and syn.protect_gui then
-        print("[DHL V2] syn.protect_gui kullaniliyor")
         local sg = Instance.new("ScreenGui")
         syn.protect_gui(sg)
         sg.Parent = game:GetService("CoreGui")
@@ -34,10 +33,8 @@ local function getGuiParent()
         test:Destroy()
     end)
     if ok then
-        print("[DHL V2] CoreGui kullaniliyor")
         return game:GetService("CoreGui")
     end
-    print("[DHL V2] PlayerGui kullaniliyor (fallback)")
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
@@ -54,10 +51,11 @@ local Settings = {
     CurrentTarget = nil,
     Locked = false,
     Mode = "RightMouseClick",
-    -- FOV Circle
     FOVVisible = true,
     FOVRadius = 150,
     FOVColor = Color3.fromRGB(255, 0, 0),
+    ESPEnabled = true,
+    ESPSelectedOnly = true,
 }
 
 -- =============================================
@@ -132,8 +130,8 @@ end
 -- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 520, 0, 440)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -220)
+MainFrame.Size = UDim2.new(0, 520, 0, 480)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
@@ -181,7 +179,6 @@ Sep.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 Sep.BorderSizePixel = 0
 Sep.Parent = MainFrame
 
--- Secili oyuncu sayaci
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(0, 220, 0, 16)
 SelectCountLabel.Position = UDim2.new(0, 15, 0, 60)
@@ -197,7 +194,7 @@ SelectCountLabel.Parent = MainFrame
 -- LEFT PANEL â€” PLAYER LIST
 -- =============================================
 local LeftPanel = Instance.new("Frame")
-LeftPanel.Size = UDim2.new(0, 220, 0, 345)
+LeftPanel.Size = UDim2.new(0, 220, 0, 390)
 LeftPanel.Position = UDim2.new(0, 15, 0, 78)
 LeftPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 LeftPanel.BackgroundTransparency = 0.3
@@ -231,7 +228,6 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 4)
 SearchCorner.Parent = SearchBox
 
--- Select All / Clear butonlari
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48, 0, 0, 22)
 SelectAllBtn.Position = UDim2.new(0, 8, 0, 40)
@@ -284,7 +280,7 @@ PlayerListLayout.Parent = PlayerScroll
 -- RIGHT PANEL â€” CONTROLS
 -- =============================================
 local RightPanel = Instance.new("Frame")
-RightPanel.Size = UDim2.new(0, 255, 0, 345)
+RightPanel.Size = UDim2.new(0, 255, 0, 390)
 RightPanel.Position = UDim2.new(0, 248, 0, 78)
 RightPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 RightPanel.BackgroundTransparency = 0.3
@@ -304,13 +300,13 @@ RightStroke.Parent = RightPanel
 local function createToggleButton(name, default, posY, parent)
     local btn = Instance.new("TextButton")
     btn.Name = name:gsub(" ", "")
-    btn.Size = UDim2.new(1, -20, 0, 32)
+    btn.Size = UDim2.new(1, -20, 0, 30)
     btn.Position = UDim2.new(0, 10, 0, posY)
     btn.BackgroundColor3 = default and Color3.fromRGB(180, 0, 0) or Color3.fromRGB(60, 60, 60)
     btn.BorderSizePixel = 0
     btn.Text = name .. ": " .. (default and "ON" or "OFF")
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 14
+    btn.TextSize = 13
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.Parent = parent
@@ -333,24 +329,24 @@ end
 local function createSlider(name, min, max, default, posY, parent)
     local container = Instance.new("Frame")
     container.Name = name:gsub(" ", "") .. "Container"
-    container.Size = UDim2.new(1, -20, 0, 45)
+    container.Size = UDim2.new(1, -20, 0, 40)
     container.Position = UDim2.new(0, 10, 0, posY)
     container.BackgroundTransparency = 1
     container.Parent = parent
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 18)
+    label.Size = UDim2.new(1, 0, 0, 16)
     label.BackgroundTransparency = 1
     label.Text = name .. ": " .. string.format("%.3f", default)
     label.TextColor3 = Color3.fromRGB(220, 220, 220)
-    label.TextSize = 13
+    label.TextSize = 12
     label.Font = Enum.Font.GothamSemibold
     label.TextXAlignment = Enum.TextXAlignment.Center
     label.Parent = container
 
     local sliderBg = Instance.new("TextButton")
-    sliderBg.Size = UDim2.new(1, 0, 0, 12)
-    sliderBg.Position = UDim2.new(0, 0, 0, 22)
+    sliderBg.Size = UDim2.new(1, 0, 0, 10)
+    sliderBg.Position = UDim2.new(0, 0, 0, 20)
     sliderBg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     sliderBg.BorderSizePixel = 0
     sliderBg.Text = ""
@@ -419,20 +415,20 @@ local function createSlider(name, min, max, default, posY, parent)
 end
 
 -- =============================================
--- BUILD CONTROLS
+-- BUILD CONTROLS (sag panel)
 -- =============================================
-local _, getCamlock = createToggleButton("Camlock System", Settings.CamlockEnabled, 10, RightPanel)
-local _, getWallCheck = createToggleButton("Wall Check", Settings.WallCheck, 50, RightPanel)
+local _, getCamlock = createToggleButton("Camlock System", Settings.CamlockEnabled, 8, RightPanel)
+local _, getWallCheck = createToggleButton("Wall Check", Settings.WallCheck, 42, RightPanel)
 
 -- Mode button
 local ModeBtn = Instance.new("TextButton")
-ModeBtn.Size = UDim2.new(1, -20, 0, 32)
-ModeBtn.Position = UDim2.new(0, 10, 0, 90)
+ModeBtn.Size = UDim2.new(1, -20, 0, 30)
+ModeBtn.Position = UDim2.new(0, 10, 0, 76)
 ModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ModeBtn.BorderSizePixel = 0
 ModeBtn.Text = "Mode: Right Mouse Click"
 ModeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ModeBtn.TextSize = 13
+ModeBtn.TextSize = 12
 ModeBtn.Font = Enum.Font.GothamBold
 ModeBtn.AutoButtonColor = false
 ModeBtn.Parent = RightPanel
@@ -456,21 +452,21 @@ ModeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Sliders
-local getSmoothness = createSlider("Smoothness", 0.01, 1.0, Settings.Smoothness, 130, RightPanel)
-local getPrediction = createSlider("Prediction", 0.0, 1.0, Settings.Prediction, 185, RightPanel)
+local getSmoothness = createSlider("Smoothness", 0.01, 1.0, Settings.Smoothness, 110, RightPanel)
+local getPrediction = createSlider("Prediction", 0.0, 1.0, Settings.Prediction, 155, RightPanel)
 
 -- Target Part
 local targetParts = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}
 local currentTargetIdx = 1
 
 local TargetBtn = Instance.new("TextButton")
-TargetBtn.Size = UDim2.new(1, -20, 0, 32)
-TargetBtn.Position = UDim2.new(0, 10, 0, 238)
+TargetBtn.Size = UDim2.new(1, -20, 0, 30)
+TargetBtn.Position = UDim2.new(0, 10, 0, 200)
 TargetBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 TargetBtn.BorderSizePixel = 0
 TargetBtn.Text = "Target Part: " .. Settings.TargetPart
 TargetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-TargetBtn.TextSize = 13
+TargetBtn.TextSize = 12
 TargetBtn.Font = Enum.Font.GothamBold
 TargetBtn.AutoButtonColor = false
 TargetBtn.Parent = RightPanel
@@ -490,11 +486,28 @@ TargetBtn.MouseButton1Click:Connect(function()
     TargetBtn.Text = "Target Part: " .. Settings.TargetPart
 end)
 
--- =============================================
--- FOV CIRCLE TOGGLE + SLIDER
--- =============================================
-local fovCircleBtn, getFOVVisible = createToggleButton("FOV Circle", Settings.FOVVisible, 280, RightPanel)
-local getFOVRadius = createSlider("FOV Radius", 20, 500, Settings.FOVRadius, 318, RightPanel)
+-- Separator
+local Sep2 = Instance.new("Frame")
+Sep2.Size = UDim2.new(1, -20, 0, 1)
+Sep2.Position = UDim2.new(0, 10, 0, 238)
+Sep2.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+Sep2.BorderSizePixel = 0
+Sep2.Parent = RightPanel
+
+-- FOV Circle toggle + slider
+local _, getFOVVisible = createToggleButton("FOV Circle", Settings.FOVVisible, 245, RightPanel)
+local getFOVRadius = createSlider("FOV Radius", 20, 500, Settings.FOVRadius, 279, RightPanel)
+
+-- Separator 2
+local Sep3 = Instance.new("Frame")
+Sep3.Size = UDim2.new(1, -20, 0, 1)
+Sep3.Position = UDim2.new(0, 10, 0, 324)
+Sep3.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+Sep3.BorderSizePixel = 0
+Sep3.Parent = RightPanel
+
+-- ESP toggle
+local _, getESP = createToggleButton("ESP", Settings.ESPEnabled, 331, RightPanel)
 
 -- =============================================
 -- FOV CIRCLE (Drawing API)
@@ -512,13 +525,10 @@ pcall(function()
     fovCircle.Visible = Settings.FOVVisible
     fovCircle.Transparency = 0.8
     usingDrawing = true
-    print("[DHL V2] FOV Circle: Drawing API aktif")
 end)
 
--- Fallback: Drawing API yoksa GUI-based circle
 local fovCircleGui = nil
 if not usingDrawing then
-    print("[DHL V2] FOV Circle: GUI fallback kullaniliyor")
     fovCircleGui = Instance.new("Frame")
     fovCircleGui.Name = "FOVCircle"
     fovCircleGui.Size = UDim2.new(0, Settings.FOVRadius * 2, 0, Settings.FOVRadius * 2)
@@ -539,6 +549,145 @@ if not usingDrawing then
 end
 
 -- =============================================
+-- ESP SYSTEM (Drawing API)
+-- =============================================
+local espObjects = {} -- player.Name -> {box, name, healthBar, healthFill, tracer}
+
+local function createESP(player)
+    if not usingDrawing then return end
+    if espObjects[player.Name] then return end
+
+    local esp = {}
+
+    esp.box = Drawing.new("Square")
+    esp.box.Color = Color3.fromRGB(255, 0, 0)
+    esp.box.Thickness = 1.5
+    esp.box.Filled = false
+    esp.box.Visible = false
+    esp.box.Transparency = 0.9
+
+    esp.name = Drawing.new("Text")
+    esp.name.Color = Color3.fromRGB(255, 255, 255)
+    esp.name.Size = 14
+    esp.name.Center = true
+    esp.name.Outline = true
+    esp.name.OutlineColor = Color3.fromRGB(0, 0, 0)
+    esp.name.Visible = false
+    esp.name.Font = 2
+
+    esp.healthBarBg = Drawing.new("Square")
+    esp.healthBarBg.Color = Color3.fromRGB(40, 40, 40)
+    esp.healthBarBg.Filled = true
+    esp.healthBarBg.Visible = false
+    esp.healthBarBg.Transparency = 0.7
+
+    esp.healthBar = Drawing.new("Square")
+    esp.healthBar.Color = Color3.fromRGB(0, 255, 0)
+    esp.healthBar.Filled = true
+    esp.healthBar.Visible = false
+    esp.healthBar.Transparency = 0.9
+
+    esp.tracer = Drawing.new("Line")
+    esp.tracer.Color = Color3.fromRGB(255, 0, 0)
+    esp.tracer.Thickness = 1
+    esp.tracer.Visible = false
+    esp.tracer.Transparency = 0.6
+
+    espObjects[player.Name] = esp
+end
+
+local function removeESP(playerName)
+    if espObjects[playerName] then
+        for _, obj in pairs(espObjects[playerName]) do
+            pcall(function() obj:Remove() end)
+        end
+        espObjects[playerName] = nil
+    end
+end
+
+local function hideESP(playerName)
+    if espObjects[playerName] then
+        for _, obj in pairs(espObjects[playerName]) do
+            pcall(function() obj.Visible = false end)
+        end
+    end
+end
+
+local function updateESP()
+    if not usingDrawing then return end
+
+    local espEnabled = getESP()
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            -- ESP sadece secili oyunculara
+            local shouldShow = espEnabled and isSelected(player)
+
+            if shouldShow and player.Character then
+                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                local head = player.Character:FindFirstChild("Head")
+
+                if humanoid and humanoid.Health > 0 and rootPart then
+                    local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+
+                    if onScreen then
+                        -- ESP objelerini olustur (yoksa)
+                        if not espObjects[player.Name] then
+                            createESP(player)
+                        end
+
+                        local esp = espObjects[player.Name]
+                        if not esp then return end
+
+                        -- Boyut hesapla (mesafeye gore)
+                        local dist = (Camera.CFrame.Position - rootPart.Position).Magnitude
+                        local scaleFactor = 1 / (dist * math.tan(math.rad(Camera.FieldOfView / 2)) * 2) * 1000
+                        local boxWidth = math.clamp(scaleFactor * 3.5, 8, 80)
+                        local boxHeight = math.clamp(scaleFactor * 5.5, 14, 130)
+
+                        -- Box
+                        esp.box.Size = Vector2.new(boxWidth, boxHeight)
+                        esp.box.Position = Vector2.new(pos.X - boxWidth / 2, pos.Y - boxHeight / 2)
+                        esp.box.Visible = true
+
+                        -- Name
+                        esp.name.Text = player.DisplayName
+                        esp.name.Position = Vector2.new(pos.X, pos.Y - boxHeight / 2 - 16)
+                        esp.name.Visible = true
+
+                        -- Health bar (sol taraf)
+                        local healthPercent = math.clamp(humanoid.Health / humanoid.MaxHealth, 0, 1)
+                        local barWidth = 3
+                        local barX = pos.X - boxWidth / 2 - barWidth - 3
+
+                        esp.healthBarBg.Size = Vector2.new(barWidth, boxHeight)
+                        esp.healthBarBg.Position = Vector2.new(barX, pos.Y - boxHeight / 2)
+                        esp.healthBarBg.Visible = true
+
+                        esp.healthBar.Size = Vector2.new(barWidth, boxHeight * healthPercent)
+                        esp.healthBar.Position = Vector2.new(barX, pos.Y - boxHeight / 2 + boxHeight * (1 - healthPercent))
+                        esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
+                        esp.healthBar.Visible = true
+
+                        -- Tracer (ekran altindan hedefe)
+                        esp.tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                        esp.tracer.To = Vector2.new(pos.X, pos.Y)
+                        esp.tracer.Visible = true
+                    else
+                        hideESP(player.Name)
+                    end
+                else
+                    hideESP(player.Name)
+                end
+            else
+                hideESP(player.Name)
+            end
+        end
+    end
+end
+
+-- =============================================
 -- MULTI-SELECT PLAYER LIST
 -- =============================================
 local playerButtons = {}
@@ -549,7 +698,7 @@ local function updateSelectCount()
     SelectCountLabel.Text = "Selected: " .. count
 end
 
-local function isSelected(player)
+function isSelected(player)
     return Settings.SelectedPlayers[player.Name] ~= nil
 end
 
@@ -558,10 +707,16 @@ local function toggleSelect(player, btn)
         Settings.SelectedPlayers[player.Name] = nil
         btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        -- ESP kaldir
+        hideESP(player.Name)
     else
         Settings.SelectedPlayers[player.Name] = player
         btn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        -- ESP olustur
+        if usingDrawing then
+            createESP(player)
+        end
     end
     updateSelectCount()
 end
@@ -626,6 +781,10 @@ end)
 ClearAllBtn.MouseButton1Click:Connect(function()
     Settings.SelectedPlayers = {}
     Settings.CurrentTarget = nil
+    -- Tum ESP temizle
+    for name, _ in pairs(espObjects) do
+        hideESP(name)
+    end
     refreshPlayerList()
 end)
 
@@ -641,6 +800,7 @@ Players.PlayerRemoving:Connect(function(player)
     if Settings.CurrentTarget == player then
         Settings.CurrentTarget = nil
     end
+    removeESP(player.Name)
     task.wait(0.1)
     refreshPlayerList()
 end)
@@ -673,29 +833,22 @@ local function isVisible(targetPart)
 end
 
 -- =============================================
--- GET TARGET â€” secili oyunculardan en yakini
+-- GET TARGET â€” SADECE SECILI OYUNCULARDAN
 -- =============================================
 local function getClosestFromSelected()
     local closest = nil
     local shortestDist = math.huge
     local fovRadius = getFOVRadius()
 
-    local pool = {}
+    -- Secili oyuncu yoksa HICBIR SEYE lock olma
     local hasSelected = false
-    for _, player in pairs(Settings.SelectedPlayers) do
+    for _ in pairs(Settings.SelectedPlayers) do
         hasSelected = true
-        table.insert(pool, player)
+        break
     end
+    if not hasSelected then return nil end
 
-    if not hasSelected then
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then
-                table.insert(pool, player)
-            end
-        end
-    end
-
-    for _, player in ipairs(pool) do
+    for _, player in pairs(Settings.SelectedPlayers) do
         if player and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -703,7 +856,6 @@ local function getClosestFromSelected()
                 local screenPos, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
-                    -- FOV circle icerisinde mi kontrol et
                     if dist < fovRadius and dist < shortestDist and isVisible(part) then
                         shortestDist = dist
                         closest = player
@@ -800,6 +952,9 @@ RunService.RenderStepped:Connect(function()
         fovCircleGui.Visible = fovVisible
     end
 
+    -- ESP guncelle
+    updateESP()
+
     -- Camlock
     if not getCamlock() then
         locked = false
@@ -855,16 +1010,26 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
+-- CLEANUP (script yeniden calistiginda)
+-- =============================================
+game:GetService("Players").LocalPlayer.CharacterRemoving:Connect(function()
+    for name, _ in pairs(espObjects) do
+        removeESP(name)
+    end
+end)
+
+-- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz â€” TAMAMEN YUKLENDI! (Multi-Select + FOV)")
+print("[DHL V2] by babaniz â€” YUKLENDI! (Camlock + ESP + FOV)")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] E = Secili hedefler arasi gecis")
+print("[DHL V2] Sadece secili oyunculara lock olur!")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Multi-Select + FOV | RShift toggle",
+        Text = "by babaniz | ESP + FOV + Multi-Select",
         Duration = 5
     })
 end)
