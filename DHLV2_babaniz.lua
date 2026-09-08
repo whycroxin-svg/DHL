@@ -312,13 +312,13 @@ WallCheckBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Mode Button
-local Modes = {"RightMouseClick", "Nearest", "Toggle"}
+local Modes = {"QKey", "Nearest"}
 local ModeIndex = 1
-local ModeBtn = CreateInfoButton("ModeBtn", "Mode: Right Mouse Click", UDim2.new(0, 10, 0, 80))
+local ModeBtn = CreateInfoButton("ModeBtn", "Mode: Q Key", UDim2.new(0, 10, 0, 80))
 ModeBtn.MouseButton1Click:Connect(function()
     ModeIndex = ModeIndex % #Modes + 1
     Settings.Mode = Modes[ModeIndex]
-    local displayName = Settings.Mode == "RightMouseClick" and "Right Mouse Click" or Settings.Mode
+    local displayName = Settings.Mode == "QKey" and "Q Key" or Settings.Mode
     ModeBtn.Text = "Mode: " .. displayName
 end)
 
@@ -672,19 +672,20 @@ end
 -- ========================
 -- INPUT HANDLING
 -- ========================
--- Right Mouse Click mode
+-- Q key toggle (won't fire while typing in chat thanks to gameProcessed)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
 
-    if Settings.Mode == "RightMouseClick" then
-        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+    if input.KeyCode == Enum.KeyCode.Q then
+        if Locked then
+            Locked = false
+        else
             if TargetPlayer then
                 Locked = true
             else
                 -- Auto-find closest if no target selected
                 local closest = GetClosestPlayer()
                 if closest then
-                    -- Select in list
                     if PlayerButtons[TargetPlayer] then
                         PlayerButtons[TargetPlayer].BackgroundColor3 = Color3.fromRGB(30, 8, 8)
                     end
@@ -697,27 +698,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
                 end
             end
         end
-    elseif Settings.Mode == "Toggle" then
-        if input.KeyCode == Enum.KeyCode.Q then
-            if Locked then
-                Locked = false
-            else
-                if not TargetPlayer then
-                    local closest = GetClosestPlayer()
-                    if closest then
-                        if PlayerButtons[TargetPlayer] then
-                            PlayerButtons[TargetPlayer].BackgroundColor3 = Color3.fromRGB(30, 8, 8)
-                        end
-                        TargetPlayer = closest
-                        if PlayerButtons[TargetPlayer] then
-                            PlayerButtons[TargetPlayer].BackgroundColor3 = Color3.fromRGB(120, 70, 20)
-                        end
-                        UpdateHighlightColors()
-                    end
-                end
-                Locked = true
-            end
-        end
     end
 
     -- Toggle UI visibility with RightShift
@@ -726,13 +706,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if Settings.Mode == "RightMouseClick" then
-        if input.UserInputType == Enum.UserInputType.MouseButton2 then
-            Locked = false
-        end
-    end
-end)
 
 -- ========================
 -- MAIN LOOP
@@ -775,4 +748,4 @@ ScreenGui.Destroying:Connect(function()
 end)
 
 print("[DHL V2] Loaded successfully — by babanız")
-print("[DHL V2] RightShift = Toggle UI | Right Click = Aim")
+print("[DHL V2] RightShift = Toggle UI | Q = Aim Lock Toggle")
