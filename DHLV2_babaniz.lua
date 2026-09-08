@@ -1,10 +1,10 @@
 --[[
-    DHL V2 - by babanız
-    Camlock Script for Roblox
+    DHL V2 - by babanÄ±z
+    Camlock Script â€” Multi-Select destekli
     Executor uyumlu (Realius, Solara, Fluxus, vb.)
 ]]
 
-print("[DHL V2] Script yükleniyor...")
+print("[DHL V2] Script yÃ¼kleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -13,58 +13,52 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
--- ═══════════════════════════════════════
--- GUI PARENT — executor uyumlu
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- GUI PARENT â€” executor uyumlu
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local function getGuiParent()
-    -- gethui varsa kullan (çoğu modern executor)
     if gethui then
-        print("[DHL V2] gethui() kullanılıyor")
+        print("[DHL V2] gethui() kullanÄ±lÄ±yor")
         return gethui()
     end
-
-    -- syn.protect_gui varsa CoreGui'ye koy
     if syn and syn.protect_gui then
-        print("[DHL V2] syn.protect_gui kullanılıyor")
+        print("[DHL V2] syn.protect_gui kullanÄ±lÄ±yor")
         local sg = Instance.new("ScreenGui")
         syn.protect_gui(sg)
         sg.Parent = game:GetService("CoreGui")
         return sg
     end
-
-    -- CoreGui'ye direkt dene
     local ok, _ = pcall(function()
         local test = Instance.new("ScreenGui")
         test.Parent = game:GetService("CoreGui")
         test:Destroy()
     end)
     if ok then
-        print("[DHL V2] CoreGui kullanılıyor")
+        print("[DHL V2] CoreGui kullanÄ±lÄ±yor")
         return game:GetService("CoreGui")
     end
-
-    -- Son çare: PlayerGui
-    print("[DHL V2] PlayerGui kullanılıyor (fallback)")
+    print("[DHL V2] PlayerGui kullanÄ±lÄ±yor (fallback)")
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- SETTINGS
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local Settings = {
     CamlockEnabled = true,
     WallCheck = true,
     Smoothness = 0.450,
     Prediction = 0.100,
     TargetPart = "HumanoidRootPart",
-    SelectedPlayer = nil,
+    SelectedPlayers = {}, -- MULTI-SELECT tablo
+    CurrentTarget = nil,
     Locked = false,
     Mode = "RightMouseClick"
 }
 
--- ═══════════════════════════════════════
--- ESKİ GUI TEMİZLE (tekrar execute için)
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- ESKÄ° GUI TEMÄ°ZLE
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 pcall(function()
     local old = game:GetService("CoreGui"):FindFirstChild("DHLV2_babaniz")
     if old then old:Destroy() end
@@ -80,11 +74,9 @@ pcall(function()
     if old then old:Destroy() end
 end)
 
-print("[DHL V2] Eski GUI temizlendi")
-
--- ═══════════════════════════════════════
--- GUI OLUŞTUR
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- GUI OLUÅTUR
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local guiParent = getGuiParent()
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -93,7 +85,6 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 999
 
--- Eğer parent zaten bir ScreenGui ise (syn durumu), ScreenGui yerine Frame kullan
 if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent
     ScreenGui.Name = "DHLV2_babaniz"
@@ -103,9 +94,7 @@ else
     ScreenGui.Parent = guiParent
 end
 
-print("[DHL V2] ScreenGui oluşturuldu, parent: " .. tostring(ScreenGui.Parent))
-
--- Draggable utility
+-- Draggable
 local function makeDraggable(frame, handle)
     local dragging, dragInput, dragStart, startPos
     handle = handle or frame
@@ -134,20 +123,18 @@ local function makeDraggable(frame, handle)
     end)
 end
 
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- MAIN FRAME
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 520, 0, 370)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -185)
+MainFrame.Size = UDim2.new(0, 520, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -200)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Parent = ScreenGui
-
-print("[DHL V2] MainFrame oluşturuldu")
 
 local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 8)
@@ -160,11 +147,10 @@ MainStroke.Parent = MainFrame
 
 makeDraggable(MainFrame)
 
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- TITLE
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Name = "Title"
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 8)
 TitleLabel.BackgroundTransparency = 1
@@ -175,11 +161,10 @@ TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.Parent = MainFrame
 
 local CreditLabel = Instance.new("TextLabel")
-CreditLabel.Name = "Credit"
 CreditLabel.Size = UDim2.new(1, 0, 0, 18)
 CreditLabel.Position = UDim2.new(0, 0, 0, 35)
 CreditLabel.BackgroundTransparency = 1
-CreditLabel.Text = "By babanız"
+CreditLabel.Text = "OluÅŸturan: babanÄ±z"
 CreditLabel.TextColor3 = Color3.fromRGB(200, 0, 0)
 CreditLabel.TextSize = 14
 CreditLabel.Font = Enum.Font.GothamSemibold
@@ -192,13 +177,24 @@ Sep.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 Sep.BorderSizePixel = 0
 Sep.Parent = MainFrame
 
--- ═══════════════════════════════════════
--- LEFT PANEL — PLAYER LIST
--- ═══════════════════════════════════════
+-- SeÃ§ili oyuncu sayÄ±sÄ± gÃ¶stergesi
+local SelectCountLabel = Instance.new("TextLabel")
+SelectCountLabel.Size = UDim2.new(0, 220, 0, 16)
+SelectCountLabel.Position = UDim2.new(0, 15, 0, 60)
+SelectCountLabel.BackgroundTransparency = 1
+SelectCountLabel.Text = "SeÃ§ili: 0 oyuncu"
+SelectCountLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+SelectCountLabel.TextSize = 11
+SelectCountLabel.Font = Enum.Font.GothamSemibold
+SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
+SelectCountLabel.Parent = MainFrame
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- LEFT PANEL â€” PLAYER LIST
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local LeftPanel = Instance.new("Frame")
-LeftPanel.Name = "LeftPanel"
-LeftPanel.Size = UDim2.new(0, 220, 0, 285)
-LeftPanel.Position = UDim2.new(0, 15, 0, 68)
+LeftPanel.Size = UDim2.new(0, 220, 0, 305)
+LeftPanel.Position = UDim2.new(0, 15, 0, 78)
 LeftPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 LeftPanel.BackgroundTransparency = 0.3
 LeftPanel.BorderSizePixel = 0
@@ -214,7 +210,6 @@ LeftStroke.Thickness = 1
 LeftStroke.Parent = LeftPanel
 
 local SearchBox = Instance.new("TextBox")
-SearchBox.Name = "SearchBox"
 SearchBox.Size = UDim2.new(1, -16, 0, 28)
 SearchBox.Position = UDim2.new(0, 8, 0, 8)
 SearchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -232,10 +227,42 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 4)
 SearchCorner.Parent = SearchBox
 
+-- TÃ¼mÃ¼nÃ¼ SeÃ§ / Temizle butonlarÄ±
+local SelectAllBtn = Instance.new("TextButton")
+SelectAllBtn.Size = UDim2.new(0.48, 0, 0, 22)
+SelectAllBtn.Position = UDim2.new(0, 8, 0, 40)
+SelectAllBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+SelectAllBtn.BorderSizePixel = 0
+SelectAllBtn.Text = "TÃ¼mÃ¼nÃ¼ SeÃ§"
+SelectAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SelectAllBtn.TextSize = 11
+SelectAllBtn.Font = Enum.Font.GothamBold
+SelectAllBtn.AutoButtonColor = false
+SelectAllBtn.Parent = LeftPanel
+
+local SelectAllCorner = Instance.new("UICorner")
+SelectAllCorner.CornerRadius = UDim.new(0, 4)
+SelectAllCorner.Parent = SelectAllBtn
+
+local ClearAllBtn = Instance.new("TextButton")
+ClearAllBtn.Size = UDim2.new(0.48, 0, 0, 22)
+ClearAllBtn.Position = UDim2.new(0.5, 2, 0, 40)
+ClearAllBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+ClearAllBtn.BorderSizePixel = 0
+ClearAllBtn.Text = "Temizle"
+ClearAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClearAllBtn.TextSize = 11
+ClearAllBtn.Font = Enum.Font.GothamBold
+ClearAllBtn.AutoButtonColor = false
+ClearAllBtn.Parent = LeftPanel
+
+local ClearAllCorner = Instance.new("UICorner")
+ClearAllCorner.CornerRadius = UDim.new(0, 4)
+ClearAllCorner.Parent = ClearAllBtn
+
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Name = "PlayerList"
-PlayerScroll.Size = UDim2.new(1, -16, 1, -44)
-PlayerScroll.Position = UDim2.new(0, 8, 0, 40)
+PlayerScroll.Size = UDim2.new(1, -16, 1, -72)
+PlayerScroll.Position = UDim2.new(0, 8, 0, 66)
 PlayerScroll.BackgroundTransparency = 1
 PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 4
@@ -249,13 +276,12 @@ PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PlayerListLayout.Padding = UDim.new(0, 4)
 PlayerListLayout.Parent = PlayerScroll
 
--- ═══════════════════════════════════════
--- RIGHT PANEL — CONTROLS
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- RIGHT PANEL â€” CONTROLS
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local RightPanel = Instance.new("Frame")
-RightPanel.Name = "RightPanel"
-RightPanel.Size = UDim2.new(0, 255, 0, 285)
-RightPanel.Position = UDim2.new(0, 248, 0, 68)
+RightPanel.Size = UDim2.new(0, 255, 0, 305)
+RightPanel.Position = UDim2.new(0, 248, 0, 78)
 RightPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 RightPanel.BackgroundTransparency = 0.3
 RightPanel.BorderSizePixel = 0
@@ -296,11 +322,7 @@ local function createToggleButton(name, default, posY, parent)
         btn.BackgroundColor3 = state and Color3.fromRGB(180, 0, 0) or Color3.fromRGB(60, 60, 60)
     end)
 
-    return btn, function() return state end, function(v)
-        state = v
-        btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(180, 0, 0) or Color3.fromRGB(60, 60, 60)
-    end
+    return btn, function() return state end
 end
 
 -- Slider helper
@@ -323,7 +345,6 @@ local function createSlider(name, min, max, default, posY, parent)
     label.Parent = container
 
     local sliderBg = Instance.new("TextButton")
-    sliderBg.Name = "SliderBg"
     sliderBg.Size = UDim2.new(1, 0, 0, 12)
     sliderBg.Position = UDim2.new(0, 0, 0, 22)
     sliderBg.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -337,7 +358,6 @@ local function createSlider(name, min, max, default, posY, parent)
     sliderBgCorner.Parent = sliderBg
 
     local fill = Instance.new("Frame")
-    fill.Name = "Fill"
     fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
     fill.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
     fill.BorderSizePixel = 0
@@ -348,7 +368,6 @@ local function createSlider(name, min, max, default, posY, parent)
     fillCorner.Parent = fill
 
     local knob = Instance.new("Frame")
-    knob.Name = "Knob"
     knob.Size = UDim2.new(0, 14, 0, 14)
     knob.AnchorPoint = Vector2.new(0.5, 0.5)
     knob.Position = UDim2.new((default - min) / (max - min), 0, 0.5, 0)
@@ -375,7 +394,7 @@ local function createSlider(name, min, max, default, posY, parent)
         label.Text = name .. ": " .. string.format("%.3f", value)
     end
 
-    sliderBg.MouseButton1Down:Connect(function(x, y)
+    sliderBg.MouseButton1Down:Connect(function(x)
         sliding = true
         update(x)
     end)
@@ -395,17 +414,14 @@ local function createSlider(name, min, max, default, posY, parent)
     return function() return value end
 end
 
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- BUILD CONTROLS
--- ═══════════════════════════════════════
-local _, getCamlock, _ = createToggleButton("Camlock System", Settings.CamlockEnabled, 10, RightPanel)
-local _, getWallCheck, _ = createToggleButton("Wall Check", Settings.WallCheck, 50, RightPanel)
-
-print("[DHL V2] Toggle butonları oluşturuldu")
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local _, getCamlock = createToggleButton("Camlock System", Settings.CamlockEnabled, 10, RightPanel)
+local _, getWallCheck = createToggleButton("Wall Check", Settings.WallCheck, 50, RightPanel)
 
 -- Mode button
 local ModeBtn = Instance.new("TextButton")
-ModeBtn.Name = "ModeBtn"
 ModeBtn.Size = UDim2.new(1, -20, 0, 32)
 ModeBtn.Position = UDim2.new(0, 10, 0, 90)
 ModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -439,14 +455,11 @@ end)
 local getSmoothness = createSlider("Smoothness", 0.01, 1.0, Settings.Smoothness, 130, RightPanel)
 local getPrediction = createSlider("Prediction", 0.0, 1.0, Settings.Prediction, 185, RightPanel)
 
-print("[DHL V2] Sliderlar oluşturuldu")
-
--- Target Part button
+-- Target Part
 local targetParts = {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}
 local currentTargetIdx = 1
 
 local TargetBtn = Instance.new("TextButton")
-TargetBtn.Name = "TargetPartBtn"
 TargetBtn.Size = UDim2.new(1, -20, 0, 32)
 TargetBtn.Position = UDim2.new(0, 10, 0, 242)
 TargetBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -473,21 +486,48 @@ TargetBtn.MouseButton1Click:Connect(function()
     TargetBtn.Text = "Target Part: " .. Settings.TargetPart
 end)
 
--- ═══════════════════════════════════════
--- PLAYER LIST
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- MULTI-SELECT PLAYER LIST
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local playerButtons = {}
+
+local function updateSelectCount()
+    local count = 0
+    for _ in pairs(Settings.SelectedPlayers) do count = count + 1 end
+    SelectCountLabel.Text = "SeÃ§ili: " .. count .. " oyuncu"
+end
+
+local function isSelected(player)
+    return Settings.SelectedPlayers[player.Name] ~= nil
+end
+
+local function toggleSelect(player, btn)
+    if isSelected(player) then
+        -- SeÃ§imi kaldÄ±r
+        Settings.SelectedPlayers[player.Name] = nil
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    else
+        -- SeÃ§
+        Settings.SelectedPlayers[player.Name] = player
+        btn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end
+    updateSelectCount()
+end
 
 local function createPlayerButton(player)
     if player == LocalPlayer then return end
 
+    local selected = isSelected(player)
+
     local btn = Instance.new("TextButton")
     btn.Name = "PLR_" .. player.Name
     btn.Size = UDim2.new(1, -4, 0, 30)
-    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    btn.BackgroundColor3 = selected and Color3.fromRGB(139, 0, 0) or Color3.fromRGB(45, 45, 45)
     btn.BorderSizePixel = 0
     btn.Text = "  " .. player.DisplayName
-    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.TextColor3 = selected and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)
     btn.TextSize = 13
     btn.Font = Enum.Font.Gotham
     btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -499,15 +539,7 @@ local function createPlayerButton(player)
     btnCorner.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
-        for _, b in pairs(playerButtons) do
-            if b and b.Parent then
-                b.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-                b.TextColor3 = Color3.fromRGB(200, 200, 200)
-            end
-        end
-        btn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Settings.SelectedPlayer = player
+        toggleSelect(player, btn)
     end)
 
     playerButtons[player.Name] = btn
@@ -529,10 +561,27 @@ local function refreshPlayerList()
             end
         end
     end
+    updateSelectCount()
 end
 
+-- TÃ¼mÃ¼nÃ¼ SeÃ§
+SelectAllBtn.MouseButton1Click:Connect(function()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            Settings.SelectedPlayers[player.Name] = player
+        end
+    end
+    refreshPlayerList()
+end)
+
+-- Temizle
+ClearAllBtn.MouseButton1Click:Connect(function()
+    Settings.SelectedPlayers = {}
+    Settings.CurrentTarget = nil
+    refreshPlayerList()
+end)
+
 refreshPlayerList()
-print("[DHL V2] Oyuncu listesi yüklendi: " .. tostring(#Players:GetPlayers() - 1) .. " oyuncu")
 
 Players.PlayerAdded:Connect(function()
     task.wait(0.5)
@@ -540,9 +589,9 @@ Players.PlayerAdded:Connect(function()
 end)
 
 Players.PlayerRemoving:Connect(function(player)
-    if Settings.SelectedPlayer == player then
-        Settings.SelectedPlayer = nil
-        Settings.Locked = false
+    Settings.SelectedPlayers[player.Name] = nil
+    if Settings.CurrentTarget == player then
+        Settings.CurrentTarget = nil
     end
     task.wait(0.1)
     refreshPlayerList()
@@ -552,9 +601,9 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     refreshPlayerList()
 end)
 
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- WALL CHECK
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
 
@@ -575,15 +624,31 @@ local function isVisible(targetPart)
     return true
 end
 
--- ═══════════════════════════════════════
--- CLOSEST PLAYER
--- ═══════════════════════════════════════
-local function getClosestPlayer()
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- GET TARGET â€” seÃ§ili oyunculardan en yakÄ±nÄ±
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+local function getClosestFromSelected()
     local closest = nil
     local shortestDist = math.huge
 
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
+    -- SeÃ§ili oyuncu yoksa tÃ¼m oyunculardan en yakÄ±nÄ±
+    local pool = {}
+    local hasSelected = false
+    for _, player in pairs(Settings.SelectedPlayers) do
+        hasSelected = true
+        table.insert(pool, player)
+    end
+
+    if not hasSelected then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                table.insert(pool, player)
+            end
+        end
+    end
+
+    for _, player in ipairs(pool) do
+        if player and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
             local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
@@ -601,10 +666,33 @@ local function getClosestPlayer()
     return closest
 end
 
--- ═══════════════════════════════════════
+-- E tuÅŸuyla seÃ§ili oyuncular arasÄ±nda geÃ§iÅŸ
+local cycleIndex = 0
+
+local function cycleTarget()
+    local selectedList = {}
+    for _, player in pairs(Settings.SelectedPlayers) do
+        if player and player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            local hum = player.Character:FindFirstChildOfClass("Humanoid")
+            if hum.Health > 0 then
+                table.insert(selectedList, player)
+            end
+        end
+    end
+
+    if #selectedList == 0 then
+        Settings.CurrentTarget = nil
+        return
+    end
+
+    cycleIndex = (cycleIndex % #selectedList) + 1
+    Settings.CurrentTarget = selectedList[cycleIndex]
+    print("[DHL V2] Hedef deÄŸiÅŸti: " .. Settings.CurrentTarget.DisplayName)
+end
+
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- CAMLOCK LOGIC
--- ═══════════════════════════════════════
-local targetPlayer = nil
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 local locked = false
 
 UserInputService.InputBegan:Connect(function(input, gpe)
@@ -613,13 +701,8 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     -- Right Mouse Click mode
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         if getCamlock() then
-            if Settings.SelectedPlayer then
-                targetPlayer = Settings.SelectedPlayer
-                locked = true
-            else
-                targetPlayer = getClosestPlayer()
-                locked = targetPlayer ~= nil
-            end
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
         end
     end
 
@@ -628,20 +711,20 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         if getCamlock() then
             if locked then
                 locked = false
-                targetPlayer = nil
+                Settings.CurrentTarget = nil
             else
-                if Settings.SelectedPlayer then
-                    targetPlayer = Settings.SelectedPlayer
-                    locked = true
-                else
-                    targetPlayer = getClosestPlayer()
-                    locked = targetPlayer ~= nil
-                end
+                Settings.CurrentTarget = getClosestFromSelected()
+                locked = Settings.CurrentTarget ~= nil
             end
         end
     end
 
-    -- Right Shift = GUI aç/kapa
+    -- E = seÃ§ili oyuncular arasÄ±nda geÃ§iÅŸ (lock aktifken)
+    if input.KeyCode == Enum.KeyCode.E and locked then
+        cycleTarget()
+    end
+
+    -- Right Shift = GUI aÃ§/kapa
     if input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
     end
@@ -650,35 +733,35 @@ end)
 UserInputService.InputEnded:Connect(function(input)
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         locked = false
-        targetPlayer = nil
+        Settings.CurrentTarget = nil
     end
 end)
 
--- ═══════════════════════════════════════
--- RENDER STEP — CAMERA LOCK
--- ═══════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- RENDER STEP
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 RunService.RenderStepped:Connect(function()
     if not getCamlock() then
         locked = false
-        targetPlayer = nil
+        Settings.CurrentTarget = nil
         return
     end
 
     -- Nearest cursor mode
     if Settings.Mode == "NearestCursor" then
         if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-            targetPlayer = getClosestPlayer()
-            locked = targetPlayer ~= nil
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
         else
             locked = false
-            targetPlayer = nil
+            Settings.CurrentTarget = nil
         end
     end
 
-    if locked and targetPlayer and targetPlayer.Character then
-        local part = targetPlayer.Character:FindFirstChild(Settings.TargetPart)
+    if locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
         if part then
-            local humanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+            local humanoid = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
                 if isVisible(part) then
                     local smoothness = getSmoothness()
@@ -701,27 +784,28 @@ RunService.RenderStepped:Connect(function()
                 else
                     if getWallCheck() then
                         locked = false
-                        targetPlayer = nil
+                        Settings.CurrentTarget = nil
                     end
                 end
             else
                 locked = false
-                targetPlayer = nil
+                Settings.CurrentTarget = nil
             end
         end
     end
 end)
 
--- ═══════════════════════════════════════
--- BİLDİRİM
--- ═══════════════════════════════════════
-print("[DHL V2] by babanız — TAMAMEN YÜKLENDI!")
-print("[DHL V2] Right Shift = GUI aç/kapa")
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- BÄ°LDÄ°RÄ°M
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+print("[DHL V2] by babanÄ±z â€” TAMAMEN YÃœKLENDI! (Multi-Select)")
+print("[DHL V2] Right Shift = GUI aÃ§/kapa")
+print("[DHL V2] E = SeÃ§ili hedefler arasÄ± geÃ§iÅŸ")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babanız — Yüklendi! | RShift aç/kapa",
+        Text = "by babanÄ±z â€” Multi-Select aktif! | RShift aÃ§/kapa",
         Duration = 5
     })
 end)
