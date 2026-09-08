@@ -439,29 +439,30 @@ local function RefreshESP()
         return
     end
 
-    -- Add highlights for new players
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            if not Highlights[player] or not Highlights[player].Parent then
-                CreateHighlight(player)
-            else
-                -- Update adornee if character changed
-                if Highlights[player].Adornee ~= player.Character then
-                    Highlights[player].Adornee = player.Character
-                end
-            end
-        end
-    end
-
-    -- Remove highlights for players who left
+    -- Only highlight the selected target
     for player, hl in pairs(Highlights) do
-        if not player.Parent or not player.Character then
+        if player ~= TargetPlayer or not player.Parent or not player.Character then
             pcall(function() hl:Destroy() end)
             Highlights[player] = nil
         end
     end
 
-    UpdateHighlightColors()
+    -- Create highlight for target if needed
+    if TargetPlayer and TargetPlayer ~= LocalPlayer and TargetPlayer.Character then
+        if not Highlights[TargetPlayer] or not Highlights[TargetPlayer].Parent then
+            CreateHighlight(TargetPlayer)
+        else
+            if Highlights[TargetPlayer].Adornee ~= TargetPlayer.Character then
+                Highlights[TargetPlayer].Adornee = TargetPlayer.Character
+            end
+        end
+        -- Apply cockroach color to target
+        if Highlights[TargetPlayer] then
+            Highlights[TargetPlayer].FillColor = ESP_TARGET_FILL
+            Highlights[TargetPlayer].OutlineColor = ESP_TARGET_OUTLINE
+            Highlights[TargetPlayer].FillTransparency = 0.3
+        end
+    end
 end
 
 -- ========================
