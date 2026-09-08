@@ -1,6 +1,6 @@
 --[[
     DHL V2 - by babaniz
-    Camlock + ESP + Multi-Select + FOV Circle
+    Camlock + Highlight ESP + Multi-Select + FOV Circle
     Executor uyumlu (Realius, Solara, Fluxus, vb.)
 ]]
 
@@ -18,7 +18,6 @@ local Mouse = LocalPlayer:GetMouse()
 -- =============================================
 local function getGuiParent()
     if gethui then
-        print("[DHL V2] gethui() kullaniliyor")
         return gethui()
     end
     if syn and syn.protect_gui then
@@ -53,9 +52,7 @@ local Settings = {
     Mode = "RightMouseClick",
     FOVVisible = true,
     FOVRadius = 150,
-    FOVColor = Color3.fromRGB(255, 0, 0),
     ESPEnabled = true,
-    ESPSelectedOnly = true,
 }
 
 -- =============================================
@@ -75,6 +72,14 @@ pcall(function()
     local old = LocalPlayer.PlayerGui:FindFirstChild("DHLV2_babaniz")
     if old then old:Destroy() end
 end)
+
+-- Eski highlight temizle
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr.Character then
+        local oldHL = plr.Character:FindFirstChild("DHL_Highlight")
+        if oldHL then oldHL:Destroy() end
+    end
+end
 
 -- =============================================
 -- GUI OLUSTUR
@@ -191,7 +196,7 @@ SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 SelectCountLabel.Parent = MainFrame
 
 -- =============================================
--- LEFT PANEL — PLAYER LIST
+-- LEFT PANEL â€” PLAYER LIST
 -- =============================================
 local LeftPanel = Instance.new("Frame")
 LeftPanel.Size = UDim2.new(0, 220, 0, 390)
@@ -277,7 +282,7 @@ PlayerListLayout.Padding = UDim.new(0, 4)
 PlayerListLayout.Parent = PlayerScroll
 
 -- =============================================
--- RIGHT PANEL — CONTROLS
+-- RIGHT PANEL â€” CONTROLS
 -- =============================================
 local RightPanel = Instance.new("Frame")
 RightPanel.Size = UDim2.new(0, 255, 0, 390)
@@ -296,7 +301,7 @@ RightStroke.Color = Color3.fromRGB(80, 0, 0)
 RightStroke.Thickness = 1
 RightStroke.Parent = RightPanel
 
--- Toggle button helper
+-- Toggle helper
 local function createToggleButton(name, default, posY, parent)
     local btn = Instance.new("TextButton")
     btn.Name = name:gsub(" ", "")
@@ -415,12 +420,12 @@ local function createSlider(name, min, max, default, posY, parent)
 end
 
 -- =============================================
--- BUILD CONTROLS (sag panel)
+-- BUILD CONTROLS
 -- =============================================
 local _, getCamlock = createToggleButton("Camlock System", Settings.CamlockEnabled, 8, RightPanel)
 local _, getWallCheck = createToggleButton("Wall Check", Settings.WallCheck, 42, RightPanel)
 
--- Mode button
+-- Mode
 local ModeBtn = Instance.new("TextButton")
 ModeBtn.Size = UDim2.new(1, -20, 0, 30)
 ModeBtn.Position = UDim2.new(0, 10, 0, 76)
@@ -494,11 +499,11 @@ Sep2.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
 Sep2.BorderSizePixel = 0
 Sep2.Parent = RightPanel
 
--- FOV Circle toggle + slider
+-- FOV Circle
 local _, getFOVVisible = createToggleButton("FOV Circle", Settings.FOVVisible, 245, RightPanel)
 local getFOVRadius = createSlider("FOV Radius", 20, 500, Settings.FOVRadius, 279, RightPanel)
 
--- Separator 2
+-- Separator
 local Sep3 = Instance.new("Frame")
 Sep3.Size = UDim2.new(1, -20, 0, 1)
 Sep3.Position = UDim2.new(0, 10, 0, 324)
@@ -507,17 +512,17 @@ Sep3.BorderSizePixel = 0
 Sep3.Parent = RightPanel
 
 -- ESP toggle
-local _, getESP = createToggleButton("ESP", Settings.ESPEnabled, 331, RightPanel)
+local _, getESP = createToggleButton("ESP Highlight", Settings.ESPEnabled, 331, RightPanel)
 
 -- =============================================
--- FOV CIRCLE (Drawing API)
+-- FOV CIRCLE
 -- =============================================
 local fovCircle = nil
 local usingDrawing = false
 
 pcall(function()
     fovCircle = Drawing.new("Circle")
-    fovCircle.Color = Settings.FOVColor
+    fovCircle.Color = Color3.fromRGB(255, 0, 0)
     fovCircle.Thickness = 1.5
     fovCircle.NumSides = 64
     fovCircle.Radius = Settings.FOVRadius
@@ -549,79 +554,105 @@ if not usingDrawing then
 end
 
 -- =============================================
--- ESP SYSTEM (Drawing API)
+-- HIGHLIGHT ESP â€” CYAN, TAMAMINI KAPLAR
 -- =============================================
-local espObjects = {} -- player.Name -> {box, name, healthBar, healthFill, tracer}
+local highlightObjects = {} -- player.Name -> Highlight instance
+local espDrawings = {} -- player.Name -> {name, tracer} Drawing objeleri
 
-local function createESP(player)
-    if not usingDrawing then return end
-    if espObjects[player.Name] then return end
+local function addHighlight(player)
+    if not player or not player.Character then return end
 
-    local esp = {}
-
-    esp.box = Drawing.new("Square")
-    esp.box.Color = Color3.fromRGB(255, 0, 0)
-    esp.box.Thickness = 1.5
-    esp.box.Filled = false
-    esp.box.Visible = false
-    esp.box.Transparency = 0.9
-
-    esp.name = Drawing.new("Text")
-    esp.name.Color = Color3.fromRGB(255, 255, 255)
-    esp.name.Size = 14
-    esp.name.Center = true
-    esp.name.Outline = true
-    esp.name.OutlineColor = Color3.fromRGB(0, 0, 0)
-    esp.name.Visible = false
-    esp.name.Font = 2
-
-    esp.healthBarBg = Drawing.new("Square")
-    esp.healthBarBg.Color = Color3.fromRGB(40, 40, 40)
-    esp.healthBarBg.Filled = true
-    esp.healthBarBg.Visible = false
-    esp.healthBarBg.Transparency = 0.7
-
-    esp.healthBar = Drawing.new("Square")
-    esp.healthBar.Color = Color3.fromRGB(0, 255, 0)
-    esp.healthBar.Filled = true
-    esp.healthBar.Visible = false
-    esp.healthBar.Transparency = 0.9
-
-    esp.tracer = Drawing.new("Line")
-    esp.tracer.Color = Color3.fromRGB(255, 0, 0)
-    esp.tracer.Thickness = 1
-    esp.tracer.Visible = false
-    esp.tracer.Transparency = 0.6
-
-    espObjects[player.Name] = esp
-end
-
-local function removeESP(playerName)
-    if espObjects[playerName] then
-        for _, obj in pairs(espObjects[playerName]) do
-            pcall(function() obj:Remove() end)
+    -- Highlight zaten varsa atla
+    if highlightObjects[player.Name] then
+        -- Character degismis olabilir, parent kontrol et
+        if highlightObjects[player.Name].Parent ~= player.Character then
+            highlightObjects[player.Name]:Destroy()
+            highlightObjects[player.Name] = nil
+        else
+            return
         end
-        espObjects[playerName] = nil
+    end
+
+    local hl = Instance.new("Highlight")
+    hl.Name = "DHL_Highlight"
+    hl.FillColor = Color3.fromRGB(0, 255, 255) -- CYAN
+    hl.OutlineColor = Color3.fromRGB(0, 255, 255) -- CYAN outline
+    hl.FillTransparency = 0.35
+    hl.OutlineTransparency = 0
+    hl.Adornee = player.Character
+    hl.Parent = player.Character
+
+    highlightObjects[player.Name] = hl
+
+    -- Drawing name + tracer
+    if usingDrawing and not espDrawings[player.Name] then
+        local esp = {}
+
+        esp.name = Drawing.new("Text")
+        esp.name.Color = Color3.fromRGB(0, 255, 255)
+        esp.name.Size = 14
+        esp.name.Center = true
+        esp.name.Outline = true
+        esp.name.OutlineColor = Color3.fromRGB(0, 0, 0)
+        esp.name.Visible = false
+        esp.name.Font = 2
+
+        esp.distance = Drawing.new("Text")
+        esp.distance.Color = Color3.fromRGB(200, 200, 200)
+        esp.distance.Size = 12
+        esp.distance.Center = true
+        esp.distance.Outline = true
+        esp.distance.OutlineColor = Color3.fromRGB(0, 0, 0)
+        esp.distance.Visible = false
+        esp.distance.Font = 2
+
+        esp.healthText = Drawing.new("Text")
+        esp.healthText.Color = Color3.fromRGB(0, 255, 0)
+        esp.healthText.Size = 12
+        esp.healthText.Center = true
+        esp.healthText.Outline = true
+        esp.healthText.OutlineColor = Color3.fromRGB(0, 0, 0)
+        esp.healthText.Visible = false
+        esp.healthText.Font = 2
+
+        esp.tracer = Drawing.new("Line")
+        esp.tracer.Color = Color3.fromRGB(0, 255, 255)
+        esp.tracer.Thickness = 1
+        esp.tracer.Visible = false
+        esp.tracer.Transparency = 0.7
+
+        espDrawings[player.Name] = esp
     end
 end
 
-local function hideESP(playerName)
-    if espObjects[playerName] then
-        for _, obj in pairs(espObjects[playerName]) do
+local function removeHighlight(playerName)
+    if highlightObjects[playerName] then
+        pcall(function() highlightObjects[playerName]:Destroy() end)
+        highlightObjects[playerName] = nil
+    end
+    if espDrawings[playerName] then
+        for _, obj in pairs(espDrawings[playerName]) do
+            pcall(function() obj:Remove() end)
+        end
+        espDrawings[playerName] = nil
+    end
+end
+
+local function hideDrawings(playerName)
+    if espDrawings[playerName] then
+        for _, obj in pairs(espDrawings[playerName]) do
             pcall(function() obj.Visible = false end)
         end
     end
 end
 
 local function updateESP()
-    if not usingDrawing then return end
-
     local espEnabled = getESP()
 
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            -- ESP sadece secili oyunculara
-            local shouldShow = espEnabled and isSelected(player)
+            local selected = Settings.SelectedPlayers[player.Name] ~= nil
+            local shouldShow = espEnabled and selected
 
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -629,59 +660,50 @@ local function updateESP()
                 local head = player.Character:FindFirstChild("Head")
 
                 if humanoid and humanoid.Health > 0 and rootPart then
-                    local pos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+                    -- Highlight ekle
+                    addHighlight(player)
 
-                    if onScreen then
-                        -- ESP objelerini olustur (yoksa)
-                        if not espObjects[player.Name] then
-                            createESP(player)
+                    -- Drawing objelerini guncelle
+                    if usingDrawing and espDrawings[player.Name] then
+                        local esp = espDrawings[player.Name]
+                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0, 2, 0)
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+
+                        if onScreen then
+                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                            local healthPercent = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
+
+                            -- Name
+                            esp.name.Text = player.DisplayName
+                            esp.name.Position = Vector2.new(screenPos.X, screenPos.Y - 30)
+                            esp.name.Visible = true
+
+                            -- Distance
+                            esp.distance.Text = "[" .. dist .. "m]"
+                            esp.distance.Position = Vector2.new(screenPos.X, screenPos.Y - 16)
+                            esp.distance.Visible = true
+
+                            -- Health
+                            esp.healthText.Text = healthPercent .. "%"
+                            esp.healthText.Position = Vector2.new(screenPos.X, screenPos.Y - 44)
+                            esp.healthText.Color = Color3.fromRGB(255 * (1 - healthPercent/100), 255 * (healthPercent/100), 0)
+                            esp.healthText.Visible = true
+
+                            -- Tracer
+                            esp.tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                            esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
+                            esp.tracer.Visible = true
+                        else
+                            hideDrawings(player.Name)
                         end
-
-                        local esp = espObjects[player.Name]
-                        if not esp then return end
-
-                        -- Boyut hesapla (mesafeye gore)
-                        local dist = (Camera.CFrame.Position - rootPart.Position).Magnitude
-                        local scaleFactor = 1 / (dist * math.tan(math.rad(Camera.FieldOfView / 2)) * 2) * 1000
-                        local boxWidth = math.clamp(scaleFactor * 3.5, 8, 80)
-                        local boxHeight = math.clamp(scaleFactor * 5.5, 14, 130)
-
-                        -- Box
-                        esp.box.Size = Vector2.new(boxWidth, boxHeight)
-                        esp.box.Position = Vector2.new(pos.X - boxWidth / 2, pos.Y - boxHeight / 2)
-                        esp.box.Visible = true
-
-                        -- Name
-                        esp.name.Text = player.DisplayName
-                        esp.name.Position = Vector2.new(pos.X, pos.Y - boxHeight / 2 - 16)
-                        esp.name.Visible = true
-
-                        -- Health bar (sol taraf)
-                        local healthPercent = math.clamp(humanoid.Health / humanoid.MaxHealth, 0, 1)
-                        local barWidth = 3
-                        local barX = pos.X - boxWidth / 2 - barWidth - 3
-
-                        esp.healthBarBg.Size = Vector2.new(barWidth, boxHeight)
-                        esp.healthBarBg.Position = Vector2.new(barX, pos.Y - boxHeight / 2)
-                        esp.healthBarBg.Visible = true
-
-                        esp.healthBar.Size = Vector2.new(barWidth, boxHeight * healthPercent)
-                        esp.healthBar.Position = Vector2.new(barX, pos.Y - boxHeight / 2 + boxHeight * (1 - healthPercent))
-                        esp.healthBar.Color = Color3.fromRGB(255 * (1 - healthPercent), 255 * healthPercent, 0)
-                        esp.healthBar.Visible = true
-
-                        -- Tracer (ekran altindan hedefe)
-                        esp.tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                        esp.tracer.To = Vector2.new(pos.X, pos.Y)
-                        esp.tracer.Visible = true
-                    else
-                        hideESP(player.Name)
                     end
                 else
-                    hideESP(player.Name)
+                    -- Oldu, highlight kaldir
+                    removeHighlight(player.Name)
                 end
             else
-                hideESP(player.Name)
+                -- Secili degil veya ESP kapali
+                removeHighlight(player.Name)
             end
         end
     end
@@ -698,7 +720,7 @@ local function updateSelectCount()
     SelectCountLabel.Text = "Selected: " .. count
 end
 
-function isSelected(player)
+local function isSelected(player)
     return Settings.SelectedPlayers[player.Name] ~= nil
 end
 
@@ -707,15 +729,13 @@ local function toggleSelect(player, btn)
         Settings.SelectedPlayers[player.Name] = nil
         btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-        -- ESP kaldir
-        hideESP(player.Name)
+        removeHighlight(player.Name)
     else
         Settings.SelectedPlayers[player.Name] = player
         btn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        -- ESP olustur
-        if usingDrawing then
-            createESP(player)
+        if getESP() then
+            addHighlight(player)
         end
     end
     updateSelectCount()
@@ -779,12 +799,12 @@ SelectAllBtn.MouseButton1Click:Connect(function()
 end)
 
 ClearAllBtn.MouseButton1Click:Connect(function()
+    -- Tum highlight temizle
+    for name, _ in pairs(highlightObjects) do
+        removeHighlight(name)
+    end
     Settings.SelectedPlayers = {}
     Settings.CurrentTarget = nil
-    -- Tum ESP temizle
-    for name, _ in pairs(espObjects) do
-        hideESP(name)
-    end
     refreshPlayerList()
 end)
 
@@ -800,7 +820,7 @@ Players.PlayerRemoving:Connect(function(player)
     if Settings.CurrentTarget == player then
         Settings.CurrentTarget = nil
     end
-    removeESP(player.Name)
+    removeHighlight(player.Name)
     task.wait(0.1)
     refreshPlayerList()
 end)
@@ -809,10 +829,31 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     refreshPlayerList()
 end)
 
+-- Character respawn handling
+for _, player in ipairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        player.CharacterAdded:Connect(function()
+            task.wait(0.5)
+            if isSelected(player) and getESP() then
+                addHighlight(player)
+            end
+        end)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        if isSelected(player) and getESP() then
+            addHighlight(player)
+        end
+    end)
+end)
+
 -- =============================================
 -- WALL CHECK
 -- =============================================
-local function isVisible(targetPart)
+local function isVisibleCheck(targetPart)
     if not getWallCheck() then return true end
 
     local origin = Camera.CFrame.Position
@@ -833,14 +874,13 @@ local function isVisible(targetPart)
 end
 
 -- =============================================
--- GET TARGET — SADECE SECILI OYUNCULARDAN
+-- GET TARGET â€” SADECE SECILI OYUNCULARDAN
 -- =============================================
 local function getClosestFromSelected()
     local closest = nil
     local shortestDist = math.huge
     local fovRadius = getFOVRadius()
 
-    -- Secili oyuncu yoksa HICBIR SEYE lock olma
     local hasSelected = false
     for _ in pairs(Settings.SelectedPlayers) do
         hasSelected = true
@@ -856,7 +896,7 @@ local function getClosestFromSelected()
                 local screenPos, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
-                    if dist < fovRadius and dist < shortestDist and isVisible(part) then
+                    if dist < fovRadius and dist < shortestDist and isVisibleCheck(part) then
                         shortestDist = dist
                         closest = player
                     end
@@ -867,7 +907,7 @@ local function getClosestFromSelected()
     return closest
 end
 
--- E tusuyla secili oyuncular arasinda gecis
+-- E tusuyla gecis
 local cycleIndex = 0
 
 local function cycleTarget()
@@ -938,7 +978,7 @@ end)
 -- RENDER STEP
 -- =============================================
 RunService.RenderStepped:Connect(function()
-    -- FOV Circle guncelle
+    -- FOV Circle
     local fovRadius = getFOVRadius()
     local fovVisible = getFOVVisible()
 
@@ -952,7 +992,7 @@ RunService.RenderStepped:Connect(function()
         fovCircleGui.Visible = fovVisible
     end
 
-    -- ESP guncelle
+    -- ESP
     updateESP()
 
     -- Camlock
@@ -977,7 +1017,7 @@ RunService.RenderStepped:Connect(function()
         if part then
             local humanoid = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.Health > 0 then
-                if isVisible(part) then
+                if isVisibleCheck(part) then
                     local smoothness = getSmoothness()
                     local prediction = getPrediction()
 
@@ -1010,26 +1050,26 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- CLEANUP (script yeniden calistiginda)
+-- CLEANUP
 -- =============================================
-game:GetService("Players").LocalPlayer.CharacterRemoving:Connect(function()
-    for name, _ in pairs(espObjects) do
-        removeESP(name)
+LocalPlayer.CharacterRemoving:Connect(function()
+    for name, _ in pairs(highlightObjects) do
+        removeHighlight(name)
     end
 end)
 
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz — YUKLENDI! (Camlock + ESP + FOV)")
+print("[DHL V2] by babaniz â€” YUKLENDI! (Highlight ESP + FOV)")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] E = Secili hedefler arasi gecis")
-print("[DHL V2] Sadece secili oyunculara lock olur!")
+print("[DHL V2] Sadece secili oyunculara lock + ESP!")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | ESP + FOV + Multi-Select",
+        Text = "by babaniz | Cyan Highlight ESP + FOV",
         Duration = 5
     })
 end)
