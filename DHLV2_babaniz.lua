@@ -1,10 +1,10 @@
 --[[
-    DHL V2 - by babanÄ±z
-    Camlock Script â€” Multi-Select destekli
+    DHL V2 - by babaniz
+    Camlock Script — Multi-Select + FOV Circle
     Executor uyumlu (Realius, Solara, Fluxus, vb.)
 ]]
 
-print("[DHL V2] Script yÃ¼kleniyor...")
+print("[DHL V2] Script yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -13,16 +13,16 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- GUI PARENT â€” executor uyumlu
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- GUI PARENT
+-- =============================================
 local function getGuiParent()
     if gethui then
-        print("[DHL V2] gethui() kullanÄ±lÄ±yor")
+        print("[DHL V2] gethui() kullaniliyor")
         return gethui()
     end
     if syn and syn.protect_gui then
-        print("[DHL V2] syn.protect_gui kullanÄ±lÄ±yor")
+        print("[DHL V2] syn.protect_gui kullaniliyor")
         local sg = Instance.new("ScreenGui")
         syn.protect_gui(sg)
         sg.Parent = game:GetService("CoreGui")
@@ -34,31 +34,35 @@ local function getGuiParent()
         test:Destroy()
     end)
     if ok then
-        print("[DHL V2] CoreGui kullanÄ±lÄ±yor")
+        print("[DHL V2] CoreGui kullaniliyor")
         return game:GetService("CoreGui")
     end
-    print("[DHL V2] PlayerGui kullanÄ±lÄ±yor (fallback)")
+    print("[DHL V2] PlayerGui kullaniliyor (fallback)")
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- SETTINGS
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local Settings = {
     CamlockEnabled = true,
     WallCheck = true,
     Smoothness = 0.450,
     Prediction = 0.100,
     TargetPart = "HumanoidRootPart",
-    SelectedPlayers = {}, -- MULTI-SELECT tablo
+    SelectedPlayers = {},
     CurrentTarget = nil,
     Locked = false,
-    Mode = "RightMouseClick"
+    Mode = "RightMouseClick",
+    -- FOV Circle
+    FOVVisible = true,
+    FOVRadius = 150,
+    FOVColor = Color3.fromRGB(255, 0, 0),
 }
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- ESKÄ° GUI TEMÄ°ZLE
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- ESKI GUI TEMIZLE
+-- =============================================
 pcall(function()
     local old = game:GetService("CoreGui"):FindFirstChild("DHLV2_babaniz")
     if old then old:Destroy() end
@@ -74,9 +78,9 @@ pcall(function()
     if old then old:Destroy() end
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- GUI OLUÅTUR
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- GUI OLUSTUR
+-- =============================================
 local guiParent = getGuiParent()
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -123,13 +127,13 @@ local function makeDraggable(frame, handle)
     end)
 end
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- MAIN FRAME
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 520, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -260, 0.5, -200)
+MainFrame.Size = UDim2.new(0, 520, 0, 440)
+MainFrame.Position = UDim2.new(0.5, -260, 0.5, -220)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
@@ -147,9 +151,9 @@ MainStroke.Parent = MainFrame
 
 makeDraggable(MainFrame)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- TITLE
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
 TitleLabel.Position = UDim2.new(0, 0, 0, 8)
@@ -164,7 +168,7 @@ local CreditLabel = Instance.new("TextLabel")
 CreditLabel.Size = UDim2.new(1, 0, 0, 18)
 CreditLabel.Position = UDim2.new(0, 0, 0, 35)
 CreditLabel.BackgroundTransparency = 1
-CreditLabel.Text = "OluÅŸturan: babanÄ±z"
+CreditLabel.Text = "By babaniz"
 CreditLabel.TextColor3 = Color3.fromRGB(200, 0, 0)
 CreditLabel.TextSize = 14
 CreditLabel.Font = Enum.Font.GothamSemibold
@@ -177,23 +181,23 @@ Sep.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 Sep.BorderSizePixel = 0
 Sep.Parent = MainFrame
 
--- SeÃ§ili oyuncu sayÄ±sÄ± gÃ¶stergesi
+-- Secili oyuncu sayaci
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(0, 220, 0, 16)
 SelectCountLabel.Position = UDim2.new(0, 15, 0, 60)
 SelectCountLabel.BackgroundTransparency = 1
-SelectCountLabel.Text = "SeÃ§ili: 0 oyuncu"
+SelectCountLabel.Text = "Selected: 0"
 SelectCountLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
 SelectCountLabel.TextSize = 11
 SelectCountLabel.Font = Enum.Font.GothamSemibold
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 SelectCountLabel.Parent = MainFrame
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- LEFT PANEL â€” PLAYER LIST
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- LEFT PANEL — PLAYER LIST
+-- =============================================
 local LeftPanel = Instance.new("Frame")
-LeftPanel.Size = UDim2.new(0, 220, 0, 305)
+LeftPanel.Size = UDim2.new(0, 220, 0, 345)
 LeftPanel.Position = UDim2.new(0, 15, 0, 78)
 LeftPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 LeftPanel.BackgroundTransparency = 0.3
@@ -227,13 +231,13 @@ local SearchCorner = Instance.new("UICorner")
 SearchCorner.CornerRadius = UDim.new(0, 4)
 SearchCorner.Parent = SearchBox
 
--- TÃ¼mÃ¼nÃ¼ SeÃ§ / Temizle butonlarÄ±
+-- Select All / Clear butonlari
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48, 0, 0, 22)
 SelectAllBtn.Position = UDim2.new(0, 8, 0, 40)
 SelectAllBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
 SelectAllBtn.BorderSizePixel = 0
-SelectAllBtn.Text = "TÃ¼mÃ¼nÃ¼ SeÃ§"
+SelectAllBtn.Text = "Select All"
 SelectAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SelectAllBtn.TextSize = 11
 SelectAllBtn.Font = Enum.Font.GothamBold
@@ -249,7 +253,7 @@ ClearAllBtn.Size = UDim2.new(0.48, 0, 0, 22)
 ClearAllBtn.Position = UDim2.new(0.5, 2, 0, 40)
 ClearAllBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
 ClearAllBtn.BorderSizePixel = 0
-ClearAllBtn.Text = "Temizle"
+ClearAllBtn.Text = "Clear"
 ClearAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ClearAllBtn.TextSize = 11
 ClearAllBtn.Font = Enum.Font.GothamBold
@@ -276,11 +280,11 @@ PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PlayerListLayout.Padding = UDim.new(0, 4)
 PlayerListLayout.Parent = PlayerScroll
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- RIGHT PANEL â€” CONTROLS
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- RIGHT PANEL — CONTROLS
+-- =============================================
 local RightPanel = Instance.new("Frame")
-RightPanel.Size = UDim2.new(0, 255, 0, 305)
+RightPanel.Size = UDim2.new(0, 255, 0, 345)
 RightPanel.Position = UDim2.new(0, 248, 0, 78)
 RightPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 RightPanel.BackgroundTransparency = 0.3
@@ -414,9 +418,9 @@ local function createSlider(name, min, max, default, posY, parent)
     return function() return value end
 end
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- BUILD CONTROLS
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local _, getCamlock = createToggleButton("Camlock System", Settings.CamlockEnabled, 10, RightPanel)
 local _, getWallCheck = createToggleButton("Wall Check", Settings.WallCheck, 50, RightPanel)
 
@@ -461,7 +465,7 @@ local currentTargetIdx = 1
 
 local TargetBtn = Instance.new("TextButton")
 TargetBtn.Size = UDim2.new(1, -20, 0, 32)
-TargetBtn.Position = UDim2.new(0, 10, 0, 242)
+TargetBtn.Position = UDim2.new(0, 10, 0, 238)
 TargetBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 TargetBtn.BorderSizePixel = 0
 TargetBtn.Text = "Target Part: " .. Settings.TargetPart
@@ -486,15 +490,63 @@ TargetBtn.MouseButton1Click:Connect(function()
     TargetBtn.Text = "Target Part: " .. Settings.TargetPart
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- FOV CIRCLE TOGGLE + SLIDER
+-- =============================================
+local fovCircleBtn, getFOVVisible = createToggleButton("FOV Circle", Settings.FOVVisible, 280, RightPanel)
+local getFOVRadius = createSlider("FOV Radius", 20, 500, Settings.FOVRadius, 318, RightPanel)
+
+-- =============================================
+-- FOV CIRCLE (Drawing API)
+-- =============================================
+local fovCircle = nil
+local usingDrawing = false
+
+pcall(function()
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Color = Settings.FOVColor
+    fovCircle.Thickness = 1.5
+    fovCircle.NumSides = 64
+    fovCircle.Radius = Settings.FOVRadius
+    fovCircle.Filled = false
+    fovCircle.Visible = Settings.FOVVisible
+    fovCircle.Transparency = 0.8
+    usingDrawing = true
+    print("[DHL V2] FOV Circle: Drawing API aktif")
+end)
+
+-- Fallback: Drawing API yoksa GUI-based circle
+local fovCircleGui = nil
+if not usingDrawing then
+    print("[DHL V2] FOV Circle: GUI fallback kullaniliyor")
+    fovCircleGui = Instance.new("Frame")
+    fovCircleGui.Name = "FOVCircle"
+    fovCircleGui.Size = UDim2.new(0, Settings.FOVRadius * 2, 0, Settings.FOVRadius * 2)
+    fovCircleGui.AnchorPoint = Vector2.new(0.5, 0.5)
+    fovCircleGui.BackgroundTransparency = 1
+    fovCircleGui.BorderSizePixel = 0
+    fovCircleGui.Parent = ScreenGui
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = fovCircleGui
+
+    local circleStroke = Instance.new("UIStroke")
+    circleStroke.Color = Color3.fromRGB(255, 0, 0)
+    circleStroke.Thickness = 1.5
+    circleStroke.Transparency = 0.2
+    circleStroke.Parent = fovCircleGui
+end
+
+-- =============================================
 -- MULTI-SELECT PLAYER LIST
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local playerButtons = {}
 
 local function updateSelectCount()
     local count = 0
     for _ in pairs(Settings.SelectedPlayers) do count = count + 1 end
-    SelectCountLabel.Text = "SeÃ§ili: " .. count .. " oyuncu"
+    SelectCountLabel.Text = "Selected: " .. count
 end
 
 local function isSelected(player)
@@ -503,12 +555,10 @@ end
 
 local function toggleSelect(player, btn)
     if isSelected(player) then
-        -- SeÃ§imi kaldÄ±r
         Settings.SelectedPlayers[player.Name] = nil
         btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.TextColor3 = Color3.fromRGB(200, 200, 200)
     else
-        -- SeÃ§
         Settings.SelectedPlayers[player.Name] = player
         btn.BackgroundColor3 = Color3.fromRGB(139, 0, 0)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -564,7 +614,6 @@ local function refreshPlayerList()
     updateSelectCount()
 end
 
--- TÃ¼mÃ¼nÃ¼ SeÃ§
 SelectAllBtn.MouseButton1Click:Connect(function()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -574,7 +623,6 @@ SelectAllBtn.MouseButton1Click:Connect(function()
     refreshPlayerList()
 end)
 
--- Temizle
 ClearAllBtn.MouseButton1Click:Connect(function()
     Settings.SelectedPlayers = {}
     Settings.CurrentTarget = nil
@@ -601,9 +649,9 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     refreshPlayerList()
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- WALL CHECK
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
 
@@ -624,14 +672,14 @@ local function isVisible(targetPart)
     return true
 end
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- GET TARGET â€” seÃ§ili oyunculardan en yakÄ±nÄ±
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
+-- GET TARGET — secili oyunculardan en yakini
+-- =============================================
 local function getClosestFromSelected()
     local closest = nil
     local shortestDist = math.huge
+    local fovRadius = getFOVRadius()
 
-    -- SeÃ§ili oyuncu yoksa tÃ¼m oyunculardan en yakÄ±nÄ±
     local pool = {}
     local hasSelected = false
     for _, player in pairs(Settings.SelectedPlayers) do
@@ -655,7 +703,8 @@ local function getClosestFromSelected()
                 local screenPos, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local dist = (Vector2.new(screenPos.X, screenPos.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
-                    if dist < shortestDist and isVisible(part) then
+                    -- FOV circle icerisinde mi kontrol et
+                    if dist < fovRadius and dist < shortestDist and isVisible(part) then
                         shortestDist = dist
                         closest = player
                     end
@@ -666,7 +715,7 @@ local function getClosestFromSelected()
     return closest
 end
 
--- E tuÅŸuyla seÃ§ili oyuncular arasÄ±nda geÃ§iÅŸ
+-- E tusuyla secili oyuncular arasinda gecis
 local cycleIndex = 0
 
 local function cycleTarget()
@@ -687,18 +736,17 @@ local function cycleTarget()
 
     cycleIndex = (cycleIndex % #selectedList) + 1
     Settings.CurrentTarget = selectedList[cycleIndex]
-    print("[DHL V2] Hedef deÄŸiÅŸti: " .. Settings.CurrentTarget.DisplayName)
+    print("[DHL V2] Target: " .. Settings.CurrentTarget.DisplayName)
 end
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- CAMLOCK LOGIC
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 local locked = false
 
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
 
-    -- Right Mouse Click mode
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         if getCamlock() then
             Settings.CurrentTarget = getClosestFromSelected()
@@ -706,7 +754,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
 
-    -- Toggle Q mode
     if Settings.Mode == "ToggleQ" and input.KeyCode == Enum.KeyCode.Q then
         if getCamlock() then
             if locked then
@@ -719,12 +766,10 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
 
-    -- E = seÃ§ili oyuncular arasÄ±nda geÃ§iÅŸ (lock aktifken)
     if input.KeyCode == Enum.KeyCode.E and locked then
         cycleTarget()
     end
 
-    -- Right Shift = GUI aÃ§/kapa
     if input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
     end
@@ -737,17 +782,31 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 -- RENDER STEP
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+-- =============================================
 RunService.RenderStepped:Connect(function()
+    -- FOV Circle guncelle
+    local fovRadius = getFOVRadius()
+    local fovVisible = getFOVVisible()
+
+    if usingDrawing and fovCircle then
+        fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+        fovCircle.Radius = fovRadius
+        fovCircle.Visible = fovVisible
+    elseif fovCircleGui then
+        fovCircleGui.Position = UDim2.new(0, Mouse.X, 0, Mouse.Y)
+        fovCircleGui.Size = UDim2.new(0, fovRadius * 2, 0, fovRadius * 2)
+        fovCircleGui.Visible = fovVisible
+    end
+
+    -- Camlock
     if not getCamlock() then
         locked = false
         Settings.CurrentTarget = nil
         return
     end
 
-    -- Nearest cursor mode
     if Settings.Mode == "NearestCursor" then
         if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
             Settings.CurrentTarget = getClosestFromSelected()
@@ -795,17 +854,17 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
--- BÄ°LDÄ°RÄ°M
--- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-print("[DHL V2] by babanÄ±z â€” TAMAMEN YÃœKLENDI! (Multi-Select)")
-print("[DHL V2] Right Shift = GUI aÃ§/kapa")
-print("[DHL V2] E = SeÃ§ili hedefler arasÄ± geÃ§iÅŸ")
+-- =============================================
+-- BILDIRIM
+-- =============================================
+print("[DHL V2] by babaniz — TAMAMEN YUKLENDI! (Multi-Select + FOV)")
+print("[DHL V2] Right Shift = GUI ac/kapa")
+print("[DHL V2] E = Secili hedefler arasi gecis")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babanÄ±z â€” Multi-Select aktif! | RShift aÃ§/kapa",
+        Text = "by babaniz | Multi-Select + FOV | RShift toggle",
         Duration = 5
     })
 end)
