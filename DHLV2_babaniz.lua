@@ -1118,12 +1118,13 @@ end)
 -- =============================================
 -- ESC + INPUT FIX
 -- =============================================
+local GuiService = game:GetService("GuiService")
+
 -- SearchBox ESC ile focustan ciksin
 SearchBox.FocusLost:Connect(function(enterPressed)
-    -- Focus kaybolunca normal
+    -- normal
 end)
 
--- ESC basilinca SearchBox focustan ciksin
 UserInputService.InputBegan:Connect(function(input, gpe)
     if input.KeyCode == Enum.KeyCode.Escape then
         if SearchBox:IsFocused() then
@@ -1132,9 +1133,19 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
 end)
 
--- Sol ve sag panellerin Active = true (sadece paneller input alsin)
-LeftPanel.Active = true
-RightPanel.Active = true
+-- ESC menusu acilinca GUI'yi gizle, kapaninca goster
+local guiWasVisible = true
+
+pcall(function()
+    GuiService.MenuOpened:Connect(function()
+        guiWasVisible = MainFrame.Visible
+        MainFrame.Visible = false
+    end)
+
+    GuiService.MenuClosed:Connect(function()
+        MainFrame.Visible = guiWasVisible
+    end)
+end)
 
 -- =============================================
 -- BILDIRIM
