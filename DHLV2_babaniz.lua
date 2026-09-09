@@ -261,6 +261,7 @@ LeftPanel.Position = UDim2.new(0, 15, 0, 78)
 LeftPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 LeftPanel.BackgroundTransparency = 0.3
 LeftPanel.BorderSizePixel = 0
+LeftPanel.Active = true
 LeftPanel.Parent = MainFrame
 
 local LeftCorner = Instance.new("UICorner")
@@ -347,6 +348,7 @@ RightPanel.Position = UDim2.new(0, 248, 0, 78)
 RightPanel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 RightPanel.BackgroundTransparency = 0.3
 RightPanel.BorderSizePixel = 0
+RightPanel.Active = true
 RightPanel.Parent = MainFrame
 
 local RightCorner = Instance.new("UICorner")
