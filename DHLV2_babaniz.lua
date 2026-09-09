@@ -140,7 +140,7 @@ MainFrame.Position = UDim2.new(0.5, -260, 0.5, -240)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
+MainFrame.Active = false -- oyun inputunu bloke etmesin
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
@@ -152,7 +152,18 @@ MainStroke.Color = Color3.fromRGB(139, 0, 0)
 MainStroke.Thickness = 1.5
 MainStroke.Parent = MainFrame
 
-makeDraggable(MainFrame)
+-- Drag handle â€” sadece ust kisim (title alani) suruklenebilir
+local DragHandle = Instance.new("TextButton")
+DragHandle.Name = "DragHandle"
+DragHandle.Size = UDim2.new(1, 0, 0, 58)
+DragHandle.Position = UDim2.new(0, 0, 0, 0)
+DragHandle.BackgroundTransparency = 1
+DragHandle.Text = ""
+DragHandle.AutoButtonColor = false
+DragHandle.ZIndex = 10
+DragHandle.Parent = MainFrame
+
+makeDraggable(MainFrame, DragHandle)
 
 -- =============================================
 -- BACKGROUND IMAGE
@@ -1103,6 +1114,27 @@ LocalPlayer.CharacterRemoving:Connect(function()
         removeHighlight(name)
     end
 end)
+
+-- =============================================
+-- ESC + INPUT FIX
+-- =============================================
+-- SearchBox ESC ile focustan ciksin
+SearchBox.FocusLost:Connect(function(enterPressed)
+    -- Focus kaybolunca normal
+end)
+
+-- ESC basilinca SearchBox focustan ciksin
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if input.KeyCode == Enum.KeyCode.Escape then
+        if SearchBox:IsFocused() then
+            SearchBox:ReleaseFocus()
+        end
+    end
+end)
+
+-- Sol ve sag panellerin Active = true (sadece paneller input alsin)
+LeftPanel.Active = true
+RightPanel.Active = true
 
 -- =============================================
 -- BILDIRIM
