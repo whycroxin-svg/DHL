@@ -155,6 +155,52 @@ MainStroke.Parent = MainFrame
 makeDraggable(MainFrame)
 
 -- =============================================
+-- BACKGROUND IMAGE
+-- =============================================
+local BgImage = Instance.new("ImageLabel")
+BgImage.Name = "Background"
+BgImage.Size = UDim2.new(1, 0, 1, 0)
+BgImage.Position = UDim2.new(0, 0, 0, 0)
+BgImage.BackgroundTransparency = 1
+BgImage.ImageTransparency = 0.82
+BgImage.ScaleType = Enum.ScaleType.Crop
+BgImage.ZIndex = 0
+BgImage.ClipsDescendants = true
+BgImage.Parent = MainFrame
+
+local BgCorner = Instance.new("UICorner")
+BgCorner.CornerRadius = UDim.new(0, 8)
+BgCorner.Parent = BgImage
+
+-- Resmi GitHub'dan indir ve yukle
+pcall(function()
+    local imageUrl = "https://raw.githubusercontent.com/whycroxin-svg/DHL/main/bg.png"
+    local fileName = "DHLV2_bg.png"
+
+    if writefile and isfile and getcustomasset then
+        if not isfile(fileName) then
+            local imgData = game:HttpGet(imageUrl)
+            writefile(fileName, imgData)
+            print("[DHL V2] Arka plan resmi indirildi")
+        end
+        BgImage.Image = getcustomasset(fileName)
+        print("[DHL V2] Arka plan resmi yuklendi")
+    else
+        print("[DHL V2] getcustomasset desteklenmiyor, arka plan yuklenemedi")
+    end
+end)
+
+-- Tum elementlerin ZIndex'ini yukselt (arka planin ustunde gorunsun)
+task.defer(function()
+    task.wait(0.2)
+    for _, child in ipairs(MainFrame:GetDescendants()) do
+        if child:IsA("GuiObject") and child ~= BgImage and child.ZIndex < 2 then
+            child.ZIndex = 2
+        end
+    end
+end)
+
+-- =============================================
 -- TITLE
 -- =============================================
 local TitleLabel = Instance.new("TextLabel")
