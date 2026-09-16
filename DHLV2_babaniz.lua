@@ -1,6 +1,6 @@
 --[[
     DHL V2 - by babaniz
-    Blatant Aimlock + ESP + Misc — Full Feature
+    Blatant Aimlock + ESP + Misc â€” Full Feature
     Tab sistemi ile sayfa sayfa
 ]]
 
@@ -495,8 +495,9 @@ local getWallCheck = addToggle(p1, "Wall Check", Settings.WallCheck, function(v)
 local getStickyAim = addToggle(p1, "Sticky Aim", Settings.StickyAim, function(v) Settings.StickyAim = v end, 4)
 local getAutoSwitch = addToggle(p1, "Auto Switch", Settings.AutoSwitch, function(v) Settings.AutoSwitch = v end, 5)
 local getResolver = addToggle(p1, "Resolver", Settings.Resolver, function(v) Settings.Resolver = v end, 6)
+local getSkipDowned = addToggle(p1, "Skip Downed (Da Hood)", true, nil, 7)
 
-addSeparator(p1, 7)
+addSeparator(p1, 8)
 addLabel(p1, "-- SETTINGS --", 8)
 
 local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v)
@@ -947,6 +948,40 @@ local function isVisible(targetPart)
 end
 
 -- =============================================
+-- DA HOOD â€” KNOCKED/DOWNED DETECTION
+-- =============================================
+local function isKnocked(character)
+    if not character then return false end
+
+    -- HumanoidRootPart icinde BodyVelocity/BodyPosition = downed
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        if hrp:FindFirstChildOfClass("BodyVelocity") then return true end
+        if hrp:FindFirstChildOfClass("BodyPosition") then return true end
+    end
+
+    -- Humanoid state kontrolu
+    local hum = character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        local state = hum:GetState()
+        if state == Enum.HumanoidStateType.Physics
+        or state == Enum.HumanoidStateType.FallingDown
+        or state == Enum.HumanoidStateType.PlatformStanding then
+            return true
+        end
+    end
+
+    -- Knocked isimli child var mi
+    for _, child in ipairs(character:GetChildren()) do
+        if child.Name == "Knocked" or child.Name == "KnockedScript" or child.Name == "YOUAREDEAD" then
+            return true
+        end
+    end
+
+    return false
+end
+
+-- =============================================
 -- CLOSEST TARGET (secili oyunculardan)
 -- =============================================
 local function getClosestFromSelected()
@@ -962,6 +997,11 @@ local function getClosestFromSelected()
             local part = player.Character[Settings.TargetPart]
             local hum = player.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
+                -- Da Hood: bayilmis oyunculari atla
+                if getSkipDowned() and isKnocked(player.Character) then
+                    continue
+                end
+
                 local sp, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
@@ -984,7 +1024,11 @@ local function cycleTarget()
     for _, p in pairs(Settings.SelectedPlayers) do
         if p and p.Character then
             local h = p.Character:FindFirstChildOfClass("Humanoid")
-            if h and h.Health > 0 then table.insert(list, p) end
+            if h and h.Health > 0 then
+                if not (getSkipDowned() and isKnocked(p.Character)) then
+                    table.insert(list, p)
+                end
+            end
         end
     end
     if #list == 0 then Settings.CurrentTarget = nil; return end
@@ -1124,7 +1168,7 @@ pcall(function()
 end)
 
 -- =============================================
--- RENDER STEP — CAMLOCK + FOV + ESP
+-- RENDER STEP â€” CAMLOCK + FOV + ESP
 -- =============================================
 RunService.RenderStepped:Connect(function()
     -- ESC menusu acikken hic bir sey yapma
@@ -1213,7 +1257,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- ESC MENU — Highlight gizle + lock koru
+-- ESC MENU â€” Highlight gizle + lock koru
 -- =============================================
 local guiWasVisible = true
 local lockWasActive = false
@@ -1319,7 +1363,7 @@ end)
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz — FULL LOAD!")
+print("[DHL V2] by babaniz â€” FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Tabs: Aimlock | Visuals | Players | Misc")
 
