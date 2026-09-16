@@ -1,51 +1,11 @@
 --[[
     DHL V2 - by babaniz
-    Blatant Aimlock + ESP + Misc + NO SPREAD (Duz Mermi)
+    Gelişmiş Aimlock + ESP + Misc
+    Hook'suz güvenli sürüm
 ]]
 
 print("[DHL V2] Script yukleniyor...")
--- =============================================
--- ANTİ-DETECTION KORUMA KATMANI
--- =============================================
-local AntiDetection = {}
 
--- getfenv hook (tespit edilmemek icin ortami gizle)
-pcall(function()
-    if hookfunction and getfenv and newcclosure then
-        local old_getfenv = getfenv
-        getfenv = newcclosure(function(level)
-            if level == 9999 then return old_getfenv(2) end
-            return old_getfenv(level)
-        end)
-    end
-end)
-
--- namecall hook'unu daha guvenli hale getir
--- (bazı anti-cheat'ler hook varlığını tespit edebilir)
-pcall(function()
-    if getrawmetatable and setreadonly and newcclosure and getnamecallmethod then
-        -- Zaten Perfect Lock icinde hook var
-        -- Burada ekstra guvenlik saglanabilir ama anti-cheat'ler bunu da tespit edebilir
-        print("[DHL V2] Namecall hook korumasi aktif (tespit edilebilir!)")
-    end
-end)
-
--- Cok agresif ozellikleri otomatik kapat
--- (Oyuna yakalanmamak icin)
-task.wait(1)
-pcall(function()
-    -- Eger anti-cheat varsa Silent Aim ve Trigger Bot'u otomatik kapat
-    if getSilentAim and getSilentAim() then
-        getSilentAim(false) -- veya getSilentAim:set(false) -- fonksiyona gore degisir
-        print("[DHL V2] Silent Aim anti-detection icin kapatildi")
-    end
-    if getTriggerBot and getTriggerBot() then
-        getTriggerBot(false)
-        print("[DHL V2] Trigger Bot anti-detection icin kapatildi")
-    end
-end)
-
-print("[DHL V2] Anti-Detection koruma yuklendi")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -54,6 +14,9 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
+-- =============================================
+-- GUI PARENT
+-- =============================================
 local function getGuiParent()
     if gethui then return gethui() end
     if syn and syn.protect_gui then
@@ -69,18 +32,51 @@ local function getGuiParent()
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
+-- =============================================
+-- SETTINGS
+-- =============================================
 local Settings = {
-    CamlockEnabled = true, WallCheck = true, Smoothness = 0.450, Prediction = 0.100,
-    TargetPart = "HumanoidRootPart", Mode = "RightMouseClick", StickyAim = false,
-    AutoSwitch = true, Resolver = false, SkipDowned = true, DownedThreshold = 0.20,
-    AimShake = 0, FOVVisible = true, FOVRadius = 150, ESPEnabled = true, ESPNames = true,
-    ESPHealth = true, ESPDistance = true, ESPTracers = true, ESPTracerOrigin = "Bottom",
-    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(0, 255, 255),
-    SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
-    InfiniteJump = false, Noclip = false, AntiAFK = true, FlyEnabled = false, FlySpeed = 50,
-    NoSpread = false, SelectedPlayers = {}, CurrentTarget = nil,
+    CamlockEnabled = true,
+    WallCheck = false,
+    Smoothness = 0.450,
+    Prediction = 0.100,
+    TargetPart = "HumanoidRootPart",
+    Mode = "RightMouseClick",
+    StickyAim = false,
+    AutoSwitch = true,
+    Resolver = false,
+    SkipDowned = true,
+    DownedThreshold = 0.20,
+    AimShake = 0,
+    FOVVisible = true,
+    FOVRadius = 150,
+    ESPEnabled = true,
+    ESPNames = true,
+    ESPHealth = true,
+    ESPDistance = true,
+    ESPTracers = true,
+    ESPTracerOrigin = "Bottom",
+    HighlightFillTransparency = 0.35,
+    HighlightColor = Color3.fromRGB(0, 255, 255),
+    SpeedEnabled = false,
+    SpeedValue = 16,
+    JumpPowerEnabled = false,
+    JumpPowerValue = 50,
+    InfiniteJump = false,
+    Noclip = false,
+    AntiAFK = true,
+    FlyEnabled = false,
+    FlySpeed = 50,
+    HitboxExpand = false,
+    HitboxSize = 1.3,
+    AlwaysOn = false,
+    SelectedPlayers = {},
+    CurrentTarget = nil,
 }
 
+-- =============================================
+-- CLEANUP
+-- =============================================
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
     pcall(function() local o = loc:FindFirstChild("DHLV2_babaniz"); if o then o:Destroy() end end)
 end
@@ -89,6 +85,9 @@ for _, plr in ipairs(Players:GetPlayers()) do
     pcall(function() if plr.Character then local h = plr.Character:FindFirstChild("DHL_Highlight"); if h then h:Destroy() end end end)
 end
 
+-- =============================================
+-- GUI
+-- =============================================
 local guiParent = getGuiParent()
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "DHLV2_babaniz"
@@ -99,6 +98,7 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "DHLV2_babaniz"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
+-- Draggable
 local function makeDraggable(frame, handle)
     local dragging, dragInput, dragStart, startPos
     handle = handle or frame
@@ -119,6 +119,9 @@ local function makeDraggable(frame, handle)
     end)
 end
 
+-- =============================================
+-- MAIN FRAME
+-- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 540, 0, 440)
@@ -132,11 +135,13 @@ MainFrame.Parent = ScreenGui
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(139, 0, 0); ms.Thickness = 1.5
 
+-- Drag handle
 local DragHandle = Instance.new("TextButton")
 DragHandle.Size = UDim2.new(1, 0, 0, 45); DragHandle.BackgroundTransparency = 1
 DragHandle.Text = ""; DragHandle.AutoButtonColor = false; DragHandle.ZIndex = 10; DragHandle.Parent = MainFrame
 makeDraggable(MainFrame, DragHandle)
 
+-- Background image
 local BgImage = Instance.new("ImageLabel")
 BgImage.Name = "Background"; BgImage.Size = UDim2.new(1, 0, 1, 0)
 BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.85
@@ -150,6 +155,7 @@ pcall(function()
     end
 end)
 
+-- Title
 local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,5)
 tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(200,0,0)
 tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
@@ -158,6 +164,9 @@ local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position
 cl.BackgroundTransparency = 1; cl.Text = "By babaniz"; cl.TextColor3 = Color3.fromRGB(200,0,0)
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
+-- =============================================
+-- TAB SYSTEM
+-- =============================================
 local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1,0,0,30); TabBar.Position = UDim2.new(0,0,0,44)
 TabBar.BackgroundColor3 = Color3.fromRGB(25,25,25); TabBar.BorderSizePixel = 0; TabBar.ZIndex = 5; TabBar.Parent = MainFrame
@@ -197,18 +206,27 @@ for i, name in ipairs(tabNames) do
     end)
 end
 
+-- =============================================
+-- KEYBIND SYSTEM
+-- =============================================
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
 
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -8, 0, 28); row.BackgroundTransparency = 1
-    row.LayoutOrder = order or 0; row.ZIndex = 3; row.Parent = page
+    row.Size = UDim2.new(1, -8, 0, 28)
+    row.BackgroundTransparency = 1
+    row.LayoutOrder = order or 0
+    row.ZIndex = 3
+    row.Parent = page
+
     local toggleWidth = withKeybind and UDim2.new(1, -68, 1, 0) or UDim2.new(1, 0, 1, 0)
+
     local btn = Instance.new("TextButton")
     btn.Size = toggleWidth
     btn.BackgroundColor3 = default and Color3.fromRGB(180,0,0) or Color3.fromRGB(50,50,50)
-    btn.BorderSizePixel = 0; btn.Text = name .. ": " .. (default and "ON" or "OFF")
+    btn.BorderSizePixel = 0
+    btn.Text = name .. ": " .. (default and "ON" or "OFF")
     btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.TextSize = 12; btn.Font = Enum.Font.GothamBold; btn.AutoButtonColor = false; btn.ZIndex = 3
     btn.Parent = row
@@ -223,32 +241,50 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     end
     btn.MouseButton1Click:Connect(doToggle)
 
+    local assignedKey = nil
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
-        kbBtn.Size = UDim2.new(0, 60, 1, 0); kbBtn.Position = UDim2.new(1, -60, 0, 0)
-        kbBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35); kbBtn.BorderSizePixel = 0
-        kbBtn.Text = "[ - ]"; kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        kbBtn.Size = UDim2.new(0, 60, 1, 0)
+        kbBtn.Position = UDim2.new(1, -60, 0, 0)
+        kbBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        kbBtn.BorderSizePixel = 0
+        kbBtn.Text = "[ - ]"
+        kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
         kbBtn.TextSize = 10; kbBtn.Font = Enum.Font.GothamBold; kbBtn.AutoButtonColor = false; kbBtn.ZIndex = 4
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
         local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(80,0,0); kbStroke.Thickness = 1
 
         kbBtn.MouseButton1Click:Connect(function()
+            if assignedKey then
+                keybindCallbacks[assignedKey] = nil
+                assignedKey = nil
+            end
+
             if activeKeybindBtn == kbBtn then
-                activeKeybindBtn = nil; kbBtn.Text = "[ - ]"; kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180); return
+                activeKeybindBtn = nil
+                kbBtn.Text = "[ - ]"
+                kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+                return
             end
+
             if activeKeybindBtn then
-                activeKeybindBtn.Text = "[ - ]"; activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+                activeKeybindBtn.Text = "[ - ]"
+                activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
             end
-            activeKeybindBtn = kbBtn; kbBtn.Text = "[...]"; kbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
+            activeKeybindBtn = kbBtn
+            kbBtn.Text = "[...]"
+            kbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
         end)
 
         local function assignKeybind(keyCode)
+            assignedKey = keyCode
             kbBtn.Text = "[" .. keyCode.Name .. "]"
             kbBtn.TextColor3 = Color3.fromRGB(0, 255, 150)
             keybindCallbacks[keyCode] = doToggle
             activeKeybindBtn = nil
         end
+
         if not _G.DHL_KeybindAssigners then _G.DHL_KeybindAssigners = {} end
         _G.DHL_KeybindAssigners[kbBtn] = assignKeybind
     end
@@ -265,26 +301,31 @@ local function addSlider(page, name, min, max, default, callback, order)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1,-8,0,36); container.BackgroundTransparency = 1
     container.LayoutOrder = order or 0; container.ZIndex = 3; container.Parent = page
+
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(1,0,0,14); label.BackgroundTransparency = 1
     label.Text = name .. ": " .. string.format("%.3f", default)
     label.TextColor3 = Color3.fromRGB(210,210,210); label.TextSize = 11
     label.Font = Enum.Font.GothamSemibold; label.TextXAlignment = Enum.TextXAlignment.Center
     label.ZIndex = 3; label.Parent = container
+
     local bg = Instance.new("TextButton")
     bg.Size = UDim2.new(1,0,0,10); bg.Position = UDim2.new(0,0,0,18)
     bg.BackgroundColor3 = Color3.fromRGB(45,45,45); bg.BorderSizePixel = 0
     bg.Text = ""; bg.AutoButtonColor = false; bg.ZIndex = 3; bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(0,4)
+
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new((default-min)/(max-min),0,1,0)
     fill.BackgroundColor3 = Color3.fromRGB(180,0,0); fill.BorderSizePixel = 0; fill.ZIndex = 3; fill.Parent = bg
     Instance.new("UICorner", fill).CornerRadius = UDim.new(0,4)
+
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,12,0,12); knob.AnchorPoint = Vector2.new(0.5,0.5)
     knob.Position = UDim2.new((default-min)/(max-min),0,0.5,0)
     knob.BackgroundColor3 = Color3.fromRGB(200,0,0); knob.BorderSizePixel = 0; knob.ZIndex = 4; knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
+
     local value = default
     local sliding = false
     local function update(px)
@@ -336,59 +377,44 @@ local function addLabel(page, text, order)
     lbl.LayoutOrder = order or 0; lbl.ZIndex = 3; lbl.Parent = page
 end
 
+-- =============================================
 -- PAGE 1: AIMLOCK
+-- =============================================
 local p1 = tabPages["Aimlock"]
 addLabel(p1, "-- CAMLOCK --", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
-local getSilentAim = addToggle(p1, "Silent Aim", true, nil, 3, true)
-local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 4, true)
-local getPerfectLock = addToggle(p1, "Perfect Lock (0 Miss)", true, nil, 5, true)
-local getWallCheck = addToggle(p1, "Wall Check", false, nil, 6, true)
-local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 7, true)
-local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 8, false)
-local getResolver = addToggle(p1, "Resolver", true, nil, 9, true)
-local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 10, true)
-local getNoSpread = addToggle(p1, "No Spread (Duz Mermi)", true, nil, 11, true)
+local getWallCheck = addToggle(p1, "Wall Check", false, nil, 3, true)
+local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
+local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
+local getResolver = addToggle(p1, "Resolver", true, nil, 6, true)
+local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 7, true)
+local getAlwaysOn = addToggle(p1, "Always On", false, nil, 8, true)
 
-addSeparator(p1, 12)
-addLabel(p1, "-- SETTINGS --", 13)
-local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q", "Always On"}, "Right Mouse Click", function(v)
-    Settings.Mode = v:gsub(" ", "")
-end, 14)
-local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, "Head", function(v)
-    Settings.TargetPart = v
-end, 15)
-local getHitboxMode = addCycleButton(p1, "Hitbox Mode", {"Normal", "Expand (Buyuk)", "Perfect (Kucuk)"}, "Expand (Buyuk)", function(v)
-    Settings.HitboxMode = v
-end, 16)
-local getSmoothness = addSlider(p1, "Smoothness", 0.01, 1.0, 1.0, nil, 17)
-local getPrediction = addSlider(p1, "Prediction", 0.0, 2.0, 1.0, nil, 18)
-local getPingComp = addSlider(p1, "Ping Compensate", 0.0, 1.0, 0.5, nil, 19)
-local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 20)
-local getTriggerDelay = addSlider(p1, "Trigger Delay", 0.0, 0.5, 0.0, nil, 21)
-local getTriggerDist = addSlider(p1, "Trigger Distance", 1, 50, 8, nil, 22)
-
-addSeparator(p1, 23)
-addLabel(p1, "-- FOV CIRCLE --", 24)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 25, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 250, nil, 26)
+addSeparator(p1, 9)
 addLabel(p1, "-- SETTINGS --", 10)
 local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v)
     Settings.Mode = v:gsub(" ", "")
 end, 11)
-local getTargetPart = addCycleButton(p1, "Target Part", {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}, "HumanoidRootPart", function(v)
+local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, "Head", function(v)
     Settings.TargetPart = v
 end, 12)
-local getSmoothness = addSlider(p1, "Smoothness", 0.01, 1.0, 0.450, nil, 13)
-local getPrediction = addSlider(p1, "Prediction", 0.0, 1.0, 0.100, nil, 14)
+local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 13)
+local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 14)
 local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 15)
 
 addSeparator(p1, 16)
-addLabel(p1, "-- FOV CIRCLE --", 17)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 18, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 19)
+addLabel(p1, "-- HITBOX --", 17)
+local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, nil, 18, false)
+local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, nil, 19)
 
+addSeparator(p1, 20)
+addLabel(p1, "-- FOV CIRCLE --", 21)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 22, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 23)
+
+-- =============================================
 -- PAGE 2: VISUALS
+-- =============================================
 local p2 = tabPages["Visuals"]
 addLabel(p2, "-- HIGHLIGHT ESP --", 1)
 local getESP = addToggle(p2, "ESP Highlight", true, nil, 2, true)
@@ -410,8 +436,11 @@ addLabel(p2, "-- TRACERS --", 11)
 local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
 local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
 
+-- =============================================
 -- PAGE 3: PLAYERS
+-- =============================================
 local p3 = tabPages["Players"]
+
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,16); SelectCountLabel.BackgroundTransparency = 1
 SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = Color3.fromRGB(255,100,100)
@@ -454,7 +483,9 @@ PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = tru
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder; PlayerListLayout.Padding = UDim.new(0,3)
 
+-- =============================================
 -- PAGE 4: MISC
+-- =============================================
 local p4 = tabPages["Misc"]
 addLabel(p4, "-- MOVEMENT --", 1)
 local getSpeed = addToggle(p4, "Speed Hack", false, nil, 2, true)
@@ -473,12 +504,15 @@ addSeparator(p4, 12)
 addLabel(p4, "-- UTILITY --", 13)
 local getAntiAFK = addToggle(p4, "Anti-AFK", true, nil, 14, false)
 
+-- =============================================
 -- PAGE 5: SPECTATE
+-- =============================================
 local p5 = tabPages["Spectate"]
 local spectateTarget = nil
 local spectating = false
 
 addLabel(p5, "-- SPECTATE MODE --", 1)
+
 local specStatusLabel = Instance.new("TextLabel")
 specStatusLabel.Size = UDim2.new(1,-8,0,22); specStatusLabel.BackgroundTransparency = 1
 specStatusLabel.Text = "Not Spectating"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
@@ -487,6 +521,7 @@ specStatusLabel.TextXAlignment = Enum.TextXAlignment.Center; specStatusLabel.Lay
 specStatusLabel.ZIndex = 3; specStatusLabel.Parent = p5
 
 addSeparator(p5, 3)
+
 local specSearch = Instance.new("TextBox")
 specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(40,40,40)
 specSearch.BorderSizePixel = 0; specSearch.PlaceholderText = "Search player to spectate..."
@@ -504,6 +539,7 @@ local specLayout = Instance.new("UIListLayout", specScroll)
 specLayout.SortOrder = Enum.SortOrder.LayoutOrder; specLayout.Padding = UDim.new(0,3)
 
 addSeparator(p5, 6)
+
 local stopSpecBtn = Instance.new("TextButton")
 stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(180,0,0)
 stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
@@ -529,6 +565,7 @@ specKeyBtn.Text = "[ V ]"; specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
 specKeyBtn.TextSize = 10; specKeyBtn.Font = Enum.Font.GothamBold; specKeyBtn.AutoButtonColor = false
 specKeyBtn.ZIndex = 4; specKeyBtn.Parent = specKeybindRow
 Instance.new("UICorner", specKeyBtn).CornerRadius = UDim.new(0,4)
+local skStroke = Instance.new("UIStroke", specKeyBtn); skStroke.Color = Color3.fromRGB(0,80,120); skStroke.Thickness = 1
 
 local spectateKey = Enum.KeyCode.V
 local specKeyListening = false
@@ -549,14 +586,16 @@ local function startSpectate(player)
     if not player or not player.Character then return end
     local hum = player.Character:FindFirstChildOfClass("Humanoid")
     if not hum then return end
-    spectateTarget = player; spectating = true
+    spectateTarget = player
+    spectating = true
     Camera.CameraSubject = hum
     specStatusLabel.Text = "Spectating: " .. player.DisplayName
     specStatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
 end
 
 local function stopSpectate()
-    spectating = false; spectateTarget = nil
+    spectating = false
+    spectateTarget = nil
     pcall(function()
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
             Camera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -569,6 +608,7 @@ end
 stopSpecBtn.MouseButton1Click:Connect(stopSpectate)
 
 local specButtons = {}
+
 local function refreshSpecList()
     for _,b in pairs(specButtons) do if b and b.Parent then b:Destroy() end end
     specButtons = {}
@@ -585,8 +625,13 @@ local function refreshSpecList()
                 btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
                 btn.AutoButtonColor = false; btn.ZIndex = 3; btn.Parent = specScroll
                 Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
+
                 btn.MouseButton1Click:Connect(function()
-                    if spectateTarget == player and spectating then stopSpectate() else startSpectate(player) end
+                    if spectateTarget == player and spectating then
+                        stopSpectate()
+                    else
+                        startSpectate(player)
+                    end
                     refreshSpecList()
                 end)
                 specButtons[player.Name] = btn
@@ -607,17 +652,25 @@ RunService.Heartbeat:Connect(function()
     if spectating and spectateTarget then
         if spectateTarget.Character and spectateTarget.Character:FindFirstChildOfClass("Humanoid") then
             local hum = spectateTarget.Character:FindFirstChildOfClass("Humanoid")
-            if Camera.CameraSubject ~= hum then Camera.CameraSubject = hum end
+            if Camera.CameraSubject ~= hum then
+                Camera.CameraSubject = hum
+            end
         end
     end
 end)
 
+-- =============================================
+-- PLAYER LIST LOGIC
+-- =============================================
 local playerButtons = {}
+
 local function updateSelectCount()
     local c = 0; for _ in pairs(Settings.SelectedPlayers) do c = c+1 end
     SelectCountLabel.Text = "Selected: " .. c
 end
+
 local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~= nil end
+
 local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
@@ -675,6 +728,9 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
+-- =============================================
+-- FOV CIRCLE
+-- =============================================
 local fovCircle, usingDrawing = nil, false
 pcall(function()
     fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(255,0,0)
@@ -683,6 +739,9 @@ pcall(function()
     usingDrawing = true
 end)
 
+-- =============================================
+-- HIGHLIGHT ESP
+-- =============================================
 highlightObjects = {}
 local espDrawings = {}
 
@@ -792,6 +851,9 @@ Players.PlayerAdded:Connect(function(plr)
     plr.CharacterAdded:Connect(function() task.wait(0.5); if isSelected(plr) and getESP() then addHighlight(plr) end end)
 end)
 
+-- =============================================
+-- WALL CHECK
+-- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
     local origin = Camera.CFrame.Position
@@ -806,6 +868,9 @@ local function isVisible(targetPart)
     return true
 end
 
+-- =============================================
+-- DOWNED CHECK (HP < 20%)
+-- =============================================
 local function isDowned(character)
     if not character then return false end
     local hum = character:FindFirstChildOfClass("Humanoid")
@@ -813,18 +878,49 @@ local function isDowned(character)
     return (hum.Health / hum.MaxHealth) < 0.20
 end
 
+-- =============================================
+-- GELISMIS PREDICTION (Ping + Hiz)
+-- =============================================
+local function getPredictedPosition(part)
+    if not part or not part.Parent then return part and part.Position or Vector3.new() end
+    local predAmount = getPrediction()
+    if predAmount <= 0 then return part.Position end
+    
+    -- Hedefin hizini al
+    local vel = Vector3.new(0,0,0)
+    pcall(function() vel = part.AssemblyLinearVelocity end)
+    
+    -- Ping hesapla
+    local ping = 0
+    pcall(function()
+        local stats = game:GetService("Stats")
+        ping = stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+    end)
+    
+    -- Ping + prediction birlestir
+    local totalTime = (predAmount * 0.3) + (ping * 0.5)
+    
+    return part.Position + (vel * totalTime)
+end
+
+-- =============================================
+-- CLOSEST TARGET
+-- =============================================
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
     local hasSelected = false
     for _ in pairs(Settings.SelectedPlayers) do hasSelected = true; break end
     if not hasSelected then return nil end
+
     for _, player in pairs(Settings.SelectedPlayers) do
         if player and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
             local hum = player.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                if getSkipDowned() and isDowned(player.Character) then continue end
+                if getSkipDowned() and isDowned(player.Character) then
+                    continue
+                end
                 local sp, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
@@ -838,6 +934,7 @@ local function getClosestFromSelected()
     return closest
 end
 
+-- Cycle target
 local cycleIdx = 0
 local function cycleTarget()
     local list = {}
@@ -845,7 +942,9 @@ local function cycleTarget()
         if p and p.Character then
             local h = p.Character:FindFirstChildOfClass("Humanoid")
             if h and h.Health > 0 then
-                if not (getSkipDowned() and isDowned(p.Character)) then table.insert(list, p) end
+                if not (getSkipDowned() and isDowned(p.Character)) then
+                    table.insert(list, p)
+                end
             end
         end
     end
@@ -854,6 +953,40 @@ local function cycleTarget()
     Settings.CurrentTarget = list[cycleIdx]
 end
 
+-- =============================================
+-- HITBOX EXPAND
+-- =============================================
+local originalSizes = {}
+
+local function expandHitbox(character)
+    if not character then return end
+    if not getHitboxExpand() then return end
+    local sizeMult = getHitboxSize()
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            if not originalSizes[part] then
+                originalSizes[part] = part.Size
+            end
+            pcall(function()
+                part.Size = originalSizes[part] * sizeMult
+            end)
+        end
+    end
+end
+
+local function restoreHitbox(character)
+    if not character then return end
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and originalSizes[part] then
+            pcall(function() part.Size = originalSizes[part] end)
+            originalSizes[part] = nil
+        end
+    end
+end
+
+-- =============================================
+-- INPUT
+-- =============================================
 local locked = false
 local menuOpen = false
 
@@ -870,12 +1003,18 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             return
         end
     end
+
     if input.UserInputType == Enum.UserInputType.Keyboard and keybindCallbacks[input.KeyCode] then
         keybindCallbacks[input.KeyCode]()
     end
+
     if gpe then return end
+
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
-        if getCamlock() then Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
+        if getCamlock() then
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
+        end
     end
     if Settings.Mode == "ToggleQ" and input.KeyCode == Enum.KeyCode.Q then
         if getCamlock() then
@@ -885,6 +1024,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
     if input.KeyCode == Enum.KeyCode.E and locked then cycleTarget() end
     if input.KeyCode == Enum.KeyCode.RightShift then MainFrame.Visible = not MainFrame.Visible end
+
     if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
         pcall(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
@@ -906,14 +1046,23 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             return
         end
     end
+
     if input.KeyCode == spectateKey and not specKeyListening then
-        if spectating then stopSpectate(); refreshSpecList()
+        if spectating then
+            stopSpectate()
+            refreshSpecList()
         else
             local target = nil
-            for _, p in pairs(Settings.SelectedPlayers) do if p and p.Character then target = p; break end end
-            if target then startSpectate(target); refreshSpecList() end
+            for _, p in pairs(Settings.SelectedPlayers) do
+                if p and p.Character then target = p; break end
+            end
+            if target then
+                startSpectate(target)
+                refreshSpecList()
+            end
         end
     end
+
     if input.KeyCode == Enum.KeyCode.Escape then
         if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
         if specSearch:IsFocused() then specSearch:ReleaseFocus() end
@@ -926,6 +1075,9 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
+-- =============================================
+-- MISC FEATURES
+-- =============================================
 RunService.Stepped:Connect(function()
     if getNoclip() and LocalPlayer.Character then
         for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
@@ -938,6 +1090,7 @@ RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if not hum then return end
+
     if getSpeed() then
         local spd = getSpeedValue()
         hum.WalkSpeed = spd
@@ -945,217 +1098,45 @@ RunService.Heartbeat:Connect(function()
         if hrp and spd > 16 then
             local moveDir = hum.MoveDirection
             if moveDir.Magnitude > 0 then
-                hrp.Velocity = Vector3.new(moveDir.X * spd, hrp.Velocity.Y, moveDir.Z * spd)
+                hrp.Velocity = Vector3.new(
+                    moveDir.X * spd,
+                    hrp.Velocity.Y,
+                    moveDir.Z * spd
+                )
             end
         end
     end
+
     if getJumpPower() then
         local jp = getJumpValue()
-        hum.JumpPower = jp; hum.JumpHeight = jp * 0.12; hum.UseJumpPower = true
+        hum.JumpPower = jp
+        hum.JumpHeight = jp * 0.12
+        hum.UseJumpPower = true
     end
 end)
 
 -- =============================================
--- NO SPREAD — MERMILER DUZ GITSIN (TAM SURUM)
--- =============================================
-local noSpreadActive = false
-local watchedProjectiles = {}
-
--- Tool'daki tum spread degerlerini sifirla
-local function resetToolSpread(tool)
-    if not tool or not tool:IsA("Tool") then return end
-    pcall(function() tool.Spread = 0 end)
-    pcall(function() tool.spread = 0 end)
-    pcall(function() tool.SpreadAngle = 0 end)
-    pcall(function() tool.MinSpread = 0 end)
-    pcall(function() tool.MaxSpread = 0 end)
-    pcall(function() tool.spreadAmount = 0 end)
-    pcall(function() tool.SpreadAmount = 0 end)
-    pcall(function() tool.Recoil = 0 end)
-    pcall(function() tool.recoil = 0 end)
-    pcall(function() tool.RecoilAmount = 0 end)
-    pcall(function() tool.recoilAmount = 0 end)
-    pcall(function() tool.BulletSpread = 0 end)
-    pcall(function() tool.bulletSpread = 0 end)
-    pcall(function() tool.Accuracy = 1 end)
-    pcall(function() tool.accuracy = 1 end)
-    pcall(function() tool.Bloom = 0 end)
-    pcall(function() tool.bloom = 0 end)
-
-    for _, child in ipairs(tool:GetDescendants()) do
-        if child:IsA("NumberValue") then
-            local n = child.Name:lower()
-            if n:find("spread") or n:find("recoil") or n:find("deviation") or n:find("bloom") or n:find("inaccuracy") then
-                pcall(function() child.Value = 0 end)
-            end
-            if n:find("accuracy") or n:find("precision") then
-                pcall(function() child.Value = 1 end)
-            end
-        end
-        if child:IsA("Vector3Value") then
-            local n = child.Name:lower()
-            if n:find("spread") or n:find("recoil") or n:find("deviation") then
-                pcall(function() child.Value = Vector3.new(0,0,0) end)
-            end
-        end
-        if child:IsA("CFrameValue") then
-            local n = child.Name:lower()
-            if n:find("spread") or n:find("recoil") then
-                pcall(function() child.Value = CFrame.new() end)
-            end
-        end
-    end
-end
-
-local function cleanAllTools()
-    local char = LocalPlayer.Character
-    if char then
-        for _, t in ipairs(char:GetChildren()) do
-            if t:IsA("Tool") then resetToolSpread(t) end
-        end
-    end
-    local backpack = LocalPlayer:FindFirstChild("Backpack")
-    if backpack then
-        for _, t in ipairs(backpack:GetChildren()) do
-            if t:IsA("Tool") then resetToolSpread(t) end
-        end
-    end
-end
-
--- Mermi tespiti
-local function isProjectile(obj)
-    if not obj or not obj:IsA("BasePart") then return false end
-    if obj:IsDescendantOf(LocalPlayer.Character) then return false end
-    local name = obj.Name:lower()
-    if name:find("bullet") or name:find("projectile") or name:find("ray")
-        or name:find("shot") or name:find("pellet") or name:find("ammo")
-        or name:find("missile") or name:find("grenade") then
-        return true
-    end
-    local size = obj.Size
-    if size.Magnitude < 3 and (obj:FindFirstChildOfClass("BodyVelocity") or obj:FindFirstChildOfClass("BodyForce") or obj:FindFirstChildOfClass("BodyThrust")) then
-        return true
-    end
-    return false
-end
-
--- Mermiyi crosshair yonune dogrult
-local function redirectProjectile(proj)
-    if not noSpreadActive then return end
-    if not proj or not proj.Parent then return end
-
-    local cam = workspace.CurrentCamera
-    local aimDir = cam.CFrame.LookVector
-
-    local speed = 300
-    pcall(function()
-        local v = proj.AssemblyLinearVelocity
-        if v and v.Magnitude > 1 then speed = v.Magnitude end
-    end)
-
-    local newVel = aimDir * speed
-
-    local bv = proj:FindFirstChildOfClass("BodyVelocity")
-    if bv then pcall(function() bv.Velocity = newVel end) end
-
-    local bf = proj:FindFirstChildOfClass("BodyForce")
-    if bf then pcall(function() bf.Force = newVel * proj:GetMass() end) end
-
-    local bt = proj:FindFirstChildOfClass("BodyThrust")
-    if bt then pcall(function() bt.Force = newVel * proj:GetMass() end) end
-
-    pcall(function() proj.AssemblyLinearVelocity = newVel end)
-    pcall(function() proj.Velocity = newVel end)
-    pcall(function() proj.CFrame = CFrame.new(proj.Position, proj.Position + aimDir) end)
-end
-
-local function watchProjectile(proj)
-    if not proj or not proj:IsA("BasePart") then return end
-    if watchedProjectiles[proj] then return end
-    watchedProjectiles[proj] = true
-    local startTime = tick()
-    local conn
-    conn = RunService.Heartbeat:Connect(function()
-        if not noSpreadActive or tick() - startTime > 5 then
-            if conn then conn:Disconnect() end
-            watchedProjectiles[proj] = nil
-            return
-        end
-        if not proj or not proj.Parent then
-            if conn then conn:Disconnect() end
-            watchedProjectiles[proj] = nil
-            return
-        end
-        redirectProjectile(proj)
-    end)
-end
-
-workspace.DescendantAdded:Connect(function(obj)
-    if not noSpreadActive then return end
-    if obj:IsA("BasePart") and isProjectile(obj) then
-        task.defer(function() task.wait(0.02); watchProjectile(obj) end)
-    end
-end)
-
--- Ana No Spread dongusu
-RunService.Heartbeat:Connect(function()
-    noSpreadActive = getNoSpread()
-    if not noSpreadActive then return end
-    cleanAllTools()
-end)
-
--- Tool equip olunca temizle
-local function hookCharacter(char)
-    task.wait(0.5)
-    char.ChildAdded:Connect(function(child)
-        if child:IsA("Tool") and getNoSpread() then
-            task.wait(0.05)
-            resetToolSpread(child)
-        end
-    end)
-end
-
-if LocalPlayer.Character then hookCharacter(LocalPlayer.Character) end
-LocalPlayer.CharacterAdded:Connect(hookCharacter)
-
--- Raycast hook (executor destekliyorsa) — mermi yonunu crosshair'e zorla
-pcall(function()
-    if getrawmetatable and setreadonly and hookfunction and newcclosure and getnamecallmethod then
-        local mt = getrawmetatable(game)
-        local oldNamecall = mt.__namecall
-        setreadonly(mt, false)
-        mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
-            if noSpreadActive and (method == "Raycast" or method == "FindPartOnRay" or method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRayWithWhitelist") then
-                if typeof(args[2]) == "Vector3" then
-                    local cam = workspace.CurrentCamera
-                    local origin = args[1]
-                    if typeof(origin) == "Vector3" then
-                        local dir = cam.CFrame.LookVector * args[2].Magnitude
-                        return oldNamecall(self, origin, dir, select(3, ...))
-                    end
-                end
-            end
-            return oldNamecall(self, ...)
-        end)
-        setreadonly(mt, true)
-        print("[DHL V2] Raycast hook aktif - mermiler duz gidecek!")
-    end
-end)
-
-print("[DHL V2] No Spread (Duz Mermi) yuklendi!")
-
 -- FLY
+-- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
     if menuOpen then return end
+
     if usingDrawing and fovCircle then
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
     end
+
     updateESP()
+
+    -- Hitbox restore (hedef degistiginde)
+    if Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        if getHitboxExpand() then
+            expandHitbox(Settings.CurrentTarget.Character)
+        end
+    end
+
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
@@ -1184,37 +1165,62 @@ RunService.RenderStepped:Connect(function()
             local bg = LocalPlayer.Character.HumanoidRootPart:FindFirstChild("DHL_AntiGrav"); if bg then bg:Destroy() end
         end
     end
+
+    -- =============================================
+    -- AIMLOCK (Ana dongu)
+    -- =============================================
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
+
+    -- Always On modu: surekli en yakin hedefe kilitli kal
+    if getAlwaysOn() then
+        if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
+        end
+    end
+
     if Settings.Mode == "NearestCursor" then
         if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
             Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
         else locked = false; Settings.CurrentTarget = nil end
     end
+
     if locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
         local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
+        if not part then
+            part = Settings.CurrentTarget.Character:FindFirstChild("HumanoidRootPart")
+        end
         if part then
             local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
+                -- Downed ise birak
                 if getSkipDowned() and isDowned(Settings.CurrentTarget.Character) then
                     if getAutoSwitch() then
+                        restoreHitbox(Settings.CurrentTarget.Character)
                         Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
                     else locked = false; Settings.CurrentTarget = nil end
                     return
                 end
+
                 local canSee = isVisible(part)
                 if canSee or getStickyAim() then
                     local smoothness = getSmoothness()
-                    local prediction = getPrediction()
                     local shake = getAimShake()
-                    local vel = Vector3.new(0,0,0)
-                    pcall(function() vel = part.AssemblyLinearVelocity end); vel = vel or Vector3.new(0,0,0)
-                    if getResolver() then vel = vel * 1.15 end
-                    local predictedPos = part.Position + (vel * prediction)
+                    
+                    -- GELISMIS PREDICTION
+                    local predictedPos = getPredictedPosition(part)
+                    
+                    -- Aim shake (silkinme)
                     if shake > 0 then
                         predictedPos = predictedPos + Vector3.new(
-                            math.random(-shake*10, shake*10)/10, math.random(-shake*10, shake*10)/10, math.random(-shake*10, shake*10)/10)
+                            math.random(-shake*10, shake*10)/10,
+                            math.random(-shake*10, shake*10)/10,
+                            math.random(-shake*10, shake*10)/10)
                     end
-                    Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, predictedPos), smoothness)
+                    
+                    -- Kamera kilidi (agresif)
+                    local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, smoothness)
                 else
                     if getWallCheck() and not getStickyAim() then
                         if getAutoSwitch() then
@@ -1231,11 +1237,15 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- Anti-AFK
 pcall(function()
     local vu = game:GetService("VirtualUser")
     LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
 end)
 
+-- =============================================
+-- ESC MENU
+-- =============================================
 local guiWasVisible = true
 local lockWasActive = false
 local savedHighlightData = {}
@@ -1254,6 +1264,7 @@ pcall(function()
         for _, esp in pairs(espDrawings) do for _,obj in pairs(esp) do pcall(function() obj.Visible = false end) end end
         if fovCircle then pcall(function() fovCircle.Visible = false end) end
     end)
+
     GuiService.MenuClosed:Connect(function()
         menuOpen = false; MainFrame.Visible = guiWasVisible
         for name, parent in pairs(savedHighlightData) do
@@ -1264,303 +1275,32 @@ pcall(function()
     end)
 end)
 
+-- Cleanup
 LocalPlayer.CharacterRemoving:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
     if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
 end)
 
+-- ZIndex fix
 task.defer(function()
     task.wait(0.3)
     for _, child in ipairs(MainFrame:GetDescendants()) do
         if child:IsA("GuiObject") and child ~= BgImage and child.ZIndex < 2 then child.ZIndex = 2 end
     end
 end)
+
 -- =============================================
--- PERFECT LOCK ENGINE — SIFIR MISS
+-- BILDIRIM
 -- =============================================
-local silentAimActive = false
-local perfectLockActive = false
-local triggerBotActive = false
-local currentSilentTarget = nil
-
--- Hedefin gelecekteki pozisyonunu hesapla (ping + hiz + yercekimi)
-local function predictPosition(part, projectileSpeed, gravity)
-    if not part or not part.Parent then return nil end
-    projectileSpeed = projectileSpeed or 1000
-    gravity = gravity or 0
-
-    local cam = workspace.CurrentCamera
-    local origin = cam.CFrame.Position
-    local targetPos = part.Position
-    local targetVel = Vector3.new(0,0,0)
-    pcall(function() targetVel = part.AssemblyLinearVelocity end)
-
-    -- Ping hesapla
-    local ping = 0
-    pcall(function()
-        local stats = game:GetService("Stats")
-        ping = stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
-    end)
-    local pingComp = getPingComp and getPingComp() or 0.5
-    local predTime = getPrediction() or 1.0
-
-    -- Iterasyonlu prediction (yercekimi icin)
-    local t = (targetPos - origin).Magnitude / projectileSpeed + (ping * pingComp) + (predTime * 0.05)
-    for _ = 1, 5 do
-        local futurePos = targetPos + targetVel * t
-        if gravity > 0 then
-            futurePos = futurePos - Vector3.new(0, 0.5 * gravity * t * t, 0)
-        end
-        local newT = (futurePos - origin).Magnitude / projectileSpeed + (ping * pingComp) + (predTime * 0.05)
-        if math.abs(newT - t) < 0.001 then break end
-        t = newT
-    end
-    local finalPos = targetPos + targetVel * t
-    if gravity > 0 then
-        finalPos = finalPos - Vector3.new(0, 0.5 * gravity * t * t, 0)
-    end
-    return finalPos
-end
-
--- Hedefin hitbox'ini bul (en buyuk part)
-local function getBestHitPart(character)
-    if not character then return nil end
-    local mode = getHitboxMode and getHitboxMode() or "Normal"
-    if mode == "Perfect (Kucuk)" then
-        return character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
-    end
-    -- Expand modunda en buyuk part'i sec
-    local best, bestSize = nil, 0
-    for _, p in ipairs(character:GetChildren()) do
-        if p:IsA("BasePart") then
-            local s = p.Size.Magnitude
-            if s > bestSize then bestSize = s; best = p end
-        end
-    end
-    return best or character:FindFirstChild("HumanoidRootPart")
-end
-
--- Silent Aim icin hedef pozisyonu
-local function getSilentAimTarget()
-    local target = Settings.CurrentTarget
-    if not target or not target.Character then return nil end
-    local hum = target.Character:FindFirstChildOfClass("Humanoid")
-    if not hum or hum.Health <= 0 then return nil end
-    if getSkipDowned() and isDowned(target.Character) then return nil end
-
-    local part = target.Character:FindFirstChild(Settings.TargetPart)
-    if not part then part = getBestHitPart(target.Character) end
-    if not part then return nil end
-
-    -- Perfect Lock icin prediction
-    if getPerfectLock() then
-        local predicted = predictPosition(part, 1000, 0)
-        if predicted then return part, predicted end
-    end
-    return part, part.Position
-end
-
--- Hook: Raycast / FindPartOnRay / Mouse.Hit / Tool
-local oldNamecall, oldIndex
-pcall(function()
-    if getrawmetatable and setreadonly and newcclosure and getnamecallmethod then
-        local mt = getrawmetatable(game)
-        oldNamecall = mt.__namecall
-        oldIndex = mt.__index
-        setreadonly(mt, false)
-
-        -- Namecall hook (Raycast/FindPartOnRay vs.)
-        mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
-
-            -- Raycast yonunu hedefe cevir
-            if silentAimActive and currentSilentTarget then
-                local targetPart, targetPos = getSilentAimTarget()
-                if targetPart and targetPos then
-                    if method == "Raycast" or method == "FindPartOnRay" or method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRayWithWhitelist" then
-                        local origin = args[1]
-                        if typeof(origin) == "Vector3" then
-                            local newDir = (targetPos - origin)
-                            if method == "Raycast" then
-                                return oldNamecall(self, origin, newDir, select(3, ...))
-                            else
-                                return oldNamecall(self, origin, newDir, select(3, ...))
-                            end
-                        end
-                    end
-                end
-            end
-            return oldNamecall(self, ...)
-        end)
-
-        -- Index hook (Mouse.Hit, Mouse.Target vs.)
-        mt.__index = newcclosure(function(self, key)
-            if silentAimActive and currentSilentTarget and typeof(self) == "Instance" and self:IsA("Mouse") then
-                if key == "Hit" then
-                    local _, targetPos = getSilentAimTarget()
-                    if targetPos then
-                        return CFrame.new(targetPos)
-                    end
-                elseif key == "Target" then
-                    local targetPart = getSilentAimTarget()
-                    if targetPart then return targetPart end
-                elseif key == "UnitRay" then
-                    local targetPart, targetPos = getSilentAimTarget()
-                    if targetPart and targetPos then
-                        local origin = self.Origin
-                        return Ray.new(origin, (targetPos - origin).Unit)
-                    end
-                end
-            end
-            return oldIndex(self, key)
-        end)
-
-        setreadonly(mt, true)
-        print("[DHL V2] Silent Aim hooks aktif!")
-    end
-end)
-
--- Trigger Bot: crosshair hedefe gelince otomatik ates
-local lastTriggerTime = 0
-local function runTriggerBot()
-    if not getTriggerBot() then return end
-    local now = tick()
-    if now - lastTriggerTime < (getTriggerDelay() or 0) then return end
-
-    local target = Settings.CurrentTarget
-    if not target or not target.Character then return end
-    local hum = target.Character:FindFirstChildOfClass("Humanoid")
-    if not hum or hum.Health <= 0 then return end
-
-    local part = target.Character:FindFirstChild(Settings.TargetPart) or getBestHitPart(target.Character)
-    if not part then return end
-
-    local cam = workspace.CurrentCamera
-    local screenPos, onScreen = cam:WorldToViewportPoint(part.Position)
-    if not onScreen then return end
-
-    local mouseCenter = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
-    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mouseCenter).Magnitude
-    if dist <= (getTriggerDist() or 8) then
-        lastTriggerTime = now
-        -- Ates et
-        pcall(function()
-            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
-            if tool then
-                tool:Activate()
-            end
-        end)
-        pcall(function()
-            if mousemoverel and mouse1click then
-                mouse1click()
-            end
-        end)
-    end
-end
-
--- Hitbox buyutucu (miss shot onlemek icin)
-local function expandHitbox(character)
-    if not character then return end
-    if getHitboxMode and getHitboxMode() == "Expand (Buyuk)" then
-        for _, part in ipairs(character:GetChildren()) do
-            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                pcall(function()
-                    if not part:GetAttribute("DHL_OrigSize") then
-                        part:SetAttribute("DHL_OrigSize", part.Size)
-                    end
-                    local orig = part:GetAttribute("DHL_OrigSize")
-                    if orig then
-                        part.Size = orig * 1.5
-                        part.CanCollide = false
-                        part.Transparency = math.max(part.Transparency, 0.7)
-                    end
-                end)
-            end
-        end
-    end
-end
-
-local function restoreHitbox(character)
-    if not character then return end
-    for _, part in ipairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            pcall(function()
-                local orig = part:GetAttribute("DHL_OrigSize")
-                if orig then
-                    part.Size = orig
-                    part:SetAttribute("DHL_OrigSize", nil)
-                end
-            end)
-        end
-    end
-end
-
--- Ana Perfect Lock dongusu
-RunService.RenderStepped:Connect(function()
-    silentAimActive = getSilentAim and getSilentAim() or false
-    perfectLockActive = getPerfectLock and getPerfectLock() or false
-    triggerBotActive = getTriggerBot and getTriggerBot() or false
-
-    if not getCamlock() then
-        currentSilentTarget = nil
-        return
-    end
-
-    -- Hedef sec (Always On modunda surekli en yakin)
-    if Settings.Mode == "AlwaysOn" then
-        local t = getClosestFromSelected()
-        if t then Settings.CurrentTarget = t; locked = t ~= nil end
-    end
-
-    if Settings.CurrentTarget then
-        currentSilentTarget = Settings.CurrentTarget
-        -- Hitbox buyut
-        if getHitboxMode and getHitboxMode() == "Expand (Buyuk)" and Settings.CurrentTarget.Character then
-            expandHitbox(Settings.CurrentTarget.Character)
-        end
-    else
-        currentSilentTarget = nil
-    end
-
-    -- Trigger bot
-    runTriggerBot()
-end)
-
--- Kamera kilidi (Perfect Lock modunda daha agresif)
-RunService.RenderStepped:Connect(function()
-    if not getCamlock() then return end
-    if not getPerfectLock() then return end
-    if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then return end
-
-    local targetPart, targetPos = getSilentAimTarget()
-    if not targetPart or not targetPos then return end
-
-    local cam = workspace.CurrentCamera
-    -- Kamera direkt hedefe baksin (smoothness 1.0 ise aninda)
-    local smooth = getSmoothness and getSmoothness() or 1.0
-    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), smooth)
-end)
-
--- Karakter respawn olunca hitbox restore
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(1)
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character then
-            restoreHitbox(plr.Character)
-        end
-    end
-end)
-
-print("[DHL V2] Perfect Lock Engine yuklendi — SIFIR MISS!")
-print("[DHL V2] by babaniz — FULL LOAD! (No Spread)")
+print("[DHL V2] by babaniz — FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
-print("[DHL V2] No Spread toggle'i Aimlock sekmesinde!")
+print("[DHL V2] Keybind: toggle yanindaki [ - ] butonuna tikla, tus bas")
+print("[DHL V2] Hook YOK - Guvenli surum")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | No Spread (Duz Mermi) Eklendi!",
+        Text = "by babaniz | Guvenli Aimlock",
         Duration = 5
     })
 end)
