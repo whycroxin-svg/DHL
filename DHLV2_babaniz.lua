@@ -3,6 +3,7 @@
     Sadece Camlock + ESP + Misc
     Hook'suz guvenli surum - Adonis tespit etmez
     ESC sonrasi silah ates etme sorunu DUZELTILDI
+    Tum kirmizi ogeler maviye cevrildi
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -59,7 +60,7 @@ local Settings = {
     ESPTracers = true,
     ESPTracerOrigin = "Bottom",
     HighlightFillTransparency = 0.35,
-    HighlightColor = Color3.fromRGB(0, 255, 255),
+    HighlightColor = Color3.fromRGB(0, 200, 255),
     SpeedEnabled = false,
     SpeedValue = 16,
     JumpPowerEnabled = false,
@@ -247,7 +248,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local kbBtn = Instance.new("TextButton")
         kbBtn.Size = UDim2.new(0, 60, 1, 0)
         kbBtn.Position = UDim2.new(1, -60, 0, 0)
-        kbBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        kbBtn.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
         kbBtn.BorderSizePixel = 0
         kbBtn.Text = "[ - ]"
         kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
@@ -305,7 +306,7 @@ local function addSlider(page, name, min, max, default, callback, order)
 
     local bg = Instance.new("TextButton")
     bg.Size = UDim2.new(1,0,0,10); bg.Position = UDim2.new(0,0,0,18)
-    bg.BackgroundColor3 = Color3.fromRGB(45,45,45); bg.BorderSizePixel = 0
+    bg.BackgroundColor3 = Color3.fromRGB(30,40,60); bg.BorderSizePixel = 0
     bg.Text = ""; bg.AutoButtonColor = false; bg.ZIndex = 3; bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(0,4)
 
@@ -412,10 +413,10 @@ local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 23)
 local p2 = tabPages["Visuals"]
 addLabel(p2, "-- HIGHLIGHT ESP --", 1)
 local getESP = addToggle(p2, "ESP Highlight", true, nil, 2, true)
-local getHighlightColor = addCycleButton(p2, "Highlight Color", {"Cyan","Red","Green","Yellow","Purple","White","Orange"}, "Cyan", function(v)
-    local colors = {Cyan=Color3.fromRGB(0,255,255), Red=Color3.fromRGB(255,0,0), Green=Color3.fromRGB(0,255,0),
+local getHighlightColor = addCycleButton(p2, "Highlight Color", {"Cyan","Blue","Green","Yellow","Purple","White","Orange"}, "Cyan", function(v)
+    local colors = {Cyan=Color3.fromRGB(0,200,255), Blue=Color3.fromRGB(0,120,255), Green=Color3.fromRGB(0,255,0),
         Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255), Orange=Color3.fromRGB(255,150,0)}
-    Settings.HighlightColor = colors[v] or Color3.fromRGB(0,255,255)
+    Settings.HighlightColor = colors[v] or Color3.fromRGB(0,200,255)
 end, 3)
 local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
 
@@ -446,7 +447,7 @@ local btnRow = Instance.new("Frame")
 btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p3
 
 local SelectAllBtn = Instance.new("TextButton")
-SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = Color3.fromRGB(0,120,0)
+SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = Color3.fromRGB(0,120,200)
 SelectAllBtn.BorderSizePixel = 0; SelectAllBtn.Text = "Select All"; SelectAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
 SelectAllBtn.TextSize = 11; SelectAllBtn.Font = Enum.Font.GothamBold; SelectAllBtn.AutoButtonColor = false
 SelectAllBtn.ZIndex = 3; SelectAllBtn.Parent = btnRow
@@ -454,7 +455,7 @@ Instance.new("UICorner", SelectAllBtn).CornerRadius = UDim.new(0,4)
 
 local ClearAllBtn = Instance.new("TextButton")
 ClearAllBtn.Size = UDim2.new(0.48,0,1,0); ClearAllBtn.Position = UDim2.new(0.52,0,0,0)
-ClearAllBtn.BackgroundColor3 = Color3.fromRGB(120,0,0); ClearAllBtn.BorderSizePixel = 0
+ClearAllBtn.BackgroundColor3 = Color3.fromRGB(0,80,150); ClearAllBtn.BorderSizePixel = 0
 ClearAllBtn.Text = "Clear"; ClearAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
 ClearAllBtn.TextSize = 11; ClearAllBtn.Font = Enum.Font.GothamBold; ClearAllBtn.AutoButtonColor = false
 ClearAllBtn.ZIndex = 3; ClearAllBtn.Parent = btnRow
@@ -554,7 +555,7 @@ specKeyLabel.TextXAlignment = Enum.TextXAlignment.Left; specKeyLabel.ZIndex = 3;
 
 local specKeyBtn = Instance.new("TextButton")
 specKeyBtn.Size = UDim2.new(0,60,1,0); specKeyBtn.Position = UDim2.new(1,-60,0,0)
-specKeyBtn.BackgroundColor3 = Color3.fromRGB(35,35,35); specKeyBtn.BorderSizePixel = 0
+specKeyBtn.BackgroundColor3 = Color3.fromRGB(25,35,55); specKeyBtn.BorderSizePixel = 0
 specKeyBtn.Text = "[ V ]"; specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
 specKeyBtn.TextSize = 10; specKeyBtn.Font = Enum.Font.GothamBold; specKeyBtn.AutoButtonColor = false
 specKeyBtn.ZIndex = 4; specKeyBtn.Parent = specKeybindRow
@@ -613,7 +614,7 @@ local function refreshSpecList()
                 local isSpec = spectateTarget == player
                 local btn = Instance.new("TextButton")
                 btn.Name = "SPEC_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
-                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,100,180) or Color3.fromRGB(30,40,60)
+                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
                 btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
                 btn.TextColor3 = isSpec and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
                 btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -969,7 +970,6 @@ end
 local locked = false
 local menuOpen = false
 
--- Mouse reset fonksiyonu (ESC sonrasi takilmayi onler)
 local function resetInput()
     pcall(function()
         if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
@@ -984,7 +984,6 @@ local function resetInput()
 end
 
 UserInputService.InputBegan:Connect(function(input, gpe)
-    -- Keybind dinleme
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
             local assignFunc = _G.DHL_KeybindAssigners and _G.DHL_KeybindAssigners[activeKeybindBtn]
@@ -1002,7 +1001,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         keybindCallbacks[input.KeyCode]()
     end
 
-    -- Yazı kutusu dışındaysa gpe'yi yoksay (silah ateş etme sorunu için)
     if gpe and not UserInputService:GetFocusedTextBox() then return end
 
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
@@ -1160,9 +1158,6 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-    -- =============================================
-    -- AIMLOCK
-    -- =============================================
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
     if getAlwaysOn() then
@@ -1232,7 +1227,7 @@ pcall(function()
 end)
 
 -- =============================================
--- ESC MENU — DUZELTILDI (silah ates etme sorunu cozuldu)
+-- ESC MENU — DUZELTILDI
 -- =============================================
 local guiWasVisible = true
 local savedHighlightData = {}
@@ -1261,7 +1256,6 @@ pcall(function()
             pcall(function() fovCircle.Visible = false end) 
         end
         
-        -- Kilitleri bırak
         locked = false
         Settings.CurrentTarget = nil
     end)
@@ -1270,7 +1264,6 @@ pcall(function()
         menuOpen = false
         MainFrame.Visible = guiWasVisible
         
-        -- Highlight'ları geri ekle
         for name, parent in pairs(savedHighlightData) do
             if highlightObjects[name] and parent then 
                 pcall(function() highlightObjects[name].Parent = parent end) 
@@ -1278,24 +1271,15 @@ pcall(function()
         end
         savedHighlightData = {}
         
-        -- FOV'u geri getir
         if fovCircle and getFOVVisible() then
             pcall(function() fovCircle.Visible = true end)
         end
         
-        -- ============================================
-        -- INPUT RESET — SILAH ATES ETME SORUNU ICIN
-        -- ============================================
-        -- Birden fazla kez dene (Roblox bazen 1. denemede kabul etmez)
         resetInput()
-        
         task.wait(0.1)
         resetInput()
-        
         task.wait(0.15)
         resetInput()
-        
-        -- ⚠️ "if lockWasActive..." satiri SILINDI — mouse kilidi tekrar aktif olmasin
     end)
 end)
 
@@ -1311,7 +1295,8 @@ task.defer(function()
     end
 end)
 
--- =============================================-- PENCERE ODAK DEGISIMI (input takilmasini onler)
+-- =============================================
+-- PENCERE ODAK DEGISIMI
 -- =============================================
 UserInputService.WindowFocused:Connect(function()
     task.wait(0.2)
@@ -1330,12 +1315,12 @@ print("[DHL V2] Input reset aktif")
 print("[DHL V2] by babaniz - FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Sadece Camlock - Hook YOK")
-print("[DHL V2] ESC sonrasi silah ates etme sorunu DUZELTILDI")
+print("[DHL V2] Tum kirmizi ogeler maviye cevrildi")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Silah ates etme sorunu duzeltildi!",
+        Text = "by babaniz | Mavi tema | Silah sorunu duzeltildi",
         Duration = 5
     })
 end)
