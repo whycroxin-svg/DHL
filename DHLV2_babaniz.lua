@@ -4,6 +4,7 @@
     Hook'suz guvenli surum - Adonis tespit etmez
     ESC sonrasi silah ates etme sorunu DUZELTILDI
     Tum kirmizi ogeler maviye cevrildi
+    YANDAN SEKMELI MODERN TASARIM
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -125,15 +126,15 @@ end
 -- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 540, 0, 440)
-MainFrame.Position = UDim2.new(0.5, -270, 0.5, -220)
+MainFrame.Size = UDim2.new(0, 620, 0, 460)
+MainFrame.Position = UDim2.new(0.5, -310, 0.5, -230)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 20, 40)
 MainFrame.BackgroundTransparency = 0.03
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = false
 MainFrame.Parent = ScreenGui
 
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
 local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(0, 120, 200); ms.Thickness = 1.5
 
 local DragHandle = Instance.new("TextButton")
@@ -145,7 +146,7 @@ local BgImage = Instance.new("ImageLabel")
 BgImage.Name = "Background"; BgImage.Size = UDim2.new(1, 0, 1, 0)
 BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.6
 BgImage.ScaleType = Enum.ScaleType.Crop; BgImage.ZIndex = 0; BgImage.Parent = MainFrame
-Instance.new("UICorner", BgImage).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", BgImage).CornerRadius = UDim.new(0, 10)
 pcall(function()
     local fn = "dhl_bg.jpg"
     local url = "https://raw.githubusercontent.com/whycroxin-svg/ahh/main/hile%20gui%20arka%20plan.jpg"
@@ -159,53 +160,124 @@ pcall(function()
     end
 end)
 
-local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,5)
+-- Başlık
+local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,6)
 tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(100, 200, 255)
 tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
-local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,26)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Camlock Only"; cl.TextColor3 = Color3.fromRGB(100, 200, 255)
+local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,27)
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Sidebar Edition"; cl.TextColor3 = Color3.fromRGB(100, 200, 255)
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM
+-- SIDEBAR (Sol Tarafta Dikey Sekmeler)
 -- =============================================
-local TabBar = Instance.new("Frame")
-TabBar.Size = UDim2.new(1,0,0,30); TabBar.Position = UDim2.new(0,0,0,44)
-TabBar.BackgroundColor3 = Color3.fromRGB(15, 25, 45); TabBar.BorderSizePixel = 0; TabBar.ZIndex = 5; TabBar.Parent = MainFrame
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Size = UDim2.new(0, 130, 1, -90)
+Sidebar.Position = UDim2.new(0, 10, 0, 78)
+Sidebar.BackgroundColor3 = Color3.fromRGB(15, 25, 45)
+Sidebar.BackgroundTransparency = 0.15
+Sidebar.BorderSizePixel = 0
+Sidebar.ZIndex = 4
+Sidebar.Parent = MainFrame
+Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 8)
+local sideStroke = Instance.new("UIStroke", Sidebar); sideStroke.Color = Color3.fromRGB(0, 80, 140); sideStroke.Thickness = 1
 
+local sideLayout = Instance.new("UIListLayout", Sidebar)
+sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
+sideLayout.Padding = UDim.new(0, 6)
+local sidePad = Instance.new("UIPadding", Sidebar)
+sidePad.PaddingTop = UDim.new(0, 8)
+sidePad.PaddingLeft = UDim.new(0, 6)
+sidePad.PaddingRight = UDim.new(0, 6)
+
+-- =============================================
+-- CONTENT AREA (Sag Tarafta Sekme Icerikleri)
+-- =============================================
+local ContentArea = Instance.new("Frame")
+ContentArea.Name = "ContentArea"
+ContentArea.Size = UDim2.new(1, -150, 1, -90)
+ContentArea.Position = UDim2.new(0, 145, 0, 78)
+ContentArea.BackgroundTransparency = 1
+ContentArea.ZIndex = 3
+ContentArea.Parent = MainFrame
+
+-- =============================================
+-- TAB SYSTEM (Sidebar Butonlari)
+-- =============================================
 local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Spectate"}
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
 
-local ContentArea = Instance.new("Frame")
-ContentArea.Size = UDim2.new(1,-20,1,-84); ContentArea.Position = UDim2.new(0,10,0,78)
-ContentArea.BackgroundTransparency = 1; ContentArea.ZIndex = 2; ContentArea.Parent = MainFrame
-
 for i, name in ipairs(tabNames) do
+    -- Sidebar butonu
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1/#tabNames,-4,1,-4); btn.Position = UDim2.new((i-1)/#tabNames,2,0,2)
-    btn.BackgroundColor3 = i==1 and Color3.fromRGB(0,120,200) or Color3.fromRGB(30, 40, 60)
-    btn.BorderSizePixel = 0; btn.Text = name; btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.TextSize = 12; btn.Font = Enum.Font.GothamBold; btn.AutoButtonColor = false; btn.ZIndex = 6; btn.Parent = TabBar
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    btn.Name = "Tab_" .. name
+    btn.Size = UDim2.new(1, 0, 0, 34)
+    btn.BackgroundColor3 = i==1 and Color3.fromRGB(0,120,200) or Color3.fromRGB(25, 35, 55)
+    btn.BackgroundTransparency = i==1 and 0 or 0.4
+    btn.BorderSizePixel = 0
+    btn.Text = "  " .. name
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamBold
+    btn.AutoButtonColor = false
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.LayoutOrder = i
+    btn.ZIndex = 5
+    btn.Parent = Sidebar
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    
+    -- Aktif gosterge (sol kenar mavi cizgi)
+    local indicator = Instance.new("Frame")
+    indicator.Name = "Indicator"
+    indicator.Size = UDim2.new(0, 3, 0.6, 0)
+    indicator.Position = UDim2.new(0, 3, 0.5, 0)
+    indicator.AnchorPoint = Vector2.new(0, 0.5)
+    indicator.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    indicator.BorderSizePixel = 0
+    indicator.Visible = (i == 1)
+    indicator.ZIndex = 6
+    indicator.Parent = btn
+    Instance.new("UICorner", indicator).CornerRadius = UDim.new(1, 0)
+    
     tabButtons[name] = btn
 
+    -- Icerik sayfasi
     local page = Instance.new("ScrollingFrame")
-    page.Size = UDim2.new(1,0,1,0); page.BackgroundTransparency = 1; page.BorderSizePixel = 0
-    page.ScrollBarThickness = 3; page.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
-    page.CanvasSize = UDim2.new(0,0,0,0); page.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    page.Visible = (i==1); page.ZIndex = 2; page.Active = true; page.Parent = ContentArea
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.BorderSizePixel = 0
+    page.ScrollBarThickness = 3
+    page.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
+    page.CanvasSize = UDim2.new(0,0,0,0)
+    page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    page.Visible = (i==1)
+    page.ZIndex = 2
+    page.Active = true
+    page.Parent = ContentArea
 
-    local layout = Instance.new("UIListLayout", page); layout.SortOrder = Enum.SortOrder.LayoutOrder; layout.Padding = UDim.new(0,5)
-    local pad = Instance.new("UIPadding", page); pad.PaddingLeft = UDim.new(0,4); pad.PaddingRight = UDim.new(0,4); pad.PaddingTop = UDim.new(0,4)
+    local layout = Instance.new("UIListLayout", page)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0,5)
+    local pad = Instance.new("UIPadding", page)
+    pad.PaddingLeft = UDim.new(0,4)
+    pad.PaddingRight = UDim.new(0,4)
+    pad.PaddingTop = UDim.new(0,4)
 
     tabPages[name] = page
+    
     btn.MouseButton1Click:Connect(function()
         activeTab = name
         for n,p in pairs(tabPages) do p.Visible = (n==name) end
-        for n,b in pairs(tabButtons) do b.BackgroundColor3 = (n==name) and Color3.fromRGB(0,120,200) or Color3.fromRGB(30, 40, 60) end
+        for n,b in pairs(tabButtons) do 
+            b.BackgroundColor3 = (n==name) and Color3.fromRGB(0,120,200) or Color3.fromRGB(25, 35, 55)
+            b.BackgroundTransparency = (n==name) and 0 or 0.4
+            local ind = b:FindFirstChild("Indicator")
+            if ind then ind.Visible = (n==name) end
+        end
     end)
 end
 
@@ -470,7 +542,7 @@ SearchBox.ClearTextOnFocus = false; SearchBox.LayoutOrder = 3; SearchBox.ZIndex 
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1,-8,0,220); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
+PlayerScroll.Size = UDim2.new(1,-8,0,260); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
 PlayerScroll.CanvasSize = UDim2.new(0,0,0,0); PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p3
@@ -526,7 +598,7 @@ specSearch.ClearTextOnFocus = false; specSearch.LayoutOrder = 4; specSearch.ZInd
 Instance.new("UICorner", specSearch).CornerRadius = UDim.new(0,4)
 
 local specScroll = Instance.new("ScrollingFrame")
-specScroll.Size = UDim2.new(1,-8,0,180); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
+specScroll.Size = UDim2.new(1,-8,0,220); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
 specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
 specScroll.CanvasSize = UDim2.new(0,0,0,0); specScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 specScroll.LayoutOrder = 5; specScroll.ZIndex = 3; specScroll.Active = true; specScroll.Parent = p5
@@ -1315,12 +1387,12 @@ print("[DHL V2] Input reset aktif")
 print("[DHL V2] by babaniz - FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Sadece Camlock - Hook YOK")
-print("[DHL V2] Tum kirmizi ogeler maviye cevrildi")
+print("[DHL V2] Sidebar modu aktif - sekmeler yanda")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Mavi tema | Silah sorunu duzeltildi",
+        Text = "by babaniz | Sidebar Edition",
         Duration = 5
     })
 end)
