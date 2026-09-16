@@ -125,14 +125,14 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 540, 0, 440)
 MainFrame.Position = UDim2.new(0.5, -270, 0.5, -220)
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-MainFrame.BackgroundTransparency = 0.05
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 20, 40)
+MainFrame.BackgroundTransparency = 0.03
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = false
 MainFrame.Parent = ScreenGui
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
-local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(139, 0, 0); ms.Thickness = 1.5
+local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(0, 120, 200); ms.Thickness = 1.5
 
 local DragHandle = Instance.new("TextButton")
 DragHandle.Size = UDim2.new(1, 0, 0, 45); DragHandle.BackgroundTransparency = 1
@@ -158,11 +158,11 @@ pcall(function()
 end)
 
 local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,5)
-tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(200,0,0)
+tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(100, 200, 255)
 tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,26)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Camlock Only"; cl.TextColor3 = Color3.fromRGB(200,0,0)
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Camlock Only"; cl.TextColor3 = Color3.fromRGB(100, 200, 255)
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
 -- =============================================
@@ -170,7 +170,7 @@ cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent =
 -- =============================================
 local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1,0,0,30); TabBar.Position = UDim2.new(0,0,0,44)
-TabBar.BackgroundColor3 = Color3.fromRGB(25,25,25); TabBar.BorderSizePixel = 0; TabBar.ZIndex = 5; TabBar.Parent = MainFrame
+TabBar.BackgroundColor3 = Color3.fromRGB(15, 25, 45); TabBar.BorderSizePixel = 0; TabBar.ZIndex = 5; TabBar.Parent = MainFrame
 
 local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Spectate"}
 local tabPages = {}
@@ -184,7 +184,7 @@ ContentArea.BackgroundTransparency = 1; ContentArea.ZIndex = 2; ContentArea.Pare
 for i, name in ipairs(tabNames) do
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1/#tabNames,-4,1,-4); btn.Position = UDim2.new((i-1)/#tabNames,2,0,2)
-    btn.BackgroundColor3 = i==1 and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+    btn.BackgroundColor3 = i==1 and Color3.fromRGB(0,120,200) or Color3.fromRGB(30, 40, 60)
     btn.BorderSizePixel = 0; btn.Text = name; btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.TextSize = 12; btn.Font = Enum.Font.GothamBold; btn.AutoButtonColor = false; btn.ZIndex = 6; btn.Parent = TabBar
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
@@ -203,7 +203,7 @@ for i, name in ipairs(tabNames) do
     btn.MouseButton1Click:Connect(function()
         activeTab = name
         for n,p in pairs(tabPages) do p.Visible = (n==name) end
-        for n,b in pairs(tabButtons) do b.BackgroundColor3 = (n==name) and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40) end
+        for n,b in pairs(tabButtons) do b.BackgroundColor3 = (n==name) and Color3.fromRGB(0,120,200) or Color3.fromRGB(30, 40, 60) end
     end)
 end
 
