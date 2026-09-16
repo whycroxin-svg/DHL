@@ -1223,8 +1223,11 @@ local savedHighlightData = {}
 
 pcall(function()
     GuiService.MenuOpened:Connect(function()
-        menuOpen = true; guiWasVisible = MainFrame.Visible; lockWasActive = locked
+        menuOpen = true
+        guiWasVisible = MainFrame.Visible
+        lockWasActive = locked
         MainFrame.Visible = false
+        
         savedHighlightData = {}
         for name, hl in pairs(highlightObjects) do
             pcall(function()
@@ -1232,17 +1235,52 @@ pcall(function()
                 hl.Parent = nil
             end)
         end
-        for _, esp in pairs(espDrawings) do for _,obj in pairs(esp) do pcall(function() obj.Visible = false end) end end
-        if fovCircle then pcall(function() fovCircle.Visible = false end) end
+        
+        for _, esp in pairs(espDrawings) do 
+            for _, obj in pairs(esp) do 
+                pcall(function() obj.Visible = false end) 
+            end 
+        end
+        
+        if fovCircle then 
+            pcall(function() fovCircle.Visible = false end) 
+        end
+        
+        locked = false
     end)
 
     GuiService.MenuClosed:Connect(function()
-        menuOpen = false; MainFrame.Visible = guiWasVisible
+        menuOpen = false
+        MainFrame.Visible = guiWasVisible
+        
         for name, parent in pairs(savedHighlightData) do
-            if highlightObjects[name] and parent then pcall(function() highlightObjects[name].Parent = parent end) end
+            if highlightObjects[name] and parent then 
+                pcall(function() highlightObjects[name].Parent = parent end) 
+            end
         end
         savedHighlightData = {}
-        if lockWasActive and Settings.CurrentTarget then locked = true end
+        
+        if fovCircle and getFOVVisible() then
+            pcall(function() fovCircle.Visible = true end)
+        end
+        
+        -- INPUT RESET (silah ateş etme sorunu için)
+        task.wait(0.1)
+        pcall(function()
+            locked = false
+            Settings.CurrentTarget = nil
+            
+            if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+            end
+            if not UserInputService.MouseIconEnabled then
+                UserInputService.MouseIconEnabled = true
+            end
+        end)
+        
+        if lockWasActive and Settings.CurrentTarget then 
+            locked = true 
+        end
     end)
 end)
 
@@ -1257,7 +1295,32 @@ task.defer(function()
         if child:IsA("GuiObject") and child ~= BgImage and child.ZIndex < 2 then child.ZIndex = 2 end
     end
 end)
+-- =============================================
+-- INPUT RESET (ESC sonrası takılmayı önler)
+-- =============================================
+local function resetInput()
+    pcall(function()
+        if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        end
+        if not UserInputService.MouseIconEnabled then
+            UserInputService.MouseIconEnabled = true
+        end
+        locked = false
+        Settings.CurrentTarget = nil
+    end)
+end
 
+UserInputService.WindowFocused:Connect(function()
+    task.wait(0.2)
+    resetInput()
+end)
+
+UserInputService.WindowFocusReleased:Connect(function()
+    resetInput()
+end)
+
+print("[DHL V2] Input reset aktif")
 -- =============================================
 -- BILDIRIM
 -- =============================================
