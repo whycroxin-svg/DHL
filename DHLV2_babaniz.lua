@@ -1127,6 +1127,9 @@ end)
 -- RENDER STEP â€” CAMLOCK + FOV + ESP
 -- =============================================
 RunService.RenderStepped:Connect(function()
+    -- ESC menusu acikken hic bir sey yapma
+    if menuOpen then return end
+
     -- FOV
     local fovR = getFOVRadius()
     local fovV = getFOVVisible()
@@ -1140,7 +1143,6 @@ RunService.RenderStepped:Connect(function()
     updateESP()
 
     -- Camlock
-    if menuOpen then return end -- ESC menusu acikken camlock isleme
     if not getCamlock() then
         locked = false; Settings.CurrentTarget = nil; return
     end
@@ -1216,10 +1218,21 @@ end)
 local guiWasVisible = true
 local lockWasActive = false
 local menuOpen = false
+local savedHighlightData = {} -- menu acilinca highlight bilgilerini sakla
 
 local function hideAllHighlights()
+    -- Highlight'lari TAMAMEN KALDIR (sadece Enabled=false yetmiyor)
+    savedHighlightData = {}
     for name, hl in pairs(highlightObjects) do
-        pcall(function() hl.Enabled = false end)
+        pcall(function()
+            savedHighlightData[name] = {
+                parent = hl.Parent,
+                fillColor = hl.FillColor,
+                outlineColor = hl.OutlineColor,
+                fillTransparency = hl.FillTransparency,
+            }
+            hl.Parent = nil -- karakterden kaldir
+        end)
     end
     -- Drawing objelerini gizle
     for name, esp in pairs(espDrawings) do
@@ -1232,13 +1245,15 @@ local function hideAllHighlights()
 end
 
 local function showAllHighlights()
-    if not getESP() then return end
-    for name, hl in pairs(highlightObjects) do
-        pcall(function() hl.Enabled = true end)
+    -- Highlight'lari geri ekle
+    for name, data in pairs(savedHighlightData) do
+        if highlightObjects[name] and data.parent then
+            pcall(function()
+                highlightObjects[name].Parent = data.parent
+            end)
+        end
     end
-    if fovCircle and getFOVVisible() then
-        pcall(function() fovCircle.Visible = true end)
-    end
+    savedHighlightData = {}
 end
 
 pcall(function()
