@@ -1,6 +1,6 @@
 --[[
     DHL V2 - by babaniz
-    Blatant Aimlock + ESP + Misc â€” Full Feature
+    Blatant Aimlock + ESP + Misc — Full Feature
     Tab sistemi ile sayfa sayfa
 ]]
 
@@ -1124,7 +1124,7 @@ pcall(function()
 end)
 
 -- =============================================
--- RENDER STEP â€” CAMLOCK + FOV + ESP
+-- RENDER STEP — CAMLOCK + FOV + ESP
 -- =============================================
 RunService.RenderStepped:Connect(function()
     -- ESC menusu acikken hic bir sey yapma
@@ -1213,7 +1213,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- ESC MENU â€” Highlight gizle + lock koru
+-- ESC MENU — Highlight gizle + lock koru
 -- =============================================
 local guiWasVisible = true
 local lockWasActive = false
@@ -1319,7 +1319,7 @@ end)
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz â€” FULL LOAD!")
+print("[DHL V2] by babaniz — FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Tabs: Aimlock | Visuals | Players | Misc")
 
