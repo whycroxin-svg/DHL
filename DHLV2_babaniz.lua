@@ -1,12 +1,11 @@
 --[[
-    DHL V2 - FULL BLATANT v3
+    DHL V2 - FULL BLATANT v4
+    Troll kaldirildi - Calisan ozellikler eklendi
     Server Hop + Rejoin
-    FOV Renk Tema Uyumlu
-    Keybind Tema Uyumlu
-    Hook YOK - Adonis tespit etmez
+    Hook YOK
 ]]
 
-print("[DHL V2] FULL BLATANT v3 yukleniyor...")
+print("[DHL V2] v4 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -14,7 +13,6 @@ local UserInputService = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
 local Lighting = game:GetService("Lighting")
 local Stats = game:GetService("Stats")
-local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local Camera = workspace.CurrentCamera
@@ -54,9 +52,6 @@ local Themes = {
 }
 local CurrentTheme = Themes.Red
 
--- =============================================
--- ORIGINAL LIGHTING VALUES
--- =============================================
 local OriginalLighting = {
     Ambient = Lighting.Ambient,
     OutdoorAmbient = Lighting.OutdoorAmbient,
@@ -78,15 +73,12 @@ local Settings = {
     Mode = "RightMouseClick",
     StickyAim = true,
     AutoSwitch = true,
-    Resolver = true,
     SkipDowned = true,
-    AimShake = 0,
     AlwaysOn = false,
     TriggerBot = false,
-    TriggerDelay = 0.05,
     FOVVisible = true,
     FOVRadius = 150,
-    FOVUseTheme = true, -- FOV rengi tema ile uyumlu olsun
+    FOVUseTheme = true,
     
     ESPEnabled = true,
     ESPNames = true,
@@ -106,8 +98,7 @@ local Settings = {
     Noclip = false,
     FlyEnabled = false,
     FlySpeed = 50,
-    WallClimb = false,
-    AutoJump = false,
+    NoclipFly = false,
     
     AntiAFK = true,
     HitboxExpand = false,
@@ -115,37 +106,28 @@ local Settings = {
     Watermark = true,
     FPSDisplay = true,
     PingDisplay = true,
-    HitSound = true,
     GuiTransparency = 0.03,
     
-    FlingAll = false,
-    FlingTarget = false,
-    TouchFling = false,
-    OrbitPlayers = false,
-    OrbitSpeed = 5,
-    SpinBot = false,
-    FakeLag = false,
-    FakeLagAmount = 0.1,
-    ExplosionAura = false,
-    ExplosionSize = 5,
-    Invisible = false,
-    GhostMode = false,
+    -- Yeni calisan ozellikler
+    FollowPlayer = false,
+    FollowTarget = nil,
+    DamageAura = false,
+    DamageAuraRange = 10,
+    DamageAuraAmount = 5,
+    AntiFling = false,
     GodMode = false,
     CharacterSize = false,
     CharacterSizeValue = 1.0,
     
+    -- World
     Fullbright = false,
     NoFog = false,
     RemoveShadows = false,
     TimeChanger = false,
     TimeValue = 12,
     
-    TeleportMouseKey = nil,
-    
     Kills = 0,
-    Damage = 0,
     SessionStart = tick(),
-    
     SelectedPlayers = {},
     CurrentTarget = nil,
 }
@@ -236,7 +218,7 @@ tl.BackgroundTransparency = 1; tl.Text = "DHL V2 — BLATANT"; tl.TextColor3 = C
 tl.TextSize = 19; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,27)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | v3 - Server Hop"; cl.TextColor3 = CurrentTheme.Text
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | v4 - Working Edition"; cl.TextColor3 = CurrentTheme.Text
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
 local closeBtn = Instance.new("TextButton")
@@ -283,9 +265,9 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM
+-- TAB SYSTEM (7 SEKME)
 -- =============================================
-local tabNames = {"Aimlock", "ESP", "Troll", "Movement", "Players", "World", "Character", "Settings"}
+local tabNames = {"Aimlock", "ESP", "Movement", "Players", "World", "Character", "Settings"}
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
@@ -293,7 +275,7 @@ local activeTab = "Aimlock"
 for i, name in ipairs(tabNames) do
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
-    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Size = UDim2.new(1, 0, 0, 32)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Primary or CurrentTheme.Button
     btn.BackgroundTransparency = i==1 and 0 or 0.4
     btn.BorderSizePixel = 0
@@ -363,7 +345,6 @@ end
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
 local uiElements = {}
-local keybindButtons = {} -- keybind butonlarini ayri tut
 
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
@@ -407,8 +388,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
         local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = CurrentTheme.Primary; kbStroke.Thickness = 1
-        
-        -- Tema uyumu icin kaydet
         table.insert(uiElements, {element=kbBtn, type="keybindBg"})
         table.insert(uiElements, {element=kbStroke, type="stroke"})
 
@@ -545,13 +524,8 @@ local function addButton(page, name, callback, order, color)
     return btn
 end
 
--- =============================================
--- HELPER: FOV rengini temaya gore al
--- =============================================
 local function getFOVThemeColor()
-    if Settings.FOVUseTheme then
-        return CurrentTheme.Accent
-    end
+    if Settings.FOVUseTheme then return CurrentTheme.Accent end
     return Color3.fromRGB(255,50,50)
 end
 
@@ -564,7 +538,6 @@ local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
 local getWallCheck = addToggle(p1, "Wall Check", false, nil, 3, true)
 local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
-local getResolver = addToggle(p1, "Resolver", true, nil, 6, true)
 local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 7, true)
 local getAlwaysOn = addToggle(p1, "Always On", false, nil, 8, true)
 
@@ -579,7 +552,6 @@ local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 15)
 addSeparator(p1, 16)
 addLabel(p1, "-- TRIGGER BOT --", 17)
 local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 18, true)
-local getTriggerDelay = addSlider(p1, "Trigger Delay", 0.0, 0.5, 0.05, nil, 19)
 
 addSeparator(p1, 20)
 addLabel(p1, "-- HITBOX --", 21)
@@ -621,195 +593,67 @@ local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","
 local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
 
 -- =============================================
--- PAGE 3: TROLL
+-- PAGE 3: MOVEMENT (YENI)
 -- =============================================
-local p3 = tabPages["Troll"]
-addLabel(p3, "-- FLING --", 1)
-local getFlingAll = addToggle(p3, "🔥 Fling All Players", false, nil, 2, true)
-local getFlingTarget = addToggle(p3, "🎯 Fling Current Target", false, nil, 3, true)
-local getTouchFling = addToggle(p3, "💥 Touch Fling", false, nil, 4, true)
+local p3 = tabPages["Movement"]
+addLabel(p3, "-- SPEED --", 1)
+local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
+local getSpeedValue = addSlider(p3, "Walk Speed", 16, 500, 16, nil, 3)
 
-addSeparator(p3, 5)
-addLabel(p3, "-- KILL --", 6)
-addButton(p3, "💀 KILL TARGET (Instant)", function()
-    local target = Settings.CurrentTarget
-    if not target or not target.Character then
-        pcall(function()
-            game:GetService("StarterGui"):SetCore("SendNotification", {Title="DHL", Text="Hedef yok!", Duration=2})
-        end)
-        return
-    end
-    local hum = target.Character:FindFirstChildOfClass("Humanoid")
-    if hum then
-        pcall(function() hum.Health = 0 end)
-        Settings.Kills = Settings.Kills + 1
-    end
-end, 7, Color3.fromRGB(180, 30, 30))
+addSeparator(p3, 4)
+addLabel(p3, "-- JUMP --", 5)
+local getJumpPower = addToggle(p3, "Jump Power", false, nil, 6, true)
+local getJumpValue = addSlider(p3, "Jump Value", 50, 500, 50, nil, 7)
+local getInfJump = addToggle(p3, "Infinite Jump", false, nil, 8, true)
 
-addButton(p3, "💀 KILL ALL PLAYERS", function()
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character then
-            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
-            if hum then pcall(function() hum.Health = 0 end) end
-        end
-    end
-    Settings.Kills = Settings.Kills + 1
-end, 8, Color3.fromRGB(180, 30, 30))
+addSeparator(p3, 10)
+addLabel(p3, "-- FLY --", 11)
+local getFly = addToggle(p3, "Fly", false, nil, 12, true)
+local getFlySpeed = addSlider(p3, "Fly Speed", 10, 500, 50, nil, 13)
+local getNoclipFly = addToggle(p3, "Noclip Fly", false, nil, 14, true)
 
-addSeparator(p3, 9)
-addLabel(p3, "-- ORBIT / SPIN --", 10)
-local getOrbitPlayers = addToggle(p3, "🔄 Orbit Players", false, nil, 11, true)
-local getOrbitSpeed = addSlider(p3, "Orbit Speed", 1, 20, 5, nil, 12)
-local getSpinBot = addToggle(p3, "🌀 Spin Bot", false, nil, 13, true)
-
-addSeparator(p3, 14)
-addLabel(p3, "-- EXPLOSION --", 15)
-local getExplosionAura = addToggle(p3, "💣 Explosion Aura", false, nil, 16, true)
-local getExplosionSize = addSlider(p3, "Explosion Size", 1, 20, 5, nil, 17)
+addSeparator(p3, 15)
+addLabel(p3, "-- NOCLIP --", 16)
+local getNoclip = addToggle(p3, "Noclip", false, nil, 17, true)
 
 addSeparator(p3, 18)
-addLabel(p3, "-- GHOST / LAG --", 19)
-local getFakeLag = addToggle(p3, "📡 Fake Lag", false, nil, 20, true)
-local getFakeLagAmount = addSlider(p3, "Fake Lag Amount", 0.05, 1.0, 0.1, nil, 21)
-local getInvisible = addToggle(p3, "👻 Invisible", false, nil, 22, true)
-local getGhostMode = addToggle(p3, "👤 Ghost Mode (Semi-Invis)", false, nil, 23, true)
-
-addSeparator(p3, 24)
-addLabel(p3, "-- ANNOY --", 25)
-addButton(p3, "🔊 Annoy Sound", function()
-    pcall(function()
-        local sound = Instance.new("Sound")
-        sound.SoundId = "rbxassetid://131237241"
-        sound.Volume = 10
-        sound.Parent = workspace
-        sound:Play()
-        game:GetService("Debris"):AddItem(sound, 5)
-    end)
-end, 26, Color3.fromRGB(150, 80, 0))
-
-addButton(p3, "🎭 Random Dance", function()
-    local char = LocalPlayer.Character
-    if char then
-        local anim = Instance.new("Animation")
-        anim.AnimationId = "rbxassetid://182435998"
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            local loadAnim = hum:LoadAnimation(anim)
-            loadAnim:Play()
-        end
-    end
-end, 27, Color3.fromRGB(100, 50, 150))
-
--- =============================================
--- PAGE 4: MOVEMENT
--- =============================================
-local p4 = tabPages["Movement"]
-addLabel(p4, "-- SPEED --", 1)
-local getSpeed = addToggle(p4, "Speed Hack", false, nil, 2, true)
-local getSpeedValue = addSlider(p4, "Walk Speed", 16, 500, 16, nil, 3)
-
-addSeparator(p4, 4)
-addLabel(p4, "-- JUMP --", 5)
-local getJumpPower = addToggle(p4, "Jump Power", false, nil, 6, true)
-local getJumpValue = addSlider(p4, "Jump Value", 50, 500, 50, nil, 7)
-local getInfJump = addToggle(p4, "Infinite Jump", false, nil, 8, true)
-local getAutoJump = addToggle(p4, "Auto Jump", false, nil, 9, false)
-
-addSeparator(p4, 10)
-addLabel(p4, "-- FLY --", 11)
-local getFly = addToggle(p4, "Fly", false, nil, 12, true)
-local getFlySpeed = addSlider(p4, "Fly Speed", 10, 500, 50, nil, 13)
-
-addSeparator(p4, 14)
-addLabel(p4, "-- CLIMB --", 15)
-local getWallClimb = addToggle(p4, "Wall Climb", false, nil, 16, true)
-
-addSeparator(p4, 17)
-addLabel(p4, "-- TELEPORT --", 18)
-
--- Teleport to Mouse with keybind
-local tpRow = Instance.new("Frame")
-tpRow.Size = UDim2.new(1, -8, 0, 28)
-tpRow.BackgroundTransparency = 1
-tpRow.LayoutOrder = 19
-tpRow.ZIndex = 3
-tpRow.Parent = p4
-
-local tpBtn = Instance.new("TextButton")
-tpBtn.Size = UDim2.new(1, -68, 1, 0)
-tpBtn.BackgroundColor3 = CurrentTheme.Primary
-tpBtn.BorderSizePixel = 0
-tpBtn.Text = "📍 Teleport to Mouse"
-tpBtn.TextColor3 = Color3.fromRGB(255,255,255)
-tpBtn.TextSize = 12; tpBtn.Font = Enum.Font.GothamBold; tpBtn.AutoButtonColor = false
-tpBtn.ZIndex = 3; tpBtn.Parent = tpRow
-Instance.new("UICorner", tpBtn).CornerRadius = UDim.new(0,5)
-
-local tpKbBtn = Instance.new("TextButton")
-tpKbBtn.Size = UDim2.new(0, 60, 1, 0)
-tpKbBtn.Position = UDim2.new(1, -60, 0, 0)
-tpKbBtn.BackgroundColor3 = CurrentTheme.Button
-tpKbBtn.BorderSizePixel = 0
-tpKbBtn.Text = "[ - ]"
-tpKbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
-tpKbBtn.TextSize = 10; tpKbBtn.Font = Enum.Font.GothamBold; tpKbBtn.AutoButtonColor = false
-tpKbBtn.ZIndex = 4; tpKbBtn.Parent = tpRow
-Instance.new("UICorner", tpKbBtn).CornerRadius = UDim.new(0, 4)
-local tpStroke = Instance.new("UIStroke", tpKbBtn); tpStroke.Color = CurrentTheme.Primary; tpStroke.Thickness = 1
-
--- Tema uyumu
-table.insert(uiElements, {element=tpKbBtn, type="keybindBg"})
-table.insert(uiElements, {element=tpStroke, type="stroke"})
-
-local function teleportToMouse()
+addLabel(p3, "-- TELEPORT --", 19)
+addButton(p3, "📍 Teleport to Mouse", function()
     local char = LocalPlayer.Character
     if char then
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if hrp then
-            pcall(function()
-                hrp.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
-            end)
+            hrp.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
         end
     end
-end
+end, 20, CurrentTheme.Primary)
 
-tpBtn.MouseButton1Click:Connect(teleportToMouse)
-
-tpKbBtn.MouseButton1Click:Connect(function()
-    if activeKeybindBtn == tpKbBtn then
-        activeKeybindBtn = nil; tpKbBtn.Text = "[ - ]"; tpKbBtn.TextColor3 = Color3.fromRGB(180, 180, 180); return
+addButton(p3, "🎯 Teleport to Current Target", function()
+    local target = Settings.CurrentTarget
+    if target and target.Character then
+        local thrp = target.Character:FindFirstChild("HumanoidRootPart")
+        local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if thrp and lhrp then
+            lhrp.CFrame = thrp.CFrame * CFrame.new(0, 0, 3)
+        end
     end
-    if activeKeybindBtn then
-        activeKeybindBtn.Text = "[ - ]"; activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
-    end
-    activeKeybindBtn = tpKbBtn; tpKbBtn.Text = "[...]"; tpKbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
-end)
-
-local function assignTpKeybind(keyCode)
-    tpKbBtn.Text = "[" .. keyCode.Name .. "]"
-    tpKbBtn.TextColor3 = Color3.fromRGB(0, 255, 150)
-    keybindCallbacks[keyCode] = teleportToMouse
-    activeKeybindBtn = nil
-end
-
-if not _G.DHL_KeybindAssigners then _G.DHL_KeybindAssigners = {} end
-_G.DHL_KeybindAssigners[tpKbBtn] = assignTpKeybind
+end, 21, CurrentTheme.Primary)
 
 -- =============================================
--- PAGE 5: PLAYERS
+-- PAGE 4: PLAYERS (GELISTIRILDI)
 -- =============================================
-local p5 = tabPages["Players"]
+local p4 = tabPages["Players"]
 
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,16); SelectCountLabel.BackgroundTransparency = 1
 SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = CurrentTheme.Text
 SelectCountLabel.TextSize = 11; SelectCountLabel.Font = Enum.Font.GothamSemibold
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left; SelectCountLabel.LayoutOrder = 1; SelectCountLabel.ZIndex = 3
-SelectCountLabel.Parent = p5
+SelectCountLabel.Parent = p4
 table.insert(uiElements, {element=SelectCountLabel, type="label"})
 
 local btnRow = Instance.new("Frame")
-btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p5
+btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p4
 
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = CurrentTheme.Primary
@@ -832,38 +676,93 @@ SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = CurrentTheme
 SearchBox.BorderSizePixel = 0; SearchBox.PlaceholderText = "Search Players..."
 SearchBox.PlaceholderColor3 = Color3.fromRGB(150,150,150); SearchBox.Text = ""
 SearchBox.TextColor3 = Color3.fromRGB(220,220,220); SearchBox.TextSize = 12; SearchBox.Font = Enum.Font.Gotham
-SearchBox.ClearTextOnFocus = false; SearchBox.LayoutOrder = 3; SearchBox.ZIndex = 3; SearchBox.Parent = p5
+SearchBox.ClearTextOnFocus = false; SearchBox.LayoutOrder = 3; SearchBox.ZIndex = 3; SearchBox.Parent = p4
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 table.insert(uiElements, {element=SearchBox, type="bg"})
 
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1,-8,0,280); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
+PlayerScroll.Size = UDim2.new(1,-8,0,220); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Primary
 PlayerScroll.CanvasSize = UDim2.new(0,0,0,0); PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p5
+PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p4
 
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder; PlayerListLayout.Padding = UDim.new(0,3)
 
--- =============================================
--- PAGE 6: WORLD
--- =============================================
-local p6 = tabPages["World"]
-addLabel(p6, "-- LIGHTING --", 1)
-local getFullbright = addToggle(p6, "Fullbright", false, nil, 2, true)
-local getNoFog = addToggle(p6, "No Fog", false, nil, 3, true)
-local getRemoveShadows = addToggle(p6, "Remove Shadows", false, nil, 4, true)
-local getTimeChanger = addToggle(p6, "Time Changer", false, nil, 5, false)
-local getTimeValue = addSlider(p6, "Time (0-24)", 0, 24, 12, nil, 6)
+-- Oyuncu aksiyonlari
+addSeparator(p4, 5)
+addLabel(p4, "-- ACTIONS (Secili Oyuncular) --", 6)
 
-addSeparator(p6, 7)
-addLabel(p6, "-- SERVER --", 8)
-addButton(p6, "🔄 Server Rejoin (Ayni Sunucu)", function()
+addButton(p4, "🎯 Goto First Selected (Işınlan)", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if thrp and lhrp then
+                lhrp.CFrame = thrp.CFrame * CFrame.new(0, 0, 3)
+            end
+            break
+        end
+    end
+end, 7, CurrentTheme.Primary)
+
+addButton(p4, "🤝 Bring First Selected (Yanina Cek)", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if thrp and lhrp then
+                thrp.CFrame = lhrp.CFrame * CFrame.new(0, 0, 5)
+            end
+            break
+        end
+    end
+end, 8, CurrentTheme.Primary)
+
+local getFollowPlayer = addToggle(p4, "👣 Follow First Selected", false, function(state)
+    Settings.FollowPlayer = state
+    if state then
+        for _, plr in pairs(Settings.SelectedPlayers) do
+            if plr and plr.Character then
+                Settings.FollowTarget = plr
+                break
+            end
+        end
+    else
+        Settings.FollowTarget = nil
+    end
+end, 9, true)
+
+addButton(p4, "💀 Kill First Selected", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                pcall(function() hum.Health = 0 end)
+                Settings.Kills = Settings.Kills + 1
+            end
+            break
+        end
+    end
+end, 10, Color3.fromRGB(180, 30, 30))
+
+-- =============================================
+-- PAGE 5: WORLD
+-- =============================================
+local p5 = tabPages["World"]
+addLabel(p5, "-- LIGHTING --", 1)
+local getFullbright = addToggle(p5, "Fullbright", false, nil, 2, true)
+local getNoFog = addToggle(p5, "No Fog", false, nil, 3, true)
+local getRemoveShadows = addToggle(p5, "Remove Shadows", false, nil, 4, true)
+local getTimeChanger = addToggle(p5, "Time Changer", false, nil, 5, false)
+local getTimeValue = addSlider(p5, "Time (0-24)", 0, 24, 12, nil, 6)
+
+addSeparator(p5, 7)
+addLabel(p5, "-- SERVER --", 8)
+addButton(p5, "🔄 Server Rejoin", function()
     pcall(function()
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "DHL V2",
-            Text = "Sunucuya yeniden baglaniliyor...",
-            Duration = 3
+            Title = "DHL V2", Text = "Sunucuya yeniden baglaniliyor...", Duration = 3
         })
     end)
     task.wait(0.5)
@@ -872,17 +771,14 @@ addButton(p6, "🔄 Server Rejoin (Ayni Sunucu)", function()
     end)
 end, 9, CurrentTheme.Primary)
 
-addButton(p6, "🌐 Server Hop (Rastgele Sunucu)", function()
+addButton(p5, "🌐 Server Hop", function()
     pcall(function()
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "DHL V2",
-            Text = "Yeni sunucu aranıyor...",
-            Duration = 3
+            Title = "DHL V2", Text = "Yeni sunucu aranıyor...", Duration = 3
         })
     end)
     task.wait(0.5)
     pcall(function()
-        -- Rastgele sunucu bul
         local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
         local success, result = pcall(function()
             return HttpService:JSONDecode(game:HttpGet(url))
@@ -898,18 +794,16 @@ addButton(p6, "🌐 Server Hop (Rastgele Sunucu)", function()
                 local randomServer = servers[math.random(1, #servers)]
                 TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer, LocalPlayer)
             else
-                -- Sunucu bulunamadiysa normal hop dene
                 TeleportService:Teleport(game.PlaceId, LocalPlayer)
             end
         else
             TeleportService:Teleport(game.PlaceId, LocalPlayer)
         end
     end)
-end, 10, Color3.fromRGB(0, 120, 200))
+end, 10, CurrentTheme.Primary)
 
-addSeparator(p6, 11)
-addLabel(p6, "-- WORLD INFO --", 12)
-
+addSeparator(p5, 11)
+addLabel(p5, "-- WORLD INFO --", 12)
 local worldInfoLabel = Instance.new("TextLabel")
 worldInfoLabel.Size = UDim2.new(1,-8,0,60)
 worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
@@ -923,7 +817,7 @@ worldInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
 worldInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
 worldInfoLabel.LayoutOrder = 13
 worldInfoLabel.ZIndex = 3
-worldInfoLabel.Parent = p6
+worldInfoLabel.Parent = p5
 Instance.new("UICorner", worldInfoLabel).CornerRadius = UDim.new(0, 6)
 table.insert(uiElements, {element=worldInfoLabel, type="bg"})
 local wInfoPad = Instance.new("UIPadding", worldInfoLabel)
@@ -931,53 +825,49 @@ wInfoPad.PaddingLeft = UDim.new(0, 8)
 wInfoPad.PaddingTop = UDim.new(0, 6)
 
 -- =============================================
--- PAGE 7: CHARACTER
+-- PAGE 6: CHARACTER
 -- =============================================
-local p7 = tabPages["Character"]
-addLabel(p7, "-- CHARACTER --", 1)
-local getGodMode = addToggle(p7, "God Mode", false, nil, 2, true)
-local getCharacterSize = addToggle(p7, "Character Size", false, nil, 3, false)
-local getSizeValue = addSlider(p7, "Size Scale", 0.5, 5.0, 1.0, nil, 4)
+local p6 = tabPages["Character"]
+addLabel(p6, "-- CHARACTER --", 1)
+local getGodMode = addToggle(p6, "God Mode", false, nil, 2, true)
+local getAntiFling = addToggle(p6, "Anti Fling", false, nil, 3, true)
+local getCharacterSize = addToggle(p6, "Character Size", false, nil, 4, false)
+local getSizeValue = addSlider(p6, "Size Scale", 0.5, 5.0, 1.0, nil, 5)
 
-addSeparator(p7, 5)
-addLabel(p7, "-- ACTIONS --", 6)
-addButton(p7, "🔄 Respawn Character", function()
+addSeparator(p6, 6)
+addLabel(p6, "-- DAMAGE AURA --", 7)
+local getDamageAura = addToggle(p6, "Damage Aura", false, nil, 8, true)
+local getDamageRange = addSlider(p6, "Aura Range", 3, 30, 10, nil, 9)
+local getDamageAmount = addSlider(p6, "Damage Amount", 1, 50, 5, nil, 10)
+
+addSeparator(p6, 11)
+addLabel(p6, "-- ACTIONS --", 12)
+addButton(p6, "🔄 Respawn", function()
     pcall(function() LocalPlayer.Character:BreakJoints() end)
-end, 7, Color3.fromRGB(150, 80, 0))
+end, 13, Color3.fromRGB(150, 80, 0))
 
-addButton(p7, "⚡ Reset Character", function()
-    pcall(function()
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
-    end)
-end, 8, Color3.fromRGB(150, 80, 0))
-
-addButton(p7, "🎯 Full Heal", function()
+addButton(p6, "🎯 Full Heal", function()
     pcall(function()
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.Health = hum.MaxHealth end
     end)
-end, 9, Color3.fromRGB(0, 120, 60))
+end, 14, Color3.fromRGB(0, 120, 60))
 
 -- =============================================
--- PAGE 8: SETTINGS
+-- PAGE 7: SETTINGS
 -- =============================================
-local p8 = tabPages["Settings"]
-addLabel(p8, "-- TEMA --", 1)
-local getTheme = addCycleButton(p8, "Theme", {"Red","Blue","Purple","Green","Orange","Pink","Cyan","Dark"}, "Red", function(v)
+local p7 = tabPages["Settings"]
+addLabel(p7, "-- TEMA --", 1)
+local getTheme = addCycleButton(p7, "Theme", {"Red","Blue","Purple","Green","Orange","Pink","Cyan","Dark"}, "Red", function(v)
     if Themes[v] then
         CurrentTheme = Themes[v]
-        
-        -- Ana frame
         MainFrame.BackgroundColor3 = CurrentTheme.Bg
         mainStroke.Color = CurrentTheme.Primary
         tl.TextColor3 = CurrentTheme.Text
         cl.TextColor3 = CurrentTheme.Text
-        
-        -- Sidebar
         Sidebar.BackgroundColor3 = CurrentTheme.Panel
         sideStroke.Color = CurrentTheme.Primary
         
-        -- Tum UI elemanlari
         for _, data in ipairs(uiElements) do
             if data.element and data.element.Parent then
                 if data.type == "toggle" then
@@ -1006,47 +896,42 @@ local getTheme = addCycleButton(p8, "Theme", {"Red","Blue","Purple","Green","Ora
             end
         end
         
-        -- Tab butonlari
         for n,b in pairs(tabButtons) do 
             b.BackgroundColor3 = (n==activeTab) and CurrentTheme.Primary or CurrentTheme.Button
             local ind = b:FindFirstChild("Indicator")
             if ind then ind.BackgroundColor3 = CurrentTheme.Accent end
         end
         
-        -- Scrollbar
         for _, page in pairs(tabPages) do
             page.ScrollBarImageColor3 = CurrentTheme.Primary
         end
         PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Primary
         
-        -- FOV Circle temasi
         if fovCircle and Settings.FOVUseTheme then
             fovCircle.Color = CurrentTheme.Accent
         end
         
-        -- Watermark
         Watermark.BackgroundColor3 = CurrentTheme.Bg
         wmStroke.Color = CurrentTheme.Primary
         wmTitle.TextColor3 = CurrentTheme.Text
     end
 end, 2)
 
-addSeparator(p8, 3)
-addLabel(p8, "-- GUI --", 4)
-local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 0.9, 0.03, function(v)
+addSeparator(p7, 3)
+addLabel(p7, "-- GUI --", 4)
+local getGuiTransparency = addSlider(p7, "Gui Transparency", 0, 0.9, 0.03, function(v)
     MainFrame.BackgroundTransparency = v
 end, 5)
 
-addSeparator(p8, 6)
-addLabel(p8, "-- GORUNUM --", 7)
-local getWatermark = addToggle(p8, "Watermark", true, nil, 8, false)
-local getFPSDisplay = addToggle(p8, "FPS Goster", true, nil, 9, false)
-local getPingDisplay = addToggle(p8, "Ping Goster", true, nil, 10, false)
-local getHitSound = addToggle(p8, "Hit Sound", true, nil, 11, false)
+addSeparator(p7, 6)
+addLabel(p7, "-- GORUNUM --", 7)
+local getWatermark = addToggle(p7, "Watermark", true, nil, 8, false)
+local getFPSDisplay = addToggle(p7, "FPS Goster", true, nil, 9, false)
+local getPingDisplay = addToggle(p7, "Ping Goster", true, nil, 10, false)
 
-addSeparator(p8, 12)
-addLabel(p8, "-- CONFIG --", 13)
-addButton(p8, "💾 Ayarlari Kaydet", function()
+addSeparator(p7, 11)
+addLabel(p7, "-- CONFIG --", 12)
+addButton(p7, "💾 Ayarlari Kaydet", function()
     if writefile then
         pcall(function()
             local data = {
@@ -1055,15 +940,13 @@ addButton(p8, "💾 Ayarlari Kaydet", function()
                 JumpPowerValue = Settings.JumpPowerValue,
                 FlySpeed = Settings.FlySpeed,
                 FOVRadius = Settings.FOVRadius,
-                FOVUseTheme = Settings.FOVUseTheme,
-                OrbitSpeed = Settings.OrbitSpeed,
             }
             writefile("DHLV2_config.json", HttpService:JSONEncode(data))
         end)
     end
-end, 14, CurrentTheme.Primary)
+end, 13, CurrentTheme.Primary)
 
-addButton(p8, "📂 Ayarlari Yukle", function()
+addButton(p7, "📂 Ayarlari Yukle", function()
     if readfile and isfile then
         pcall(function()
             if isfile("DHLV2_config.json") then
@@ -1076,24 +959,24 @@ addButton(p8, "📂 Ayarlari Yukle", function()
             end
         end)
     end
-end, 15, CurrentTheme.Primary)
+end, 14, CurrentTheme.Primary)
 
-addSeparator(p8, 16)
-addLabel(p8, "-- ISTATISTIK --", 17)
+addSeparator(p7, 15)
+addLabel(p7, "-- ISTATISTIK --", 16)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,60)
 statLabel.BackgroundColor3 = CurrentTheme.Button
 statLabel.BackgroundTransparency = 0.4
 statLabel.BorderSizePixel = 0
-statLabel.Text = "Kills: 0 | Damage: 0\nSession: 0s"
+statLabel.Text = "Kills: 0\nSession: 0s"
 statLabel.TextColor3 = Color3.fromRGB(220,220,220)
 statLabel.TextSize = 11
 statLabel.Font = Enum.Font.Gotham
 statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
-statLabel.LayoutOrder = 18
+statLabel.LayoutOrder = 17
 statLabel.ZIndex = 3
-statLabel.Parent = p8
+statLabel.Parent = p7
 Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 6)
 table.insert(uiElements, {element=statLabel, type="bg"})
 local statPad = Instance.new("UIPadding", statLabel)
@@ -1104,7 +987,7 @@ task.spawn(function()
     while task.wait(1) do
         pcall(function()
             local sessionTime = math.floor(tick() - Settings.SessionStart)
-            statLabel.Text = "Kills: " .. Settings.Kills .. " | Damage: " .. Settings.Damage .. "\nSession: " .. sessionTime .. "s"
+            statLabel.Text = "Kills: " .. Settings.Kills .. "\nSession: " .. sessionTime .. "s"
         end)
     end
 end)
@@ -1129,7 +1012,7 @@ makeDraggable(Watermark, Watermark)
 local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18); wmTitle.Position = UDim2.new(0, 8, 0, 2)
 wmTitle.BackgroundTransparency = 1
-wmTitle.Text = "DHL V2 — BLATANT"
+wmTitle.Text = "DHL V2 — v4"
 wmTitle.TextColor3 = CurrentTheme.Text
 wmTitle.TextSize = 12; wmTitle.Font = Enum.Font.GothamBold
 wmTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -1230,6 +1113,7 @@ Players.PlayerAdded:Connect(function() task.wait(0.5); refreshPlayerList() end)
 Players.PlayerRemoving:Connect(function(player)
     Settings.SelectedPlayers[player.Name] = nil
     if Settings.CurrentTarget == player then Settings.CurrentTarget = nil end
+    if Settings.FollowTarget == player then Settings.FollowTarget = nil end
     removeHighlight(player.Name); task.wait(0.1); refreshPlayerList()
 end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
@@ -1412,9 +1296,6 @@ local function isDowned(character)
     return (hum.Health / hum.MaxHealth) < 0.20
 end
 
--- =============================================
--- PREDICTION + CLOSEST
--- =============================================
 local function getPredictedPosition(part)
     if not part or not part.Parent then return part and part.Position or Vector3.new() end
     local predAmount = getPrediction()
@@ -1503,21 +1384,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             else Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
         end
     end
-    if input.KeyCode == Enum.KeyCode.E and locked then
-        local list = {}
-        for _, p in pairs(Settings.SelectedPlayers) do
-            if p and p.Character then
-                local h = p.Character:FindFirstChildOfClass("Humanoid")
-                if h and h.Health > 0 then table.insert(list, p) end
-            end
-        end
-        if #list > 0 then
-            local idx = 1
-            for i, p in ipairs(list) do if p == Settings.CurrentTarget then idx = i; break end end
-            idx = (idx % #list) + 1
-            Settings.CurrentTarget = list[idx]
-        end
-    end
     if input.KeyCode == Enum.KeyCode.RightShift then MainFrame.Visible = not MainFrame.Visible end
 
     if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
@@ -1542,21 +1408,6 @@ end)
 -- =============================================
 -- FEATURE LOOPS
 -- =============================================
-
-local function doFling(character)
-    if not character then return end
-    pcall(function()
-        local hrp = character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            local bv = Instance.new("BodyVelocity")
-            bv.Velocity = Vector3.new(math.random(-5000, 5000), math.random(1000, 5000), math.random(-5000, 5000))
-            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            bv.Parent = hrp
-            game:GetService("Debris"):AddItem(bv, 0.3)
-        end
-    end)
-end
-
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -1580,10 +1431,6 @@ RunService.Heartbeat:Connect(function()
         hum.JumpHeight = jp * 0.12
         hum.UseJumpPower = true
     end
-
-    if getAutoJump() and hum.FloorMaterial ~= Enum.Material.Air then
-        pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
-    end
 end)
 
 RunService.Stepped:Connect(function()
@@ -1592,112 +1439,50 @@ RunService.Stepped:Connect(function()
             if part:IsA("BasePart") then part.CanCollide = false end
         end
     end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if not getWallClimb() then return end
-    if not LocalPlayer.Character then return end
-    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    local ray = Ray.new(hrp.Position, hrp.CFrame.LookVector * 3)
-    local hitPart = workspace:FindPartOnRay(ray, LocalPlayer.Character)
-    if hitPart then
-        hrp.Velocity = Vector3.new(hrp.Velocity.X, 50, hrp.Velocity.Z)
-    end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if getFlingAll() then
-        for _, plr in ipairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer and plr.Character then
-                doFling(plr.Character)
-            end
-        end
-    end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if getFlingTarget() and Settings.CurrentTarget and Settings.CurrentTarget.Character then
-        doFling(Settings.CurrentTarget.Character)
-    end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if getTouchFling() and LocalPlayer.Character then
+    if getAntiFling() and LocalPlayer.Character then
         local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
         if hrp then
-            for _, plr in ipairs(Players:GetPlayers()) do
-                if plr ~= LocalPlayer and plr.Character then
-                    local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
-                    if thrp and (thrp.Position - hrp.Position).Magnitude < 5 then
-                        doFling(plr.Character)
-                    end
-                end
+            local vel = hrp.Velocity
+            if vel.Magnitude > 200 then
+                hrp.Velocity = Vector3.new(0, vel.Y, 0)
             end
         end
     end
 end)
 
-local orbitAngle = 0
-RunService.Heartbeat:Connect(function(dt)
-    if not getOrbitPlayers() then return end
+-- Follow Player
+RunService.Heartbeat:Connect(function()
+    if not Settings.FollowPlayer or not Settings.FollowTarget then return end
+    if not Settings.FollowTarget.Character then return end
+    local thrp = Settings.FollowTarget.Character:FindFirstChild("HumanoidRootPart")
+    local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if thrp and lhrp then
+        local dist = (thrp.Position - lhrp.Position).Magnitude
+        if dist > 8 then
+            lhrp.CFrame = lhrp.CFrame:Lerp(CFrame.new(thrp.Position) * (lhrp.CFrame - lhrp.Position), 0.1)
+        end
+    end
+end)
+
+-- Damage Aura
+local lastDamageTick = 0
+RunService.Heartbeat:Connect(function()
+    if not getDamageAura() then return end
+    if tick() - lastDamageTick < 0.5 then return end
+    lastDamageTick = tick()
     if not LocalPlayer.Character then return end
-    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    orbitAngle = orbitAngle + (getOrbitSpeed() * dt)
-    local players = {}
+    local lhrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not lhrp then return end
+    local range = getDamageRange()
+    local dmg = getDamageAmount()
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
             local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
-            if thrp then table.insert(players, thrp) end
-        end
-    end
-    for i, p in ipairs(players) do
-        local angle = orbitAngle + (i * math.pi * 2 / #players)
-        local offset = Vector3.new(math.cos(angle) * 10, 5, math.sin(angle) * 10)
-        pcall(function() p.CFrame = CFrame.new(hrp.Position + offset) end)
-    end
-end)
-
-local spinAngle = 0
-RunService.Heartbeat:Connect(function(dt)
-    if not getSpinBot() then return end
-    if not LocalPlayer.Character then return end
-    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        spinAngle = spinAngle + (dt * 20)
-        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, spinAngle, 0)
-    end
-end)
-
-local lastExplosion = 0
-RunService.Heartbeat:Connect(function()
-    if not getExplosionAura() then return end
-    if tick() - lastExplosion < 0.5 then return end
-    if not LocalPlayer.Character then return end
-    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    lastExplosion = tick()
-    pcall(function()
-        local exp = Instance.new("Explosion")
-        exp.Position = hrp.Position
-        exp.BlastRadius = getExplosionSize()
-        exp.BlastPressure = 0
-        exp.DestroyJointRadiusPercent = 0
-        exp.Parent = workspace
-    end)
-end)
-
-RunService.Heartbeat:Connect(function()
-    if not LocalPlayer.Character then return end
-    for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
-        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            if getInvisible() then
-                part.LocalTransparencyModifier = 1
-            elseif getGhostMode() then
-                part.LocalTransparencyModifier = 0.7
-            else
-                part.LocalTransparencyModifier = 0
+            if thrp and (thrp.Position - lhrp.Position).Magnitude < range then
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    pcall(function() hum.Health = hum.Health - dmg end)
+                end
             end
         end
     end
@@ -1744,7 +1529,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- =============================================
--- FLY + AIMLOCK
+-- FLY + AIMLOCK + WORLD
 -- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
@@ -1754,7 +1539,6 @@ RunService.RenderStepped:Connect(function()
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
-        -- FOV rengi: tema uyumlu veya kirmizi
         fovCircle.Color = getFOVThemeColor()
     end
 
@@ -1763,6 +1547,11 @@ RunService.RenderStepped:Connect(function()
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
+            if getNoclipFly() then
+                for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
             if not flyBV or flyBV.Parent ~= root then
                 if flyBV then pcall(function() flyBV:Destroy() end) end
                 flyBV = Instance.new("BodyVelocity"); flyBV.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
@@ -1861,9 +1650,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- =============================================
--- WORLD (DUZELTILDI)
--- =============================================
+-- WORLD
 RunService.Heartbeat:Connect(function()
     if getFullbright() then
         Lighting.Ambient = Color3.fromRGB(255,255,255)
@@ -1954,15 +1741,14 @@ print("[DHL V2] Input reset aktif")
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] FULL BLATANT v3 - LOADED!")
-print("[DHL V2] Server Hop + Rejoin eklendi")
-print("[DHL V2] FOV rengi tema uyumlu")
-print("[DHL V2] Keybind butonlari tema uyumlu")
+print("[DHL V2] v4 - LOADED!")
+print("[DHL V2] Troll kaldirildi")
+print("[DHL V2] Working Edition - Goto, Bring, Follow, Damage Aura")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "DHL V2 v3",
-        Text = "Server Hop + FOV Theme loaded!",
+        Title = "DHL V2 v4",
+        Text = "Working Edition loaded!",
         Duration = 5
     })
 end)
