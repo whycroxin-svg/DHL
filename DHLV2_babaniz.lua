@@ -168,7 +168,7 @@ local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1,0,0,30); TabBar.Position = UDim2.new(0,0,0,44)
 TabBar.BackgroundColor3 = Color3.fromRGB(25,25,25); TabBar.BorderSizePixel = 0; TabBar.ZIndex = 5; TabBar.Parent = MainFrame
 
-local tabNames = {"Aimlock", "Visuals", "Players", "Misc"}
+local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Spectate"}
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
@@ -510,6 +510,169 @@ addLabel(p4, "-- UTILITY --", 13)
 local getAntiAFK = addToggle(p4, "Anti-AFK", true, nil, 14, false)
 
 -- =============================================
+-- PAGE 5: SPECTATE
+-- =============================================
+local p5 = tabPages["Spectate"]
+local spectateTarget = nil
+local spectating = false
+
+addLabel(p5, "-- SPECTATE MODE --", 1)
+
+-- Spectate status label
+local specStatusLabel = Instance.new("TextLabel")
+specStatusLabel.Size = UDim2.new(1,-8,0,22); specStatusLabel.BackgroundTransparency = 1
+specStatusLabel.Text = "Not Spectating"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
+specStatusLabel.TextSize = 13; specStatusLabel.Font = Enum.Font.GothamBold
+specStatusLabel.TextXAlignment = Enum.TextXAlignment.Center; specStatusLabel.LayoutOrder = 2
+specStatusLabel.ZIndex = 3; specStatusLabel.Parent = p5
+
+addSeparator(p5, 3)
+
+-- Spectate player search
+local specSearch = Instance.new("TextBox")
+specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(40,40,40)
+specSearch.BorderSizePixel = 0; specSearch.PlaceholderText = "Search player to spectate..."
+specSearch.PlaceholderColor3 = Color3.fromRGB(150,150,150); specSearch.Text = ""
+specSearch.TextColor3 = Color3.fromRGB(220,220,220); specSearch.TextSize = 12; specSearch.Font = Enum.Font.Gotham
+specSearch.ClearTextOnFocus = false; specSearch.LayoutOrder = 4; specSearch.ZIndex = 3; specSearch.Parent = p5
+Instance.new("UICorner", specSearch).CornerRadius = UDim.new(0,4)
+
+-- Spectate player scroll
+local specScroll = Instance.new("ScrollingFrame")
+specScroll.Size = UDim2.new(1,-8,0,180); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
+specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,150,255)
+specScroll.CanvasSize = UDim2.new(0,0,0,0); specScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+specScroll.LayoutOrder = 5; specScroll.ZIndex = 3; specScroll.Active = true; specScroll.Parent = p5
+local specLayout = Instance.new("UIListLayout", specScroll)
+specLayout.SortOrder = Enum.SortOrder.LayoutOrder; specLayout.Padding = UDim.new(0,3)
+
+addSeparator(p5, 6)
+
+-- Stop spectate button
+local stopSpecBtn = Instance.new("TextButton")
+stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(180,0,0)
+stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
+stopSpecBtn.TextColor3 = Color3.fromRGB(255,255,255); stopSpecBtn.TextSize = 13
+stopSpecBtn.Font = Enum.Font.GothamBold; stopSpecBtn.AutoButtonColor = false
+stopSpecBtn.LayoutOrder = 7; stopSpecBtn.ZIndex = 3; stopSpecBtn.Parent = p5
+Instance.new("UICorner", stopSpecBtn).CornerRadius = UDim.new(0,5)
+
+-- Spectate keybind
+local specKeybindRow = Instance.new("Frame")
+specKeybindRow.Size = UDim2.new(1,-8,0,28); specKeybindRow.BackgroundTransparency = 1
+specKeybindRow.LayoutOrder = 8; specKeybindRow.ZIndex = 3; specKeybindRow.Parent = p5
+
+local specKeyLabel = Instance.new("TextLabel")
+specKeyLabel.Size = UDim2.new(1,-68,1,0); specKeyLabel.BackgroundTransparency = 1
+specKeyLabel.Text = "Spectate Key:"; specKeyLabel.TextColor3 = Color3.fromRGB(200,200,200)
+specKeyLabel.TextSize = 12; specKeyLabel.Font = Enum.Font.GothamBold
+specKeyLabel.TextXAlignment = Enum.TextXAlignment.Left; specKeyLabel.ZIndex = 3; specKeyLabel.Parent = specKeybindRow
+
+local specKeyBtn = Instance.new("TextButton")
+specKeyBtn.Size = UDim2.new(0,60,1,0); specKeyBtn.Position = UDim2.new(1,-60,0,0)
+specKeyBtn.BackgroundColor3 = Color3.fromRGB(35,35,35); specKeyBtn.BorderSizePixel = 0
+specKeyBtn.Text = "[ V ]"; specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
+specKeyBtn.TextSize = 10; specKeyBtn.Font = Enum.Font.GothamBold; specKeyBtn.AutoButtonColor = false
+specKeyBtn.ZIndex = 4; specKeyBtn.Parent = specKeybindRow
+Instance.new("UICorner", specKeyBtn).CornerRadius = UDim.new(0,4)
+local skStroke = Instance.new("UIStroke", specKeyBtn); skStroke.Color = Color3.fromRGB(0,80,120); skStroke.Thickness = 1
+
+local spectateKey = Enum.KeyCode.V
+local specKeyListening = false
+
+specKeyBtn.MouseButton1Click:Connect(function()
+    if specKeyListening then
+        specKeyListening = false
+        specKeyBtn.Text = spectateKey and "["..spectateKey.Name.."]" or "[ - ]"
+        specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
+        return
+    end
+    specKeyListening = true
+    specKeyBtn.Text = "[...]"
+    specKeyBtn.TextColor3 = Color3.fromRGB(255,255,0)
+end)
+
+-- Spectate fonksiyonlari
+local function startSpectate(player)
+    if not player or not player.Character then return end
+    local hum = player.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    spectateTarget = player
+    spectating = true
+    Camera.CameraSubject = hum
+    specStatusLabel.Text = "Spectating: " .. player.DisplayName
+    specStatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+end
+
+local function stopSpectate()
+    spectating = false
+    spectateTarget = nil
+    pcall(function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            Camera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        end
+    end)
+    specStatusLabel.Text = "Not Spectating"
+    specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
+end
+
+stopSpecBtn.MouseButton1Click:Connect(stopSpectate)
+
+-- Spectate player list (ayri liste â€” tum oyuncular)
+local specButtons = {}
+
+local function refreshSpecList()
+    for _,b in pairs(specButtons) do if b and b.Parent then b:Destroy() end end
+    specButtons = {}
+    local search = specSearch.Text:lower()
+    for _,player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            if search == "" or player.DisplayName:lower():find(search,1,true) or player.Name:lower():find(search,1,true) then
+                local isSpec = spectateTarget == player
+                local btn = Instance.new("TextButton")
+                btn.Name = "SPEC_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
+                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,100,180) or Color3.fromRGB(45,45,45)
+                btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
+                btn.TextColor3 = isSpec and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
+                btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
+                btn.AutoButtonColor = false; btn.ZIndex = 3; btn.Parent = specScroll
+                Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
+
+                btn.MouseButton1Click:Connect(function()
+                    if spectateTarget == player and spectating then
+                        stopSpectate()
+                    else
+                        startSpectate(player)
+                    end
+                    refreshSpecList()
+                end)
+                specButtons[player.Name] = btn
+            end
+        end
+    end
+end
+
+refreshSpecList()
+specSearch:GetPropertyChangedSignal("Text"):Connect(refreshSpecList)
+Players.PlayerAdded:Connect(function() task.wait(0.5); refreshSpecList() end)
+Players.PlayerRemoving:Connect(function(player)
+    if spectateTarget == player then stopSpectate() end
+    task.wait(0.1); refreshSpecList()
+end)
+
+-- Spectate target olunce/respawn olunca takip et
+RunService.Heartbeat:Connect(function()
+    if spectating and spectateTarget then
+        if spectateTarget.Character and spectateTarget.Character:FindFirstChildOfClass("Humanoid") then
+            local hum = spectateTarget.Character:FindFirstChildOfClass("Humanoid")
+            if Camera.CameraSubject ~= hum then
+                Camera.CameraSubject = hum
+            end
+        end
+    end
+end)
+
+-- =============================================
 -- PLAYER LIST LOGIC
 -- =============================================
 local playerButtons = {}
@@ -833,9 +996,45 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             end
         end)
     end
+    -- Spectate keybind dinleme
+    if specKeyListening and input.UserInputType == Enum.UserInputType.Keyboard then
+        if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
+            spectateKey = input.KeyCode
+            specKeyBtn.Text = "["..input.KeyCode.Name.."]"
+            specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
+            specKeyListening = false
+            return
+        else
+            specKeyListening = false
+            specKeyBtn.Text = spectateKey and "["..spectateKey.Name.."]" or "[ - ]"
+            specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
+            return
+        end
+    end
+
+    -- Spectate tusu
+    if input.KeyCode == spectateKey and not specKeyListening then
+        if spectating then
+            stopSpectate()
+            refreshSpecList()
+        else
+            -- Ilk secili oyuncuyu spectate et
+            local target = nil
+            for _, p in pairs(Settings.SelectedPlayers) do
+                if p and p.Character then target = p; break end
+            end
+            if target then
+                startSpectate(target)
+                refreshSpecList()
+            end
+        end
+    end
 
     -- ESC fix
-    if input.KeyCode == Enum.KeyCode.Escape and SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
+    if input.KeyCode == Enum.KeyCode.Escape then
+        if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
+        if specSearch:IsFocused() then specSearch:ReleaseFocus() end
+    end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
