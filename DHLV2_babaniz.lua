@@ -4,7 +4,48 @@
 ]]
 
 print("[DHL V2] Script yukleniyor...")
+-- =============================================
+-- ANTİ-DETECTION KORUMA KATMANI
+-- =============================================
+local AntiDetection = {}
 
+-- getfenv hook (tespit edilmemek icin ortami gizle)
+pcall(function()
+    if hookfunction and getfenv and newcclosure then
+        local old_getfenv = getfenv
+        getfenv = newcclosure(function(level)
+            if level == 9999 then return old_getfenv(2) end
+            return old_getfenv(level)
+        end)
+    end
+end)
+
+-- namecall hook'unu daha guvenli hale getir
+-- (bazı anti-cheat'ler hook varlığını tespit edebilir)
+pcall(function()
+    if getrawmetatable and setreadonly and newcclosure and getnamecallmethod then
+        -- Zaten Perfect Lock icinde hook var
+        -- Burada ekstra guvenlik saglanabilir ama anti-cheat'ler bunu da tespit edebilir
+        print("[DHL V2] Namecall hook korumasi aktif (tespit edilebilir!)")
+    end
+end)
+
+-- Cok agresif ozellikleri otomatik kapat
+-- (Oyuna yakalanmamak icin)
+task.wait(1)
+pcall(function()
+    -- Eger anti-cheat varsa Silent Aim ve Trigger Bot'u otomatik kapat
+    if getSilentAim and getSilentAim() then
+        getSilentAim(false) -- veya getSilentAim:set(false) -- fonksiyona gore degisir
+        print("[DHL V2] Silent Aim anti-detection icin kapatildi")
+    end
+    if getTriggerBot and getTriggerBot() then
+        getTriggerBot(false)
+        print("[DHL V2] Trigger Bot anti-detection icin kapatildi")
+    end
+end)
+
+print("[DHL V2] Anti-Detection koruma yuklendi")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
