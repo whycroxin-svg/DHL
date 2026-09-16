@@ -1,7 +1,7 @@
 --[[
     DHL V2 - by babaniz
-    Blatant Aimlock + ESP + Misc â€” Full Feature
-    Tab sistemi + Keybind sistemi
+    Blatant Aimlock + ESP + Misc — Full Feature
+    Tab sistemi + Keybind sistemi + No Spread
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -67,6 +67,7 @@ local Settings = {
     AntiAFK = true,
     FlyEnabled = false,
     FlySpeed = 50,
+    NoSpread = false, -- NO SPREAD EKLENDI
     SelectedPlayers = {},
     CurrentTarget = nil,
 }
@@ -206,8 +207,8 @@ end
 -- =============================================
 -- KEYBIND SYSTEM
 -- =============================================
-local activeKeybindBtn = nil -- simdiki dinlenen keybind butonu
-local keybindCallbacks = {} -- keycode -> {callback, getState}
+local activeKeybindBtn = nil
+local keybindCallbacks = {}
 
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
@@ -238,7 +239,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     end
     btn.MouseButton1Click:Connect(doToggle)
 
-    -- Keybind butonu
     local assignedKey = nil
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
@@ -254,7 +254,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(80,0,0); kbStroke.Thickness = 1
 
         kbBtn.MouseButton1Click:Connect(function()
-            -- Eski keybind'i kaldir
             if assignedKey then
                 keybindCallbacks[assignedKey] = nil
                 assignedKey = nil
@@ -267,7 +266,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
                 return
             end
 
-            -- Dinleme moduna gec
             if activeKeybindBtn then
                 activeKeybindBtn.Text = "[ - ]"
                 activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
@@ -277,14 +275,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
             kbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
         end)
 
-        -- Store reference for keybind assignment
-        kbBtn:SetAttribute("ToggleName", name)
-        kbBtn:SetAttribute("DoToggle", "true")
-
-        -- Keybind atama icin closure
-        row:SetAttribute("IsKeybindRow", "true")
-
-        -- Keybind assign fonksiyonu
         local function assignKeybind(keyCode)
             assignedKey = keyCode
             kbBtn.Text = "[" .. keyCode.Name .. "]"
@@ -293,9 +283,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
             activeKeybindBtn = nil
         end
 
-        -- Store assign function
-        kbBtn:SetAttribute("AssignFunc", "")
-        -- We'll use a different approach - store in a table
         if not _G.DHL_KeybindAssigners then _G.DHL_KeybindAssigners = {} end
         _G.DHL_KeybindAssigners[kbBtn] = assignKeybind
     end
@@ -399,23 +386,24 @@ local getStickyAim = addToggle(p1, "Sticky Aim", false, nil, 4, true)
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
 local getResolver = addToggle(p1, "Resolver", false, nil, 6, true)
 local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 7, true)
+local getNoSpread = addToggle(p1, "No Spread", false, nil, 8, true) -- NO SPREAD TOGGLE EKLENDI
 
-addSeparator(p1, 8)
-addLabel(p1, "-- SETTINGS --", 9)
+addSeparator(p1, 9)
+addLabel(p1, "-- SETTINGS --", 10)
 local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v)
     Settings.Mode = v:gsub(" ", "")
-end, 10)
+end, 11)
 local getTargetPart = addCycleButton(p1, "Target Part", {"HumanoidRootPart", "Head", "UpperTorso", "LowerTorso"}, "HumanoidRootPart", function(v)
     Settings.TargetPart = v
-end, 11)
-local getSmoothness = addSlider(p1, "Smoothness", 0.01, 1.0, 0.450, nil, 12)
-local getPrediction = addSlider(p1, "Prediction", 0.0, 1.0, 0.100, nil, 13)
-local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 14)
+end, 12)
+local getSmoothness = addSlider(p1, "Smoothness", 0.01, 1.0, 0.450, nil, 13)
+local getPrediction = addSlider(p1, "Prediction", 0.0, 1.0, 0.100, nil, 14)
+local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 15)
 
-addSeparator(p1, 15)
-addLabel(p1, "-- FOV CIRCLE --", 16)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 17, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 18)
+addSeparator(p1, 16)
+addLabel(p1, "-- FOV CIRCLE --", 17)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 18, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 19)
 
 -- =============================================
 -- PAGE 2: VISUALS
@@ -518,7 +506,6 @@ local spectating = false
 
 addLabel(p5, "-- SPECTATE MODE --", 1)
 
--- Spectate status label
 local specStatusLabel = Instance.new("TextLabel")
 specStatusLabel.Size = UDim2.new(1,-8,0,22); specStatusLabel.BackgroundTransparency = 1
 specStatusLabel.Text = "Not Spectating"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
@@ -528,7 +515,6 @@ specStatusLabel.ZIndex = 3; specStatusLabel.Parent = p5
 
 addSeparator(p5, 3)
 
--- Spectate player search
 local specSearch = Instance.new("TextBox")
 specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(40,40,40)
 specSearch.BorderSizePixel = 0; specSearch.PlaceholderText = "Search player to spectate..."
@@ -537,7 +523,6 @@ specSearch.TextColor3 = Color3.fromRGB(220,220,220); specSearch.TextSize = 12; s
 specSearch.ClearTextOnFocus = false; specSearch.LayoutOrder = 4; specSearch.ZIndex = 3; specSearch.Parent = p5
 Instance.new("UICorner", specSearch).CornerRadius = UDim.new(0,4)
 
--- Spectate player scroll
 local specScroll = Instance.new("ScrollingFrame")
 specScroll.Size = UDim2.new(1,-8,0,180); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
 specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,150,255)
@@ -548,7 +533,6 @@ specLayout.SortOrder = Enum.SortOrder.LayoutOrder; specLayout.Padding = UDim.new
 
 addSeparator(p5, 6)
 
--- Stop spectate button
 local stopSpecBtn = Instance.new("TextButton")
 stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(180,0,0)
 stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
@@ -557,7 +541,6 @@ stopSpecBtn.Font = Enum.Font.GothamBold; stopSpecBtn.AutoButtonColor = false
 stopSpecBtn.LayoutOrder = 7; stopSpecBtn.ZIndex = 3; stopSpecBtn.Parent = p5
 Instance.new("UICorner", stopSpecBtn).CornerRadius = UDim.new(0,5)
 
--- Spectate keybind
 local specKeybindRow = Instance.new("Frame")
 specKeybindRow.Size = UDim2.new(1,-8,0,28); specKeybindRow.BackgroundTransparency = 1
 specKeybindRow.LayoutOrder = 8; specKeybindRow.ZIndex = 3; specKeybindRow.Parent = p5
@@ -592,7 +575,6 @@ specKeyBtn.MouseButton1Click:Connect(function()
     specKeyBtn.TextColor3 = Color3.fromRGB(255,255,0)
 end)
 
--- Spectate fonksiyonlari
 local function startSpectate(player)
     if not player or not player.Character then return end
     local hum = player.Character:FindFirstChildOfClass("Humanoid")
@@ -618,7 +600,6 @@ end
 
 stopSpecBtn.MouseButton1Click:Connect(stopSpectate)
 
--- Spectate player list (ayri liste â€” tum oyuncular)
 local specButtons = {}
 
 local function refreshSpecList()
@@ -660,7 +641,6 @@ Players.PlayerRemoving:Connect(function(player)
     task.wait(0.1); refreshSpecList()
 end)
 
--- Spectate target olunce/respawn olunca takip et
 RunService.Heartbeat:Connect(function()
     if spectating and spectateTarget then
         if spectateTarget.Character and spectateTarget.Character:FindFirstChildOfClass("Humanoid") then
@@ -855,7 +835,6 @@ local function updateESP()
     end
 end
 
--- Character respawn
 for _,plr in ipairs(Players:GetPlayers()) do
     if plr ~= LocalPlayer then
         plr.CharacterAdded:Connect(function() task.wait(0.5); if isSelected(plr) and getESP() then addHighlight(plr) end end)
@@ -907,7 +886,6 @@ local function getClosestFromSelected()
             local part = player.Character[Settings.TargetPart]
             local hum = player.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                -- Downed atla
                 if getSkipDowned() and isDowned(player.Character) then
                     continue
                 end
@@ -924,7 +902,6 @@ local function getClosestFromSelected()
     return closest
 end
 
--- Cycle target
 local cycleIdx = 0
 local function cycleTarget()
     local list = {}
@@ -950,14 +927,12 @@ local locked = false
 local menuOpen = false
 
 UserInputService.InputBegan:Connect(function(input, gpe)
-    -- Keybind dinleme
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
             local assignFunc = _G.DHL_KeybindAssigners and _G.DHL_KeybindAssigners[activeKeybindBtn]
             if assignFunc then assignFunc(input.KeyCode) end
             return
         else
-            -- ESC ile iptal
             activeKeybindBtn.Text = "[ - ]"
             activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
             activeKeybindBtn = nil
@@ -965,14 +940,12 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
 
-    -- Keybind tetikleme (gpe kontrol etme â€” oyun inputu olsa bile calissin)
     if input.UserInputType == Enum.UserInputType.Keyboard and keybindCallbacks[input.KeyCode] then
         keybindCallbacks[input.KeyCode]()
     end
 
     if gpe then return end
 
-    -- Camlock
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         if getCamlock() then
             Settings.CurrentTarget = getClosestFromSelected()
@@ -988,7 +961,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     if input.KeyCode == Enum.KeyCode.E and locked then cycleTarget() end
     if input.KeyCode == Enum.KeyCode.RightShift then MainFrame.Visible = not MainFrame.Visible end
 
-    -- Infinite jump
     if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
         pcall(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
@@ -996,7 +968,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             end
         end)
     end
-    -- Spectate keybind dinleme
     if specKeyListening and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
             spectateKey = input.KeyCode
@@ -1012,13 +983,11 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
 
-    -- Spectate tusu
     if input.KeyCode == spectateKey and not specKeyListening then
         if spectating then
             stopSpectate()
             refreshSpecList()
         else
-            -- Ilk secili oyuncuyu spectate et
             local target = nil
             for _, p in pairs(Settings.SelectedPlayers) do
                 if p and p.Character then target = p; break end
@@ -1030,7 +999,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
 
-    -- ESC fix
     if input.KeyCode == Enum.KeyCode.Escape then
         if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
         if specSearch:IsFocused() then specSearch:ReleaseFocus() end
@@ -1046,7 +1014,6 @@ end)
 -- =============================================
 -- MISC FEATURES
 -- =============================================
--- Noclip
 RunService.Stepped:Connect(function()
     if getNoclip() and LocalPlayer.Character then
         for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
@@ -1055,18 +1022,15 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Speed + Jump Power (agresif â€” Da Hood icin)
 local lastSpeedSet = 0
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if not hum then return end
 
-    -- Speed Hack
     if getSpeed() then
         local spd = getSpeedValue()
         hum.WalkSpeed = spd
-        -- Da Hood override'ina karsi: Velocity boost
         local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
         if hrp and spd > 16 then
             local moveDir = hum.MoveDirection
@@ -1081,32 +1045,93 @@ RunService.Heartbeat:Connect(function()
         end
     end
 
-    -- Jump Power
     if getJumpPower() then
         local jp = getJumpValue()
         hum.JumpPower = jp
-        hum.JumpHeight = jp * 0.12 -- yeni Roblox jump sistemi icin
+        hum.JumpHeight = jp * 0.12
         hum.UseJumpPower = true
     end
 end)
 
--- Fly
+-- =============================================
+-- NO SPREAD (YENİ EKLENDİ)
+-- =============================================
+local noSpreadConnection = nil
+
+local function applyNoSpread()
+    -- Tool'lardaki spread değerlerini sıfırla
+    local char = LocalPlayer.Character
+    if not char then return end
+    
+    for _, tool in ipairs(char:GetChildren()) do
+        if tool:IsA("Tool") then
+            -- Spread ile ilgili tüm property'leri sıfırla
+            pcall(function() tool.Spread = 0 end)
+            pcall(function() tool.spread = 0 end)
+            pcall(function() tool.SpreadAngle = 0 end)
+            pcall(function() tool.MinSpread = 0 end)
+            pcall(function() tool.MaxSpread = 0 end)
+            pcall(function() tool.spreadAmount = 0 end)
+            pcall(function() tool.SpreadAmount = 0 end)
+            pcall(function() tool.Recoil = 0 end)
+            pcall(function() tool.recoil = 0 end)
+            
+            -- Tool içindeki tüm değerleri tara
+            for _, child in ipairs(tool:GetDescendants()) do
+                if child:IsA("NumberValue") and (child.Name:lower():find("spread") or child.Name:lower():find("recoil")) then
+                    pcall(function() child.Value = 0 end)
+                end
+                if child:IsA("Vector3Value") and (child.Name:lower():find("spread") or child.Name:lower():find("recoil")) then
+                    pcall(function() child.Value = Vector3.new(0,0,0) end)
+                end
+            end
+        end
+    end
+    
+    -- Backpack'teki tool'lar
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if backpack then
+        for _, tool in ipairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                pcall(function() tool.Spread = 0 end)
+                pcall(function() tool.spread = 0 end)
+                pcall(function() tool.Recoil = 0 end)
+                pcall(function() tool.recoil = 0 end)
+            end
+        end
+    end
+end
+
+-- No Spread sürekli uygula
+RunService.Heartbeat:Connect(function()
+    if getNoSpread() then
+        applyNoSpread()
+    end
+end)
+
+-- Karakter respawn olunca tekrar uygula
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(1)
+    if getNoSpread() then
+        applyNoSpread()
+    end
+end)
+
+-- =============================================
+-- FLY
+-- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
-    -- ESC menu acikken hic bir sey yapma
     if menuOpen then return end
 
-    -- FOV
     if usingDrawing and fovCircle then
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
     end
 
-    -- ESP
     updateESP()
 
-    -- Fly
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
@@ -1136,7 +1161,6 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-    -- Camlock
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
     if Settings.Mode == "NearestCursor" then
@@ -1150,7 +1174,6 @@ RunService.RenderStepped:Connect(function()
         if part then
             local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                -- Downed ise birak
                 if getSkipDowned() and isDowned(Settings.CurrentTarget.Character) then
                     if getAutoSwitch() then
                         Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
@@ -1195,7 +1218,7 @@ pcall(function()
 end)
 
 -- =============================================
--- ESC MENU â€” Highlight gizle + lock koru
+-- ESC MENU
 -- =============================================
 local guiWasVisible = true
 local lockWasActive = false
@@ -1205,7 +1228,6 @@ pcall(function()
     GuiService.MenuOpened:Connect(function()
         menuOpen = true; guiWasVisible = MainFrame.Visible; lockWasActive = locked
         MainFrame.Visible = false
-        -- Highlight'lari kaldir
         savedHighlightData = {}
         for name, hl in pairs(highlightObjects) do
             pcall(function()
@@ -1219,7 +1241,6 @@ pcall(function()
 
     GuiService.MenuClosed:Connect(function()
         menuOpen = false; MainFrame.Visible = guiWasVisible
-        -- Highlight'lari geri ekle
         for name, parent in pairs(savedHighlightData) do
             if highlightObjects[name] and parent then pcall(function() highlightObjects[name].Parent = parent end) end
         end
@@ -1228,13 +1249,11 @@ pcall(function()
     end)
 end)
 
--- Cleanup
 LocalPlayer.CharacterRemoving:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
     if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
 end)
 
--- ZIndex fix
 task.defer(function()
     task.wait(0.3)
     for _, child in ipairs(MainFrame:GetDescendants()) do
@@ -1245,14 +1264,14 @@ end)
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz â€” FULL LOAD!")
+print("[DHL V2] by babaniz — FULL LOAD! (No Spread Eklendi)")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Keybind: toggle yanindaki [ - ] butonuna tikla, tus bas")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Keybinds + Skip Downed",
+        Text = "by babaniz | No Spread Eklendi!",
         Duration = 5
     })
 end)
