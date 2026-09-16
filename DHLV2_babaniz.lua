@@ -1,11 +1,10 @@
 --[[
-    DHL VIP - CLEAN PRO EDITION v3
-    Theme Customization Sekmesi
-    15 Tema (7 Klasik + 8 Ozel)
-    GUI Transparency 0-500 arasi
+    DHL VIP - CLEAN PRO EDITION v4
+    Transparency varsayilan: 250 (yarim saydam)
+    Save/Load duzeltildi - gelismis hata yakalama
 ]]
 
-print("[DHL VIP] Clean Pro Edition v3 yukleniyor...")
+print("[DHL VIP] Clean Pro Edition v4 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -39,10 +38,9 @@ local function getGuiParent()
 end
 
 -- =============================================
--- PRO THEMES (15 TEMA - 7 KLASIK + 8 OZEL)
+-- THEMES
 -- =============================================
 local Themes = {
-    -- ===== KLASIK TEMALAR =====
     Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
     Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
     Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
@@ -50,8 +48,6 @@ local Themes = {
     Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
     Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
     Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
-    
-    -- ===== OZEL TEMALAR =====
     Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
     Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90),  G1=Color3.fromRGB(255,140,60), G2=Color3.fromRGB(160,60,20)},
     Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90),  G1=Color3.fromRGB(220,180,110),G2=Color3.fromRGB(140,90,50)},
@@ -89,7 +85,8 @@ local Settings = {
     InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
     
     AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
-    Watermark = true, FPSDisplay = true, PingDisplay = true, GuiTransparency = 500,
+    Watermark = true, FPSDisplay = true, PingDisplay = true,
+    GuiTransparency = 250, -- 250 = yarim saydam (varsayilan)
     
     FollowPlayer = false, FollowTarget = nil,
     DamageAura = false, DamageAuraRange = 10, DamageAuraAmount = 5,
@@ -102,9 +99,6 @@ local Settings = {
     SelectedPlayers = {}, CurrentTarget = nil,
     ParticlesEnabled = true,
 }
-
--- GuiTransparency 500 = tam opak (Roblox 0-1 arasi oldugu icin 500/500 = 1)
--- Yani 500 = background transparency 0 (opak)
 
 -- =============================================
 -- CLEANUP
@@ -371,13 +365,16 @@ end
 
 -- =============================================
 -- MAIN FRAME
+-- Transparency: 250 = 1 - 250/500 = 0.5 (yarim saydam)
 -- =============================================
+local InitialTransparency = 1 - (Settings.GuiTransparency / 500) -- = 0.5
+
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 700, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
-MainFrame.BackgroundTransparency = 0  -- GuiTransparency 500 = opak
+MainFrame.BackgroundTransparency = InitialTransparency
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = false
 MainFrame.Visible = false
@@ -388,7 +385,7 @@ Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local mainStroke = Instance.new("UIStroke", MainFrame)
 mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
-mainStroke.Transparency = 0
+mainStroke.Transparency = InitialTransparency + 0.2
 
 local topAccent = Instance.new("Frame")
 topAccent.Size = UDim2.new(0, 120, 0, 1)
@@ -436,7 +433,7 @@ local versionLbl = Instance.new("TextLabel")
 versionLbl.Size = UDim2.new(0, 60, 0, 14)
 versionLbl.Position = UDim2.new(1, -120, 0, 20)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v6.0.3"
+versionLbl.Text = "v6.0.4"
 versionLbl.TextColor3 = CurrentTheme.SubText
 versionLbl.TextSize = 10
 versionLbl.Font = Enum.Font.Gotham
@@ -448,7 +445,7 @@ local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -38, 0, 14)
 closeBtn.BackgroundColor3 = CurrentTheme.Button
-closeBtn.BackgroundTransparency = 0.3
+closeBtn.BackgroundTransparency = InitialTransparency + 0.2
 closeBtn.BorderSizePixel = 0
 closeBtn.Text = "×"
 closeBtn.TextColor3 = CurrentTheme.SubText
@@ -462,7 +459,7 @@ closeBtn.MouseEnter:Connect(function()
     tween(closeBtn, 0.15, {BackgroundColor3 = Color3.fromRGB(180, 50, 50), BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255,255,255)})
 end)
 closeBtn.MouseLeave:Connect(function()
-    tween(closeBtn, 0.15, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = 0.3, TextColor3 = CurrentTheme.SubText})
+    tween(closeBtn, 0.15, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.2, TextColor3 = CurrentTheme.SubText})
 end)
 closeBtn.MouseButton1Click:Connect(function()
     tween(MainFrame, 0.35, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1}, Enum.EasingStyle.Back, Enum.EasingDirection.In)
@@ -470,7 +467,7 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     MainFrame.Size = UDim2.new(0, 700, 0, 480)
     MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
-    MainFrame.BackgroundTransparency = 0
+    MainFrame.BackgroundTransparency = 1 - (Settings.GuiTransparency / 500)
 end)
 
 -- =============================================
@@ -481,7 +478,7 @@ Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.new(0, 155, 1, -110)
 Sidebar.Position = UDim2.new(0, 15, 0, 95)
 Sidebar.BackgroundColor3 = CurrentTheme.Panel
-Sidebar.BackgroundTransparency = 0
+Sidebar.BackgroundTransparency = InitialTransparency
 Sidebar.BorderSizePixel = 0
 Sidebar.ZIndex = 4
 Sidebar.Parent = MainFrame
@@ -490,13 +487,13 @@ Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 6)
 local sideStroke = Instance.new("UIStroke", Sidebar)
 sideStroke.Color = CurrentTheme.Button
 sideStroke.Thickness = 1
-sideStroke.Transparency = 0
+sideStroke.Transparency = InitialTransparency + 0.2
 
 local profileFrame = Instance.new("Frame")
 profileFrame.Size = UDim2.new(1, -12, 0, 55)
 profileFrame.Position = UDim2.new(0, 6, 0, 6)
 profileFrame.BackgroundColor3 = CurrentTheme.Button
-profileFrame.BackgroundTransparency = 0.5
+profileFrame.BackgroundTransparency = InitialTransparency + 0.2
 profileFrame.BorderSizePixel = 0
 profileFrame.ZIndex = 5
 profileFrame.Parent = Sidebar
@@ -506,6 +503,7 @@ local avatarCircle = Instance.new("Frame")
 avatarCircle.Size = UDim2.new(0, 36, 0, 36)
 avatarCircle.Position = UDim2.new(0, 8, 0.5, -18)
 avatarCircle.BackgroundColor3 = CurrentTheme.Button
+avatarCircle.BackgroundTransparency = InitialTransparency
 avatarCircle.BorderSizePixel = 0
 avatarCircle.ZIndex = 6
 avatarCircle.Parent = profileFrame
@@ -579,7 +577,7 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM (8 sekme - THEMES eklendi)
+-- TAB SYSTEM (8 sekme)
 -- =============================================
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting system"},
@@ -623,7 +621,7 @@ for i, config in ipairs(tabConfig) do
     btn.Name = "Tab_" .. name
     btn.Size = UDim2.new(1, 0, 0, 42)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Button or Color3.fromRGB(0,0,0)
-    btn.BackgroundTransparency = i==1 and 0 or 1
+    btn.BackgroundTransparency = i==1 and InitialTransparency or 1
     btn.BorderSizePixel = 0
     btn.Text = ""
     btn.AutoButtonColor = false
@@ -671,7 +669,7 @@ for i, config in ipairs(tabConfig) do
     
     btn.MouseEnter:Connect(function()
         if activeTab ~= name then
-            tween(btn, 0.15, {BackgroundTransparency = 0.7, BackgroundColor3 = CurrentTheme.Button})
+            tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3, BackgroundColor3 = CurrentTheme.Button})
             tween(nameLbl, 0.15, {TextColor3 = CurrentTheme.Text})
         end
     end)
@@ -714,7 +712,7 @@ for i, config in ipairs(tabConfig) do
             local isActive = (n == name)
             tween(b, 0.2, {
                 BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0),
-                BackgroundTransparency = isActive and 0 or 1
+                BackgroundTransparency = isActive and InitialTransparency or 1
             })
             local ind = b:FindFirstChild("Indicator")
             if ind then ind.Visible = isActive end
@@ -744,7 +742,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local btn = Instance.new("TextButton")
     btn.Size = toggleWidth
     btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = 0.3
+    btn.BackgroundTransparency = InitialTransparency + 0.3
     btn.BorderSizePixel = 0
     btn.Text = name
     btn.TextColor3 = CurrentTheme.Text
@@ -776,7 +774,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local state = default
     local function doToggle()
         state = not state
-        tween(btn, 0.2, {BackgroundTransparency = state and 0.15 or 0.3})
+        tween(btn, 0.2, {BackgroundTransparency = state and InitialTransparency + 0.15 or InitialTransparency + 0.3})
         tween(stateLbl, 0.2, {TextColor3 = state and CurrentTheme.Accent or CurrentTheme.SubText})
         stateLbl.Text = state and "ON" or "OFF"
         if callback then callback(state) end
@@ -784,10 +782,10 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     btn.MouseButton1Click:Connect(doToggle)
     
     btn.MouseEnter:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = state and 0.05 or 0.15})
+        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency + 0.05 or InitialTransparency + 0.15})
     end)
     btn.MouseLeave:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = state and 0.15 or 0.3})
+        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency + 0.15 or InitialTransparency + 0.3})
     end)
 
     if withKeybind then
@@ -795,7 +793,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.Size = UDim2.new(0, 68, 1, 0)
         kbBtn.Position = UDim2.new(1, -68, 0, 0)
         kbBtn.BackgroundColor3 = CurrentTheme.Button
-        kbBtn.BackgroundTransparency = 0.5
+        kbBtn.BackgroundTransparency = InitialTransparency + 0.5
         kbBtn.BorderSizePixel = 0
         kbBtn.Text = "—"
         kbBtn.TextColor3 = CurrentTheme.SubText
@@ -808,7 +806,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local kbStroke = Instance.new("UIStroke", kbBtn)
         kbStroke.Color = CurrentTheme.Button
         kbStroke.Thickness = 1
-        kbStroke.Transparency = 0
+        kbStroke.Transparency = InitialTransparency
         table.insert(uiElements, {element=kbBtn, type="keybindBg"})
         table.insert(uiElements, {element=kbStroke, type="stroke"})
 
@@ -817,24 +815,24 @@ local function addToggle(page, name, default, callback, order, withKeybind)
                 activeKeybindBtn = nil
                 kbBtn.Text = "—"
                 kbBtn.TextColor3 = CurrentTheme.SubText
-                tween(kbBtn, 0.2, {BackgroundTransparency = 0.5})
+                tween(kbBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.5})
                 return
             end
             if activeKeybindBtn then
                 activeKeybindBtn.Text = "—"
                 activeKeybindBtn.TextColor3 = CurrentTheme.SubText
-                tween(activeKeybindBtn, 0.2, {BackgroundTransparency = 0.5})
+                tween(activeKeybindBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.5})
             end
             activeKeybindBtn = kbBtn
             kbBtn.Text = "..."
             kbBtn.TextColor3 = Color3.fromRGB(230, 180, 60)
-            tween(kbBtn, 0.2, {BackgroundTransparency = 0.2})
+            tween(kbBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.2})
         end)
 
         local function assignKeybind(keyCode)
             kbBtn.Text = keyCode.Name
             kbBtn.TextColor3 = CurrentTheme.Text
-            tween(kbBtn, 0.15, {BackgroundTransparency = 0.3})
+            tween(kbBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3})
             keybindCallbacks[keyCode] = doToggle
             activeKeybindBtn = nil
         end
@@ -845,14 +843,13 @@ local function addToggle(page, name, default, callback, order, withKeybind)
 
     return function() return state end, function(v)
         state = v
-        tween(btn, 0.2, {BackgroundTransparency = state and 0.15 or 0.3})
+        tween(btn, 0.2, {BackgroundTransparency = state and InitialTransparency + 0.15 or InitialTransparency + 0.3})
         tween(stateLbl, 0.2, {TextColor3 = state and CurrentTheme.Accent or CurrentTheme.SubText})
         stateLbl.Text = state and "ON" or "OFF"
         if callback then callback(state) end
     end
 end
 
--- GuiTransparency slider 0-500 arasi (500 = opak)
 local function addSlider(page, name, min, max, default, callback, order)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1,-8,0,46)
@@ -889,7 +886,7 @@ local function addSlider(page, name, min, max, default, callback, order)
     bg.Size = UDim2.new(1,0,0,6)
     bg.Position = UDim2.new(0,0,0,26)
     bg.BackgroundColor3 = CurrentTheme.Button
-    bg.BackgroundTransparency = 0.3
+    bg.BackgroundTransparency = InitialTransparency + 0.3
     bg.BorderSizePixel = 0
     bg.Text = ""
     bg.AutoButtonColor = false
@@ -946,7 +943,7 @@ local function addCycleButton(page, name, options, default, callback, order)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1,-8,0,34)
     btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = 0.3
+    btn.BackgroundTransparency = InitialTransparency + 0.3
     btn.BorderSizePixel = 0
     btn.Text = ""
     btn.AutoButtonColor = false
@@ -957,7 +954,7 @@ local function addCycleButton(page, name, options, default, callback, order)
     local s = Instance.new("UIStroke", btn)
     s.Color = CurrentTheme.Button
     s.Thickness = 1
-    s.Transparency = 0
+    s.Transparency = InitialTransparency
     table.insert(uiElements, {element=s, type="stroke"})
     
     local nameLbl = Instance.new("TextLabel")
@@ -984,8 +981,8 @@ local function addCycleButton(page, name, options, default, callback, order)
     valueLbl.ZIndex = 4
     valueLbl.Parent = btn
     
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.15}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.3}) end)
+    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
     
     btn.MouseButton1Click:Connect(function()
         idx = idx % #options + 1
@@ -1010,6 +1007,7 @@ local function addSeparator(page, order)
     line.Size = UDim2.new(1, 0, 0, 1)
     line.Position = UDim2.new(0, 0, 0.5, 0)
     line.BackgroundColor3 = CurrentTheme.Button
+    line.BackgroundTransparency = InitialTransparency
     line.BorderSizePixel = 0
     line.ZIndex = 3
     line.Parent = container
@@ -1036,7 +1034,7 @@ local function addButton(page, name, callback, order, color)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1,-8,0,36)
     btn.BackgroundColor3 = color or CurrentTheme.Button
-    btn.BackgroundTransparency = 0.2
+    btn.BackgroundTransparency = InitialTransparency + 0.2
     btn.BorderSizePixel = 0
     btn.Text = name
     btn.TextColor3 = CurrentTheme.Text
@@ -1051,15 +1049,15 @@ local function addButton(page, name, callback, order, color)
     local stroke = Instance.new("UIStroke", btn)
     stroke.Color = CurrentTheme.Button
     stroke.Thickness = 1
-    stroke.Transparency = 0
+    stroke.Transparency = InitialTransparency
     
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.05}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.2}) end)
+    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.05}) end)
+    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.2}) end)
     
     btn.MouseButton1Click:Connect(function()
-        tween(btn, 0.1, {BackgroundTransparency = 0})
+        tween(btn, 0.1, {BackgroundTransparency = InitialTransparency})
         task.wait(0.1)
-        tween(btn, 0.15, {BackgroundTransparency = 0.2})
+        tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.2})
         if callback then callback() end
     end)
     return btn
@@ -1071,11 +1069,13 @@ local function getFOVThemeColor()
 end
 
 -- =============================================
--- TEMA UYGULAMA FONKSIYONU
+-- TEMA UYGULAMA
 -- =============================================
 local function applyTheme(themeName)
     if not Themes[themeName] then return end
     CurrentTheme = Themes[themeName]
+    
+    local baseTransparency = 1 - (Settings.GuiTransparency / 500)
     
     MainFrame.BackgroundColor3 = CurrentTheme.Bg
     mainStroke.Color = CurrentTheme.Button
@@ -1162,7 +1162,6 @@ local function applyTheme(themeName)
     wmInfo.TextColor3 = CurrentTheme.SubText
     wmAccent.BackgroundColor3 = CurrentTheme.Primary
     
-    -- Theme preview butonlarini guncelle
     for _, btn in pairs(_G.DHL_ThemeButtons or {}) do
         if btn.Parent then
             local isActive = btn:GetAttribute("ThemeName") == themeName
@@ -1315,7 +1314,7 @@ btnRow.Parent = p4
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48,0,1,0)
 SelectAllBtn.BackgroundColor3 = CurrentTheme.Button
-SelectAllBtn.BackgroundTransparency = 0.3
+SelectAllBtn.BackgroundTransparency = InitialTransparency + 0.3
 SelectAllBtn.BorderSizePixel = 0
 SelectAllBtn.Text = "Select All"
 SelectAllBtn.TextColor3 = CurrentTheme.Text
@@ -1325,14 +1324,14 @@ SelectAllBtn.AutoButtonColor = false
 SelectAllBtn.ZIndex = 3
 SelectAllBtn.Parent = btnRow
 Instance.new("UICorner", SelectAllBtn).CornerRadius = UDim.new(0,4)
-SelectAllBtn.MouseEnter:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = 0.15}) end)
-SelectAllBtn.MouseLeave:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = 0.3}) end)
+SelectAllBtn.MouseEnter:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+SelectAllBtn.MouseLeave:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
 
 local ClearAllBtn = Instance.new("TextButton")
 ClearAllBtn.Size = UDim2.new(0.48,0,1,0)
 ClearAllBtn.Position = UDim2.new(0.52,0,0,0)
 ClearAllBtn.BackgroundColor3 = CurrentTheme.Button
-ClearAllBtn.BackgroundTransparency = 0.3
+ClearAllBtn.BackgroundTransparency = InitialTransparency + 0.3
 ClearAllBtn.BorderSizePixel = 0
 ClearAllBtn.Text = "Clear"
 ClearAllBtn.TextColor3 = CurrentTheme.Text
@@ -1342,13 +1341,13 @@ ClearAllBtn.AutoButtonColor = false
 ClearAllBtn.ZIndex = 3
 ClearAllBtn.Parent = btnRow
 Instance.new("UICorner", ClearAllBtn).CornerRadius = UDim.new(0,4)
-ClearAllBtn.MouseEnter:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = 0.15}) end)
-ClearAllBtn.MouseLeave:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = 0.3}) end)
+ClearAllBtn.MouseEnter:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+ClearAllBtn.MouseLeave:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
 
 local SearchBox = Instance.new("TextBox")
 SearchBox.Size = UDim2.new(1,-8,0,32)
 SearchBox.BackgroundColor3 = CurrentTheme.Button
-SearchBox.BackgroundTransparency = 0.3
+SearchBox.BackgroundTransparency = InitialTransparency + 0.3
 SearchBox.BorderSizePixel = 0
 SearchBox.PlaceholderText = "Search players..."
 SearchBox.PlaceholderColor3 = CurrentTheme.SubText
@@ -1488,7 +1487,7 @@ addLabel(p5, "SERVER INFO", 12)
 local worldInfoLabel = Instance.new("TextLabel")
 worldInfoLabel.Size = UDim2.new(1,-8,0,80)
 worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
-worldInfoLabel.BackgroundTransparency = 0.4
+worldInfoLabel.BackgroundTransparency = InitialTransparency + 0.4
 worldInfoLabel.BorderSizePixel = 0
 worldInfoLabel.Text = "  Game ID      : " .. game.PlaceId .. "\n  Player Count : " .. #Players:GetPlayers() .. "\n  Server ID    : " .. game.JobId:sub(1,8) .. "\n  Ping         : --"
 worldInfoLabel.TextColor3 = CurrentTheme.SubText
@@ -1535,14 +1534,11 @@ addButton(p6, "Full Heal", function()
 end, 14, CurrentTheme.Button)
 
 -- =============================================
--- PAGE 7: THEMES (YENI!)
+-- PAGE 7: THEMES
 -- =============================================
 local p7 = tabPages["THEMES"]
-
--- Bilgi label
 addLabel(p7, "SELECT A THEME", 1)
 
--- Klasik temalar basligi
 local classicHeader = Instance.new("TextLabel")
 classicHeader.Size = UDim2.new(1,-8,0,24)
 classicHeader.BackgroundTransparency = 1
@@ -1556,7 +1552,6 @@ classicHeader.ZIndex = 3
 classicHeader.Parent = p7
 table.insert(uiElements, {element=classicHeader, type="sectionLabel"})
 
--- Klasik tema grid
 local classicGrid = Instance.new("Frame")
 classicGrid.Size = UDim2.new(1, -8, 0, 200)
 classicGrid.BackgroundTransparency = 1
@@ -1571,12 +1566,12 @@ classicLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 _G.DHL_ThemeButtons = _G.DHL_ThemeButtons or {}
 
--- Klasik tema kartlari
 for name, theme in pairs(Themes) do
     if theme.Category == "Classic" then
         local btn = Instance.new("TextButton")
         btn.Name = "ThemeBtn_" .. name
         btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BackgroundTransparency = InitialTransparency
         btn.BorderSizePixel = 0
         btn.Text = ""
         btn.AutoButtonColor = false
@@ -1589,7 +1584,6 @@ for name, theme in pairs(Themes) do
         stroke.Thickness = 1.5
         stroke.Transparency = 0.7
         
-        -- Renk preview (3 kucuk daire)
         local colorRow = Instance.new("Frame")
         colorRow.Size = UDim2.new(1, -16, 0, 20)
         colorRow.Position = UDim2.new(0, 8, 0, 8)
@@ -1611,7 +1605,6 @@ for name, theme in pairs(Themes) do
             Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
         end
         
-        -- Isim
         local nameLbl = Instance.new("TextLabel")
         nameLbl.Size = UDim2.new(1, -8, 0, 16)
         nameLbl.Position = UDim2.new(0, 4, 1, -22)
@@ -1626,7 +1619,6 @@ for name, theme in pairs(Themes) do
         btn:SetAttribute("ThemeName", name)
         _G.DHL_ThemeButtons[name] = btn
         
-        -- Aktif tema ise
         if name == CurrentTheme.Name then
             stroke.Transparency = 0
             stroke.Color = CurrentTheme.Primary
@@ -1652,7 +1644,6 @@ for name, theme in pairs(Themes) do
     end
 end
 
--- Ozel temalar basligi
 local specialHeader = Instance.new("TextLabel")
 specialHeader.Size = UDim2.new(1,-8,0,24)
 specialHeader.BackgroundTransparency = 1
@@ -1666,7 +1657,6 @@ specialHeader.ZIndex = 3
 specialHeader.Parent = p7
 table.insert(uiElements, {element=specialHeader, type="sectionLabel"})
 
--- Ozel tema grid
 local specialGrid = Instance.new("Frame")
 specialGrid.Size = UDim2.new(1, -8, 0, 280)
 specialGrid.BackgroundTransparency = 1
@@ -1684,6 +1674,7 @@ for name, theme in pairs(Themes) do
         local btn = Instance.new("TextButton")
         btn.Name = "ThemeBtn_" .. name
         btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BackgroundTransparency = InitialTransparency
         btn.BorderSizePixel = 0
         btn.Text = ""
         btn.AutoButtonColor = false
@@ -1755,8 +1746,8 @@ end
 -- =============================================
 local p8 = tabPages["SETTINGS"]
 addLabel(p8, "INTERFACE", 1)
-local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, 500, function(v)
-    -- 500 = opak (transparency 0), 0 = tam saydam (transparency 1)
+local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
+    Settings.GuiTransparency = v
     local transparency = 1 - (v / 500)
     MainFrame.BackgroundTransparency = transparency
 end, 2)
@@ -1769,42 +1760,140 @@ local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 7, false)
 
 addSeparator(p8, 8)
 addLabel(p8, "CONFIGURATION", 9)
-addButton(p8, "Save Config", function()
-    if writefile then
-        pcall(function()
-            local data = {
-                Theme = CurrentTheme.Name, SpeedValue = Settings.SpeedValue,
-                JumpPowerValue = Settings.JumpPowerValue, FlySpeed = Settings.FlySpeed,
-                FOVRadius = Settings.FOVRadius, GuiTransparency = Settings.GuiTransparency,
-            }
-            writefile("DHLVIP_config.json", HttpService:JSONEncode(data))
-        end)
-    end
-    showToast("Config", "Settings saved", "success")
-end, 10, CurrentTheme.Button)
 
-addButton(p8, "Load Config", function()
-    if readfile and isfile then
-        pcall(function()
-            if isfile("DHLVIP_config.json") then
-                local data = HttpService:JSONDecode(readfile("DHLVIP_config.json"))
-                if data.SpeedValue then getSpeedValue(data.SpeedValue) end
-                if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
-                if data.FlySpeed then getFlySpeed(data.FlySpeed) end
-                if data.FOVRadius then getFOVRadius(data.FOVRadius) end
-                if data.Theme and Themes[data.Theme] then applyTheme(data.Theme) end
-            end
-        end)
+-- =============================================
+-- SAVE / LOAD SISTEMI (DUZELTILDI)
+-- =============================================
+local CONFIG_FILE = "DHLVIP_config.json"
+
+-- Dosya islemlerini kontrol et
+local function hasFileSupport()
+    return writefile ~= nil and readfile ~= nil and isfile ~= nil
+end
+
+local function saveConfig()
+    if not hasFileSupport() then
+        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
+        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        return false
     end
-    showToast("Config", "Settings loaded", "success")
-end, 11, CurrentTheme.Button)
+    
+    local data = {
+        Theme = CurrentTheme.Name,
+        SpeedValue = Settings.SpeedValue,
+        JumpPowerValue = Settings.JumpPowerValue,
+        FlySpeed = Settings.FlySpeed,
+        FOVRadius = Settings.FOVRadius,
+        GuiTransparency = Settings.GuiTransparency,
+        Smoothness = Settings.Smoothness,
+        Prediction = Settings.Prediction,
+        HitboxSize = Settings.HitboxSize,
+        AimShake = Settings.AimShake,
+        EspFillTransparency = Settings.HighlightFillTransparency,
+        Version = "6.0.4",
+        SavedAt = os.time(),
+    }
+    
+    local success, encoded = pcall(function()
+        return HttpService:JSONEncode(data)
+    end)
+    
+    if not success then
+        showToast("Config Error", "Encode hatasi olustu", "error")
+        print("[DHL VIP] HATA: JSON encode basarisiz!")
+        return false
+    end
+    
+    local writeSuccess, writeErr = pcall(function()
+        writefile(CONFIG_FILE, encoded)
+    end)
+    
+    if writeSuccess then
+        showToast("Config Saved", "Ayarlar kaydedildi: " .. CONFIG_FILE, "success")
+        print("[DHL VIP] Ayarlar kaydedildi: " .. CONFIG_FILE)
+        return true
+    else
+        showToast("Config Error", "Yazma hatasi: " .. tostring(writeErr), "error")
+        print("[DHL VIP] HATA: writefile basarisiz - " .. tostring(writeErr))
+        return false
+    end
+end
+
+local function loadConfig()
+    if not hasFileSupport() then
+        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
+        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        return false
+    end
+    
+    local exists = false
+    pcall(function() exists = isfile(CONFIG_FILE) end)
+    
+    if not exists then
+        showToast("Config Error", "Kayitli config bulunamadi", "warning")
+        print("[DHL VIP] Config dosyasi bulunamadi: " .. CONFIG_FILE)
+        return false
+    end
+    
+    local readSuccess, content = pcall(function()
+        return readfile(CONFIG_FILE)
+    end)
+    
+    if not readSuccess or not content then
+        showToast("Config Error", "Okuma hatasi", "error")
+        print("[DHL VIP] HATA: readfile basarisiz!")
+        return false
+    end
+    
+    local decodeSuccess, data = pcall(function()
+        return HttpService:JSONDecode(content)
+    end)
+    
+    if not decodeSuccess or not data then
+        showToast("Config Error", "Bozuk config dosyasi", "error")
+        print("[DHL VIP] HATA: JSON decode basarisiz!")
+        return false
+    end
+    
+    -- Ayarlari uygula
+    if data.Theme and Themes[data.Theme] then
+        applyTheme(data.Theme)
+    end
+    if data.SpeedValue then getSpeedValue(data.SpeedValue) end
+    if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
+    if data.FlySpeed then getFlySpeed(data.FlySpeed) end
+    if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+    if data.GuiTransparency then
+        getGuiTransparency(data.GuiTransparency)
+        Settings.GuiTransparency = data.GuiTransparency
+        MainFrame.BackgroundTransparency = 1 - (data.GuiTransparency / 500)
+    end
+    if data.Smoothness then getSmoothness(data.Smoothness) end
+    if data.Prediction then getPrediction(data.Prediction) end
+    if data.HitboxSize then getHitboxSize(data.HitboxSize) end
+    if data.AimShake then getAimShake(data.AimShake) end
+    if data.EspFillTransparency then getFillTransparency(data.EspFillTransparency) end
+    
+    showToast("Config Loaded", "Ayarlar yuklendi!", "success")
+    print("[DHL VIP] Ayarlar yuklendi!")
+    return true
+end
+
+addButton(p8, "Save Config", saveConfig, 10, CurrentTheme.Button)
+addButton(p8, "Load Config", loadConfig, 11, CurrentTheme.Button)
+
+-- Auto save on close
+GuiService.MenuOpened:Connect(function()
+    -- Auto-save on menu open (her ihtimale karsi)
+    task.spawn(function() pcall(saveConfig) end)
+end)
 
 addSeparator(p8, 12)
 addLabel(p8, "SESSION", 13)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,80)
 statLabel.BackgroundColor3 = CurrentTheme.Button
-statLabel.BackgroundTransparency = 0.4
+statLabel.BackgroundTransparency = InitialTransparency + 0.4
 statLabel.BorderSizePixel = 0
 statLabel.Text = "  Status     : ACTIVE\n  Kills      : 0\n  Session    : 0s\n  User       : " .. LocalPlayer.Name
 statLabel.TextColor3 = CurrentTheme.SubText
@@ -1838,7 +1927,7 @@ Watermark.Name = "Watermark"
 Watermark.Size = UDim2.new(0, 220, 0, 38)
 Watermark.Position = UDim2.new(0, 15, 0, 15)
 Watermark.BackgroundColor3 = CurrentTheme.Panel
-Watermark.BackgroundTransparency = 0.05
+Watermark.BackgroundTransparency = InitialTransparency
 Watermark.BorderSizePixel = 0
 Watermark.Visible = true
 Watermark.ZIndex = 500
@@ -1918,11 +2007,11 @@ local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~
 local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
-        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = 0.3})
+        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.3})
         btn.TextColor3 = CurrentTheme.SubText
     else
         Settings.SelectedPlayers[player.Name] = player
-        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = 0.15})
+        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.15})
         btn.TextColor3 = CurrentTheme.Text
     end
     updateSelectCount()
@@ -1935,7 +2024,7 @@ local function createPlayerButton(player)
     btn.Name = "PLR_"..player.Name
     btn.Size = UDim2.new(1,-4,0,32)
     btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = sel and 0.15 or 0.3
+    btn.BackgroundTransparency = sel and (InitialTransparency + 0.15) or (InitialTransparency + 0.3)
     btn.BorderSizePixel = 0
     btn.Text = player.DisplayName
     btn.TextColor3 = sel and CurrentTheme.Text or CurrentTheme.SubText
@@ -1952,10 +2041,10 @@ local function createPlayerButton(player)
     
     btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
     btn.MouseEnter:Connect(function()
-        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = 0.15}) end
+        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end
     end)
     btn.MouseLeave:Connect(function()
-        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = 0.3}) end
+        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end
     end)
     playerButtons[player.Name] = btn
 end
@@ -2613,7 +2702,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[DHL VIP] Clean Pro Edition v3 yuklendi! Themes sekmesi aktif.")
+print("[DHL VIP] v4 yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2630,13 +2719,26 @@ task.spawn(function()
     task.wait(0.7)
     showToast("DHL VIP", "Connection established", "success")
     task.wait(0.6)
-    showToast("Interface", "15 themes available in THEMES tab", "info")
+    
+    -- Auto-load config if exists
+    if hasFileSupport and hasFileSupport() then
+        local exists = false
+        pcall(function() exists = isfile(CONFIG_FILE) end)
+        if exists then
+            task.wait(0.3)
+            loadConfig()
+        else
+            showToast("Interface", "Press Right Shift to toggle", "info")
+        end
+    else
+        showToast("Interface", "Press Right Shift to toggle", "info")
+    end
 end)
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL VIP",
-        Text = "Theme Customization loaded!",
+        Text = "Config system ready!",
         Duration = 5
     })
 end)
