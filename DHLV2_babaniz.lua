@@ -299,14 +299,38 @@ end
 local p1 = tabPages["Aimlock"]
 addLabel(p1, "-- CAMLOCK --", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
-local getWallCheck = addToggle(p1, "Wall Check", true, nil, 3, true)
-local getStickyAim = addToggle(p1, "Sticky Aim", false, nil, 4, true)
-local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
-local getResolver = addToggle(p1, "Resolver", false, nil, 6, true)
-local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 7, true)
-local getNoSpread = addToggle(p1, "No Spread (Duz Mermi)", false, nil, 8, true)
+local getSilentAim = addToggle(p1, "Silent Aim", true, nil, 3, true)
+local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 4, true)
+local getPerfectLock = addToggle(p1, "Perfect Lock (0 Miss)", true, nil, 5, true)
+local getWallCheck = addToggle(p1, "Wall Check", false, nil, 6, true)
+local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 7, true)
+local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 8, false)
+local getResolver = addToggle(p1, "Resolver", true, nil, 9, true)
+local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 10, true)
+local getNoSpread = addToggle(p1, "No Spread (Duz Mermi)", true, nil, 11, true)
 
-addSeparator(p1, 9)
+addSeparator(p1, 12)
+addLabel(p1, "-- SETTINGS --", 13)
+local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q", "Always On"}, "Right Mouse Click", function(v)
+    Settings.Mode = v:gsub(" ", "")
+end, 14)
+local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, "Head", function(v)
+    Settings.TargetPart = v
+end, 15)
+local getHitboxMode = addCycleButton(p1, "Hitbox Mode", {"Normal", "Expand (Buyuk)", "Perfect (Kucuk)"}, "Expand (Buyuk)", function(v)
+    Settings.HitboxMode = v
+end, 16)
+local getSmoothness = addSlider(p1, "Smoothness", 0.01, 1.0, 1.0, nil, 17)
+local getPrediction = addSlider(p1, "Prediction", 0.0, 2.0, 1.0, nil, 18)
+local getPingComp = addSlider(p1, "Ping Compensate", 0.0, 1.0, 0.5, nil, 19)
+local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 20)
+local getTriggerDelay = addSlider(p1, "Trigger Delay", 0.0, 0.5, 0.0, nil, 21)
+local getTriggerDist = addSlider(p1, "Trigger Distance", 1, 50, 8, nil, 22)
+
+addSeparator(p1, 23)
+addLabel(p1, "-- FOV CIRCLE --", 24)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 25, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 250, nil, 26)
 addLabel(p1, "-- SETTINGS --", 10)
 local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v)
     Settings.Mode = v:gsub(" ", "")
@@ -1210,7 +1234,284 @@ task.defer(function()
         if child:IsA("GuiObject") and child ~= BgImage and child.ZIndex < 2 then child.ZIndex = 2 end
     end
 end)
+-- =============================================
+-- PERFECT LOCK ENGINE — SIFIR MISS
+-- =============================================
+local silentAimActive = false
+local perfectLockActive = false
+local triggerBotActive = false
+local currentSilentTarget = nil
 
+-- Hedefin gelecekteki pozisyonunu hesapla (ping + hiz + yercekimi)
+local function predictPosition(part, projectileSpeed, gravity)
+    if not part or not part.Parent then return nil end
+    projectileSpeed = projectileSpeed or 1000
+    gravity = gravity or 0
+
+    local cam = workspace.CurrentCamera
+    local origin = cam.CFrame.Position
+    local targetPos = part.Position
+    local targetVel = Vector3.new(0,0,0)
+    pcall(function() targetVel = part.AssemblyLinearVelocity end)
+
+    -- Ping hesapla
+    local ping = 0
+    pcall(function()
+        local stats = game:GetService("Stats")
+        ping = stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+    end)
+    local pingComp = getPingComp and getPingComp() or 0.5
+    local predTime = getPrediction() or 1.0
+
+    -- Iterasyonlu prediction (yercekimi icin)
+    local t = (targetPos - origin).Magnitude / projectileSpeed + (ping * pingComp) + (predTime * 0.05)
+    for _ = 1, 5 do
+        local futurePos = targetPos + targetVel * t
+        if gravity > 0 then
+            futurePos = futurePos - Vector3.new(0, 0.5 * gravity * t * t, 0)
+        end
+        local newT = (futurePos - origin).Magnitude / projectileSpeed + (ping * pingComp) + (predTime * 0.05)
+        if math.abs(newT - t) < 0.001 then break end
+        t = newT
+    end
+    local finalPos = targetPos + targetVel * t
+    if gravity > 0 then
+        finalPos = finalPos - Vector3.new(0, 0.5 * gravity * t * t, 0)
+    end
+    return finalPos
+end
+
+-- Hedefin hitbox'ini bul (en buyuk part)
+local function getBestHitPart(character)
+    if not character then return nil end
+    local mode = getHitboxMode and getHitboxMode() or "Normal"
+    if mode == "Perfect (Kucuk)" then
+        return character:FindFirstChild("Head") or character:FindFirstChild("HumanoidRootPart")
+    end
+    -- Expand modunda en buyuk part'i sec
+    local best, bestSize = nil, 0
+    for _, p in ipairs(character:GetChildren()) do
+        if p:IsA("BasePart") then
+            local s = p.Size.Magnitude
+            if s > bestSize then bestSize = s; best = p end
+        end
+    end
+    return best or character:FindFirstChild("HumanoidRootPart")
+end
+
+-- Silent Aim icin hedef pozisyonu
+local function getSilentAimTarget()
+    local target = Settings.CurrentTarget
+    if not target or not target.Character then return nil end
+    local hum = target.Character:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return nil end
+    if getSkipDowned() and isDowned(target.Character) then return nil end
+
+    local part = target.Character:FindFirstChild(Settings.TargetPart)
+    if not part then part = getBestHitPart(target.Character) end
+    if not part then return nil end
+
+    -- Perfect Lock icin prediction
+    if getPerfectLock() then
+        local predicted = predictPosition(part, 1000, 0)
+        if predicted then return part, predicted end
+    end
+    return part, part.Position
+end
+
+-- Hook: Raycast / FindPartOnRay / Mouse.Hit / Tool
+local oldNamecall, oldIndex
+pcall(function()
+    if getrawmetatable and setreadonly and newcclosure and getnamecallmethod then
+        local mt = getrawmetatable(game)
+        oldNamecall = mt.__namecall
+        oldIndex = mt.__index
+        setreadonly(mt, false)
+
+        -- Namecall hook (Raycast/FindPartOnRay vs.)
+        mt.__namecall = newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            local args = {...}
+
+            -- Raycast yonunu hedefe cevir
+            if silentAimActive and currentSilentTarget then
+                local targetPart, targetPos = getSilentAimTarget()
+                if targetPart and targetPos then
+                    if method == "Raycast" or method == "FindPartOnRay" or method == "FindPartOnRayWithIgnoreList" or method == "FindPartOnRayWithWhitelist" then
+                        local origin = args[1]
+                        if typeof(origin) == "Vector3" then
+                            local newDir = (targetPos - origin)
+                            if method == "Raycast" then
+                                return oldNamecall(self, origin, newDir, select(3, ...))
+                            else
+                                return oldNamecall(self, origin, newDir, select(3, ...))
+                            end
+                        end
+                    end
+                end
+            end
+            return oldNamecall(self, ...)
+        end)
+
+        -- Index hook (Mouse.Hit, Mouse.Target vs.)
+        mt.__index = newcclosure(function(self, key)
+            if silentAimActive and currentSilentTarget and typeof(self) == "Instance" and self:IsA("Mouse") then
+                if key == "Hit" then
+                    local _, targetPos = getSilentAimTarget()
+                    if targetPos then
+                        return CFrame.new(targetPos)
+                    end
+                elseif key == "Target" then
+                    local targetPart = getSilentAimTarget()
+                    if targetPart then return targetPart end
+                elseif key == "UnitRay" then
+                    local targetPart, targetPos = getSilentAimTarget()
+                    if targetPart and targetPos then
+                        local origin = self.Origin
+                        return Ray.new(origin, (targetPos - origin).Unit)
+                    end
+                end
+            end
+            return oldIndex(self, key)
+        end)
+
+        setreadonly(mt, true)
+        print("[DHL V2] Silent Aim hooks aktif!")
+    end
+end)
+
+-- Trigger Bot: crosshair hedefe gelince otomatik ates
+local lastTriggerTime = 0
+local function runTriggerBot()
+    if not getTriggerBot() then return end
+    local now = tick()
+    if now - lastTriggerTime < (getTriggerDelay() or 0) then return end
+
+    local target = Settings.CurrentTarget
+    if not target or not target.Character then return end
+    local hum = target.Character:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return end
+
+    local part = target.Character:FindFirstChild(Settings.TargetPart) or getBestHitPart(target.Character)
+    if not part then return end
+
+    local cam = workspace.CurrentCamera
+    local screenPos, onScreen = cam:WorldToViewportPoint(part.Position)
+    if not onScreen then return end
+
+    local mouseCenter = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+    local dist = (Vector2.new(screenPos.X, screenPos.Y) - mouseCenter).Magnitude
+    if dist <= (getTriggerDist() or 8) then
+        lastTriggerTime = now
+        -- Ates et
+        pcall(function()
+            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+            if tool then
+                tool:Activate()
+            end
+        end)
+        pcall(function()
+            if mousemoverel and mouse1click then
+                mouse1click()
+            end
+        end)
+    end
+end
+
+-- Hitbox buyutucu (miss shot onlemek icin)
+local function expandHitbox(character)
+    if not character then return end
+    if getHitboxMode and getHitboxMode() == "Expand (Buyuk)" then
+        for _, part in ipairs(character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                pcall(function()
+                    if not part:GetAttribute("DHL_OrigSize") then
+                        part:SetAttribute("DHL_OrigSize", part.Size)
+                    end
+                    local orig = part:GetAttribute("DHL_OrigSize")
+                    if orig then
+                        part.Size = orig * 1.5
+                        part.CanCollide = false
+                        part.Transparency = math.max(part.Transparency, 0.7)
+                    end
+                end)
+            end
+        end
+    end
+end
+
+local function restoreHitbox(character)
+    if not character then return end
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            pcall(function()
+                local orig = part:GetAttribute("DHL_OrigSize")
+                if orig then
+                    part.Size = orig
+                    part:SetAttribute("DHL_OrigSize", nil)
+                end
+            end)
+        end
+    end
+end
+
+-- Ana Perfect Lock dongusu
+RunService.RenderStepped:Connect(function()
+    silentAimActive = getSilentAim and getSilentAim() or false
+    perfectLockActive = getPerfectLock and getPerfectLock() or false
+    triggerBotActive = getTriggerBot and getTriggerBot() or false
+
+    if not getCamlock() then
+        currentSilentTarget = nil
+        return
+    end
+
+    -- Hedef sec (Always On modunda surekli en yakin)
+    if Settings.Mode == "AlwaysOn" then
+        local t = getClosestFromSelected()
+        if t then Settings.CurrentTarget = t; locked = t ~= nil end
+    end
+
+    if Settings.CurrentTarget then
+        currentSilentTarget = Settings.CurrentTarget
+        -- Hitbox buyut
+        if getHitboxMode and getHitboxMode() == "Expand (Buyuk)" and Settings.CurrentTarget.Character then
+            expandHitbox(Settings.CurrentTarget.Character)
+        end
+    else
+        currentSilentTarget = nil
+    end
+
+    -- Trigger bot
+    runTriggerBot()
+end)
+
+-- Kamera kilidi (Perfect Lock modunda daha agresif)
+RunService.RenderStepped:Connect(function()
+    if not getCamlock() then return end
+    if not getPerfectLock() then return end
+    if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then return end
+
+    local targetPart, targetPos = getSilentAimTarget()
+    if not targetPart or not targetPos then return end
+
+    local cam = workspace.CurrentCamera
+    -- Kamera direkt hedefe baksin (smoothness 1.0 ise aninda)
+    local smooth = getSmoothness and getSmoothness() or 1.0
+    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), smooth)
+end)
+
+-- Karakter respawn olunca hitbox restore
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(1)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            restoreHitbox(plr.Character)
+        end
+    end
+end)
+
+print("[DHL V2] Perfect Lock Engine yuklendi — SIFIR MISS!")
 print("[DHL V2] by babaniz — FULL LOAD! (No Spread)")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] No Spread toggle'i Aimlock sekmesinde!")
