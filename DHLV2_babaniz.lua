@@ -1,7 +1,7 @@
 --[[
     DHL V2 - by babaniz
-    Gelişmiş Aimlock + ESP + Misc
-    Hook'suz güvenli sürüm
+    Sadece Camlock + ESP + Misc
+    Hook'suz guvenli surum - Adonis tespit etmez
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -40,14 +40,15 @@ local Settings = {
     WallCheck = false,
     Smoothness = 0.450,
     Prediction = 0.100,
-    TargetPart = "HumanoidRootPart",
+    TargetPart = "Head",
     Mode = "RightMouseClick",
-    StickyAim = false,
+    StickyAim = true,
     AutoSwitch = true,
-    Resolver = false,
+    Resolver = true,
     SkipDowned = true,
     DownedThreshold = 0.20,
     AimShake = 0,
+    AlwaysOn = false,
     FOVVisible = true,
     FOVRadius = 150,
     ESPEnabled = true,
@@ -69,7 +70,6 @@ local Settings = {
     FlySpeed = 50,
     HitboxExpand = false,
     HitboxSize = 1.3,
-    AlwaysOn = false,
     SelectedPlayers = {},
     CurrentTarget = nil,
 }
@@ -98,7 +98,6 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "DHLV2_babaniz"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
--- Draggable
 local function makeDraggable(frame, handle)
     local dragging, dragInput, dragStart, startPos
     handle = handle or frame
@@ -135,13 +134,11 @@ MainFrame.Parent = ScreenGui
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(139, 0, 0); ms.Thickness = 1.5
 
--- Drag handle
 local DragHandle = Instance.new("TextButton")
 DragHandle.Size = UDim2.new(1, 0, 0, 45); DragHandle.BackgroundTransparency = 1
 DragHandle.Text = ""; DragHandle.AutoButtonColor = false; DragHandle.ZIndex = 10; DragHandle.Parent = MainFrame
 makeDraggable(MainFrame, DragHandle)
 
--- Background image
 local BgImage = Instance.new("ImageLabel")
 BgImage.Name = "Background"; BgImage.Size = UDim2.new(1, 0, 1, 0)
 BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.85
@@ -155,13 +152,12 @@ pcall(function()
     end
 end)
 
--- Title
 local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,5)
 tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(200,0,0)
 tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,26)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz"; cl.TextColor3 = Color3.fromRGB(200,0,0)
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Camlock Only"; cl.TextColor3 = Color3.fromRGB(200,0,0)
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
 -- =============================================
@@ -241,7 +237,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     end
     btn.MouseButton1Click:Connect(doToggle)
 
-    local assignedKey = nil
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
         kbBtn.Size = UDim2.new(0, 60, 1, 0)
@@ -256,18 +251,12 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(80,0,0); kbStroke.Thickness = 1
 
         kbBtn.MouseButton1Click:Connect(function()
-            if assignedKey then
-                keybindCallbacks[assignedKey] = nil
-                assignedKey = nil
-            end
-
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
                 kbBtn.Text = "[ - ]"
                 kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
                 return
             end
-
             if activeKeybindBtn then
                 activeKeybindBtn.Text = "[ - ]"
                 activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
@@ -278,7 +267,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         end)
 
         local function assignKeybind(keyCode)
-            assignedKey = keyCode
             kbBtn.Text = "[" .. keyCode.Name .. "]"
             kbBtn.TextColor3 = Color3.fromRGB(0, 255, 150)
             keybindCallbacks[keyCode] = doToggle
@@ -885,21 +873,17 @@ local function getPredictedPosition(part)
     if not part or not part.Parent then return part and part.Position or Vector3.new() end
     local predAmount = getPrediction()
     if predAmount <= 0 then return part.Position end
-    
-    -- Hedefin hizini al
+
     local vel = Vector3.new(0,0,0)
     pcall(function() vel = part.AssemblyLinearVelocity end)
-    
-    -- Ping hesapla
+
     local ping = 0
     pcall(function()
         local stats = game:GetService("Stats")
         ping = stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
     end)
-    
-    -- Ping + prediction birlestir
+
     local totalTime = (predAmount * 0.3) + (ping * 0.5)
-    
     return part.Position + (vel * totalTime)
 end
 
@@ -934,7 +918,6 @@ local function getClosestFromSelected()
     return closest
 end
 
--- Cycle target
 local cycleIdx = 0
 local function cycleTarget()
     local list = {}
@@ -970,16 +953,6 @@ local function expandHitbox(character)
             pcall(function()
                 part.Size = originalSizes[part] * sizeMult
             end)
-        end
-    end
-end
-
-local function restoreHitbox(character)
-    if not character then return end
-    for _, part in ipairs(character:GetChildren()) do
-        if part:IsA("BasePart") and originalSizes[part] then
-            pcall(function() part.Size = originalSizes[part] end)
-            originalSizes[part] = nil
         end
     end
 end
@@ -1116,7 +1089,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- =============================================
--- FLY
+-- FLY + AIMLOCK ANA DONGU
 -- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
@@ -1130,13 +1103,14 @@ RunService.RenderStepped:Connect(function()
 
     updateESP()
 
-    -- Hitbox restore (hedef degistiginde)
+    -- Hitbox expand (aktif hedef icin)
     if Settings.CurrentTarget and Settings.CurrentTarget.Character then
         if getHitboxExpand() then
             expandHitbox(Settings.CurrentTarget.Character)
         end
     end
 
+    -- Fly
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
@@ -1167,11 +1141,10 @@ RunService.RenderStepped:Connect(function()
     end
 
     -- =============================================
-    -- AIMLOCK (Ana dongu)
+    -- AIMLOCK
     -- =============================================
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
-    -- Always On modu: surekli en yakin hedefe kilitli kal
     if getAlwaysOn() then
         if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
             Settings.CurrentTarget = getClosestFromSelected()
@@ -1193,10 +1166,8 @@ RunService.RenderStepped:Connect(function()
         if part then
             local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                -- Downed ise birak
                 if getSkipDowned() and isDowned(Settings.CurrentTarget.Character) then
                     if getAutoSwitch() then
-                        restoreHitbox(Settings.CurrentTarget.Character)
                         Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
                     else locked = false; Settings.CurrentTarget = nil end
                     return
@@ -1206,19 +1177,16 @@ RunService.RenderStepped:Connect(function()
                 if canSee or getStickyAim() then
                     local smoothness = getSmoothness()
                     local shake = getAimShake()
-                    
-                    -- GELISMIS PREDICTION
+
                     local predictedPos = getPredictedPosition(part)
-                    
-                    -- Aim shake (silkinme)
+
                     if shake > 0 then
                         predictedPos = predictedPos + Vector3.new(
                             math.random(-shake*10, shake*10)/10,
                             math.random(-shake*10, shake*10)/10,
                             math.random(-shake*10, shake*10)/10)
                     end
-                    
-                    -- Kamera kilidi (agresif)
+
                     local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
                     Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, smoothness)
                 else
@@ -1275,13 +1243,11 @@ pcall(function()
     end)
 end)
 
--- Cleanup
 LocalPlayer.CharacterRemoving:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
     if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
 end)
 
--- ZIndex fix
 task.defer(function()
     task.wait(0.3)
     for _, child in ipairs(MainFrame:GetDescendants()) do
@@ -1292,15 +1258,14 @@ end)
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz — FULL LOAD!")
+print("[DHL V2] by babaniz - FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
-print("[DHL V2] Keybind: toggle yanindaki [ - ] butonuna tikla, tus bas")
-print("[DHL V2] Hook YOK - Guvenli surum")
+print("[DHL V2] Sadece Camlock - Hook YOK")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Guvenli Aimlock",
+        Text = "by babaniz | Camlock Only (Hook Yok)",
         Duration = 5
     })
 end)
