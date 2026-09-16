@@ -1,10 +1,10 @@
 --[[
-    DHL VIP - CLEAN PRO EDITION
-    Profesyonel, minimal, kurumsal tasarim
-    Yapay zeka destekli hile gorunumu
+    DHL VIP - CLEAN PRO EDITION v2
+    Yesil noktalar kaldirildi
+    Sade, minimal, kurumsal tasarim
 ]]
 
-print("[DHL VIP] Clean Pro Edition yukleniyor...")
+print("[DHL VIP] Clean Pro Edition v2 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -38,7 +38,7 @@ local function getGuiParent()
 end
 
 -- =============================================
--- PRO THEMES (Sade ve Profesyonel)
+-- PRO THEMES
 -- =============================================
 local Themes = {
     Obsidian = {Name="Obsidian", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
@@ -127,7 +127,7 @@ if guiParent:IsA("ScreenGui") then
 else ScreenGui.Parent = guiParent end
 
 -- =============================================
--- CLEAN SPLASH SCREEN
+-- SPLASH SCREEN
 -- =============================================
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "DHL_Splash"
@@ -145,7 +145,6 @@ splashFrame.BorderSizePixel = 0
 splashFrame.ZIndex = 1
 splashFrame.Parent = splashGui
 
--- Ince cizgi efekti
 local lineTop = Instance.new("Frame")
 lineTop.Size = UDim2.new(0, 0, 0, 1)
 lineTop.Position = UDim2.new(0.5, 0, 0.5, -60)
@@ -164,7 +163,6 @@ lineBottom.BorderSizePixel = 0
 lineBottom.ZIndex = 2
 lineBottom.Parent = splashFrame
 
--- Title (Clean, minimal)
 local splashTitle = Instance.new("TextLabel")
 splashTitle.Size = UDim2.new(1, 0, 0, 40)
 splashTitle.Position = UDim2.new(0, 0, 0.5, -20)
@@ -189,7 +187,6 @@ splashSub.TextTransparency = 1
 splashSub.ZIndex = 3
 splashSub.Parent = splashFrame
 
--- Progress bar (ince, minimal)
 local progressBg = Instance.new("Frame")
 progressBg.Size = UDim2.new(0, 240, 0, 2)
 progressBg.Position = UDim2.new(0.5, -120, 0.5, 90)
@@ -218,29 +215,18 @@ progressText.TextTransparency = 1
 progressText.ZIndex = 4
 progressText.Parent = splashFrame
 
--- Splash animasyonu
 task.spawn(function()
     task.wait(0.15)
-    
-    -- Cizgiler acilir
     tween(lineTop, 0.5, {Size = UDim2.new(0, 300, 0, 1)}, Enum.EasingStyle.Quart)
     tween(lineBottom, 0.5, {Size = UDim2.new(0, 300, 0, 1)}, Enum.EasingStyle.Quart)
-    
     task.wait(0.3)
-    
-    -- Title fade
     tween(splashTitle, 0.4, {TextTransparency = 0})
     task.wait(0.2)
-    
-    -- Subtitle
     tween(splashSub, 0.4, {TextTransparency = 0})
     task.wait(0.25)
-    
-    -- Progress
     tween(progressBg, 0.2, {BackgroundTransparency = 0})
     tween(progressText, 0.3, {TextTransparency = 0})
     
-    -- Progress mesajlari
     local messages = {"Initializing...", "Loading modules...", "Injecting...", "Ready"}
     for i, msg in ipairs(messages) do
         progressText.Text = msg
@@ -249,8 +235,6 @@ task.spawn(function()
     end
     
     task.wait(0.2)
-    
-    -- Cikis
     tween(splashFrame, 0.5, {BackgroundTransparency = 1})
     tween(splashTitle, 0.4, {TextTransparency = 1})
     tween(splashSub, 0.4, {TextTransparency = 1})
@@ -263,7 +247,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- CLEAN TOAST SISTEMI
+-- TOAST SISTEMI
 -- =============================================
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
@@ -302,7 +286,6 @@ local function showToast(title, message, toastType)
     stroke.Thickness = 1
     stroke.Transparency = 0
     
-    -- Sol ince renkli serit
     local bar = Instance.new("Frame")
     bar.Size = UDim2.new(0, 2, 1, 0)
     bar.Position = UDim2.new(0, 0, 0, 0)
@@ -335,7 +318,6 @@ local function showToast(title, message, toastType)
     msgLbl.ZIndex = 1002
     msgLbl.Parent = toast
     
-    -- Giris
     tween(toast, 0.4, {Size = UDim2.new(0, 320, 0, 52), Position = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Quint)
     
     task.delay(3, function()
@@ -373,7 +355,7 @@ local function makeDraggable(frame, handle)
 end
 
 -- =============================================
--- MAIN FRAME (Clean, minimal)
+-- MAIN FRAME
 -- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -388,13 +370,11 @@ MainFrame.Parent = ScreenGui
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
--- Clean border (ince, keskin)
 local mainStroke = Instance.new("UIStroke", MainFrame)
 mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
 mainStroke.Transparency = 0
 
--- Ust kenar vurgu cizgisi
 local topAccent = Instance.new("Frame")
 topAccent.Size = UDim2.new(0, 120, 0, 1)
 topAccent.Position = UDim2.new(0, 24, 0, 1)
@@ -408,7 +388,6 @@ DragHandle.Size = UDim2.new(1, 0, 0, 55); DragHandle.BackgroundTransparency = 1
 DragHandle.Text = ""; DragHandle.AutoButtonColor = false; DragHandle.ZIndex = 10; DragHandle.Parent = MainFrame
 makeDraggable(MainFrame, DragHandle)
 
--- Basit arka plan (cok hafif gradient)
 local mainGradient = Instance.new("UIGradient", MainFrame)
 mainGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(CurrentTheme.Bg.R*255 + 4, CurrentTheme.Bg.G*255 + 4, CurrentTheme.Bg.B*255 + 4)),
@@ -416,28 +395,8 @@ mainGradient.Color = ColorSequence.new({
 })
 mainGradient.Rotation = 135
 
--- Baslik (SOLDA KUCUK NOKTA + TEXT)
-local dotIndicator = Instance.new("Frame")
-dotIndicator.Size = UDim2.new(0, 6, 0, 6)
-dotIndicator.Position = UDim2.new(0, 24, 0, 22)
-dotIndicator.BackgroundColor3 = CurrentTheme.Primary
-dotIndicator.BorderSizePixel = 0
-dotIndicator.ZIndex = 5
-dotIndicator.Parent = MainFrame
-Instance.new("UICorner", dotIndicator).CornerRadius = UDim.new(1, 0)
-
--- Dot pulse
-task.spawn(function()
-    while dotIndicator.Parent do
-        tween(dotIndicator, 1.5, {BackgroundTransparency = 0.5}, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-        task.wait(1.5)
-        tween(dotIndicator, 1.5, {BackgroundTransparency = 0}, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-        task.wait(1.5)
-    end
-end)
-
 local tl = Instance.new("TextLabel")
-tl.Size = UDim2.new(1, 0, 0, 18); tl.Position = UDim2.new(0, 38, 0, 16)
+tl.Size = UDim2.new(1, 0, 0, 18); tl.Position = UDim2.new(0, 24, 0, 16)
 tl.BackgroundTransparency = 1
 tl.Text = "DHL VIP"
 tl.TextColor3 = CurrentTheme.Text
@@ -448,7 +407,7 @@ tl.ZIndex = 5
 tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel")
-cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 38, 0, 32)
+cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
 cl.Text = "PROFESSIONAL EDITION"
 cl.TextColor3 = CurrentTheme.SubText
@@ -458,12 +417,11 @@ cl.TextXAlignment = Enum.TextXAlignment.Left
 cl.ZIndex = 5
 cl.Parent = MainFrame
 
--- Versiyon (sag ust)
 local versionLbl = Instance.new("TextLabel")
 versionLbl.Size = UDim2.new(0, 60, 0, 14)
 versionLbl.Position = UDim2.new(1, -120, 0, 20)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v6.0.1"
+versionLbl.Text = "v6.0.2"
 versionLbl.TextColor3 = CurrentTheme.SubText
 versionLbl.TextSize = 10
 versionLbl.Font = Enum.Font.Gotham
@@ -471,7 +429,6 @@ versionLbl.TextXAlignment = Enum.TextXAlignment.Right
 versionLbl.ZIndex = 5
 versionLbl.Parent = MainFrame
 
--- Kapat butonu (sade, minimal)
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -38, 0, 14)
@@ -502,7 +459,7 @@ closeBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =============================================
--- SIDEBAR (Clean)
+-- SIDEBAR
 -- =============================================
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
@@ -520,7 +477,6 @@ sideStroke.Color = CurrentTheme.Button
 sideStroke.Thickness = 1
 sideStroke.Transparency = 0
 
--- Profil
 local profileFrame = Instance.new("Frame")
 profileFrame.Size = UDim2.new(1, -12, 0, 55)
 profileFrame.Position = UDim2.new(0, 6, 0, 6)
@@ -549,7 +505,6 @@ avatarImg.ZIndex = 7
 avatarImg.Parent = avatarCircle
 Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
 
--- Avatar etrafinda ince halka
 local avatarRing = Instance.new("UIStroke", avatarCircle)
 avatarRing.Color = CurrentTheme.Primary
 avatarRing.Thickness = 1.5
@@ -572,15 +527,14 @@ local profileStatus = Instance.new("TextLabel")
 profileStatus.Size = UDim2.new(1, -54, 0, 12)
 profileStatus.Position = UDim2.new(0, 50, 0, 28)
 profileStatus.BackgroundTransparency = 1
-profileStatus.Text = "● CONNECTED"
-profileStatus.TextColor3 = Color3.fromRGB(80, 200, 130)
+profileStatus.Text = "CONNECTED"
+profileStatus.TextColor3 = CurrentTheme.SubText
 profileStatus.TextSize = 9
 profileStatus.Font = Enum.Font.GothamSemibold
 profileStatus.TextXAlignment = Enum.TextXAlignment.Left
 profileStatus.ZIndex = 6
 profileStatus.Parent = profileFrame
 
--- Sidebar scroll
 local SideScroll = Instance.new("ScrollingFrame")
 SideScroll.Size = UDim2.new(1, -12, 1, -78)
 SideScroll.Position = UDim2.new(0, 6, 0, 66)
@@ -610,7 +564,7 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM (Clean, sade)
+-- TAB SYSTEM
 -- =============================================
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting system"},
@@ -629,7 +583,6 @@ local uiElements = {}
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
 
--- Sekme gecis animasyonu
 local function animatePageSwitch(oldPage, newPage)
     if oldPage then
         tween(oldPage, 0.15, {Position = UDim2.new(0, -20, 0, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
@@ -663,7 +616,6 @@ for i, config in ipairs(tabConfig) do
     btn.Parent = SideScroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
     
-    -- Aktif indicator (sol ince serit)
     local indicator = Instance.new("Frame")
     indicator.Name = "Indicator"
     indicator.Size = UDim2.new(0, 2, 0.6, 0)
@@ -675,7 +627,6 @@ for i, config in ipairs(tabConfig) do
     indicator.ZIndex = 7
     indicator.Parent = btn
     
-    -- Ana text (buyuk harf)
     local nameLbl = Instance.new("TextLabel")
     nameLbl.Size = UDim2.new(1, -20, 0, 16)
     nameLbl.Position = UDim2.new(0, 14, 0, 6)
@@ -688,7 +639,6 @@ for i, config in ipairs(tabConfig) do
     nameLbl.ZIndex = 6
     nameLbl.Parent = btn
     
-    -- Alt text (aciklama)
     local subLbl = Instance.new("TextLabel")
     subLbl.Size = UDim2.new(1, -20, 0, 12)
     subLbl.Position = UDim2.new(0, 14, 0, 22)
@@ -763,7 +713,7 @@ for i, config in ipairs(tabConfig) do
 end
 
 -- =============================================
--- UI BUILDERS (Clean, Professional)
+-- UI BUILDERS (Yesil nokta YOK)
 -- =============================================
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
@@ -790,28 +740,18 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     btn.Parent = row
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
     
-    -- Sol durum noktasi
-    local statusDot = Instance.new("Frame")
-    statusDot.Size = UDim2.new(0, 6, 0, 6)
-    statusDot.Position = UDim2.new(0, 12, 0.5, -3)
-    statusDot.BackgroundColor3 = default and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText
-    statusDot.BorderSizePixel = 0
-    statusDot.ZIndex = 4
-    statusDot.Parent = btn
-    Instance.new("UICorner", statusDot).CornerRadius = UDim.new(1, 0)
-    
-    -- Text padding sol
+    -- Yesil nokta YOK! Sadece text padding
     local textPad = Instance.new("UIPadding", btn)
-    textPad.PaddingLeft = UDim.new(0, 26)
+    textPad.PaddingLeft = UDim.new(0, 14)
     
-    -- Durum text (sagda)
+    -- Durum text (sagda) - biraz buyutuldu
     local stateLbl = Instance.new("TextLabel")
     stateLbl.Size = UDim2.new(0, 40, 1, 0)
     stateLbl.Position = UDim2.new(1, -48, 0, 0)
     stateLbl.BackgroundTransparency = 1
     stateLbl.Text = default and "ON" or "OFF"
-    stateLbl.TextColor3 = default and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText
-    stateLbl.TextSize = 10
+    stateLbl.TextColor3 = default and CurrentTheme.Accent or CurrentTheme.SubText
+    stateLbl.TextSize = 11
     stateLbl.Font = Enum.Font.GothamBold
     stateLbl.TextXAlignment = Enum.TextXAlignment.Right
     stateLbl.ZIndex = 4
@@ -823,8 +763,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local function doToggle()
         state = not state
         tween(btn, 0.2, {BackgroundTransparency = state and 0.15 or 0.3})
-        tween(statusDot, 0.2, {BackgroundColor3 = state and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText})
-        tween(stateLbl, 0.2, {TextColor3 = state and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText})
+        tween(stateLbl, 0.2, {TextColor3 = state and CurrentTheme.Accent or CurrentTheme.SubText})
         stateLbl.Text = state and "ON" or "OFF"
         if callback then callback(state) end
     end
@@ -893,8 +832,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     return function() return state end, function(v)
         state = v
         tween(btn, 0.2, {BackgroundTransparency = state and 0.15 or 0.3})
-        tween(statusDot, 0.2, {BackgroundColor3 = state and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText})
-        tween(stateLbl, 0.2, {TextColor3 = state and Color3.fromRGB(80, 200, 130) or CurrentTheme.SubText})
+        tween(stateLbl, 0.2, {TextColor3 = state and CurrentTheme.Accent or CurrentTheme.SubText})
         stateLbl.Text = state and "ON" or "OFF"
         if callback then callback(state) end
     end
@@ -908,7 +846,6 @@ local function addSlider(page, name, min, max, default, callback, order)
     container.ZIndex = 3
     container.Parent = page
 
-    -- Ust satir: isim + deger
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.6, 0, 0, 16)
     label.Position = UDim2.new(0, 0, 0, 0)
@@ -1008,10 +945,9 @@ local function addCycleButton(page, name, options, default, callback, order)
     s.Transparency = 0
     table.insert(uiElements, {element=s, type="stroke"})
     
-    -- Isim
     local nameLbl = Instance.new("TextLabel")
     nameLbl.Size = UDim2.new(0.5, 0, 1, 0)
-    nameLbl.Position = UDim2.new(0, 12, 0, 0)
+    nameLbl.Position = UDim2.new(0, 14, 0, 0)
     nameLbl.BackgroundTransparency = 1
     nameLbl.Text = name
     nameLbl.TextColor3 = CurrentTheme.Text
@@ -1021,9 +957,8 @@ local function addCycleButton(page, name, options, default, callback, order)
     nameLbl.ZIndex = 4
     nameLbl.Parent = btn
     
-    -- Deger
     local valueLbl = Instance.new("TextLabel")
-    valueLbl.Size = UDim2.new(0.5, -12, 1, 0)
+    valueLbl.Size = UDim2.new(0.5, -14, 1, 0)
     valueLbl.Position = UDim2.new(0.5, 0, 0, 0)
     valueLbl.BackgroundTransparency = 1
     valueLbl.Text = options[idx]
@@ -1063,19 +998,6 @@ local function addSeparator(page, order)
     line.BorderSizePixel = 0
     line.ZIndex = 3
     line.Parent = container
-    
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0, 100, 1, 0)
-    lbl.Position = UDim2.new(0, 0, 0, 0)
-    lbl.BackgroundColor3 = CurrentTheme.Bg
-    lbl.BorderSizePixel = 0
-    lbl.Text = ""
-    lbl.TextColor3 = CurrentTheme.SubText
-    lbl.TextSize = 9
-    lbl.Font = Enum.Font.GothamBold
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.ZIndex = 4
-    lbl.Parent = container
     
     table.insert(uiElements, {element=line, type="separatorLine"})
 end
@@ -1498,7 +1420,6 @@ local getTheme = addCycleButton(p7, "Theme", {"Obsidian","Cobalt","Noir","Crimso
         MainFrame.BackgroundColor3 = CurrentTheme.Bg
         mainStroke.Color = CurrentTheme.Button
         topAccent.BackgroundColor3 = CurrentTheme.Primary
-        dotIndicator.BackgroundColor3 = CurrentTheme.Primary
         tl.TextColor3 = CurrentTheme.Text
         cl.TextColor3 = CurrentTheme.SubText
         versionLbl.TextColor3 = CurrentTheme.SubText
@@ -1508,7 +1429,7 @@ local getTheme = addCycleButton(p7, "Theme", {"Obsidian","Cobalt","Noir","Crimso
         avatarCircle.BackgroundColor3 = CurrentTheme.Button
         avatarRing.Color = CurrentTheme.Primary
         profileName.TextColor3 = CurrentTheme.Text
-        profileStatus.TextColor3 = Color3.fromRGB(80, 200, 130)
+        profileStatus.TextColor3 = CurrentTheme.SubText
         
         mainGradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, Color3.fromRGB(CurrentTheme.Bg.R*255 + 4, CurrentTheme.Bg.G*255 + 4, CurrentTheme.Bg.B*255 + 4)),
@@ -1562,6 +1483,7 @@ local getTheme = addCycleButton(p7, "Theme", {"Obsidian","Cobalt","Noir","Crimso
         wmStroke.Color = CurrentTheme.Button
         wmTitle.TextColor3 = CurrentTheme.Text
         wmInfo.TextColor3 = CurrentTheme.SubText
+        wmAccent.BackgroundColor3 = CurrentTheme.Primary
         
         showToast("Theme", CurrentTheme.Name .. " applied", "info")
     end
@@ -1643,7 +1565,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- WATERMARK (Clean)
+-- WATERMARK (Yesil nokta YOK)
 -- =============================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "Watermark"
@@ -1661,7 +1583,6 @@ wmStroke.Color = CurrentTheme.Button
 wmStroke.Thickness = 1
 makeDraggable(Watermark, Watermark)
 
--- Ust accent cizgisi
 local wmAccent = Instance.new("Frame")
 wmAccent.Size = UDim2.new(0, 30, 0, 1)
 wmAccent.Position = UDim2.new(0, 12, 0, 1)
@@ -1670,18 +1591,9 @@ wmAccent.BorderSizePixel = 0
 wmAccent.ZIndex = 502
 wmAccent.Parent = Watermark
 
-local wmDot = Instance.new("Frame")
-wmDot.Size = UDim2.new(0, 5, 0, 5)
-wmDot.Position = UDim2.new(0, 12, 0.5, -2)
-wmDot.BackgroundColor3 = CurrentTheme.Primary
-wmDot.BorderSizePixel = 0
-wmDot.ZIndex = 502
-wmDot.Parent = Watermark
-Instance.new("UICorner", wmDot).CornerRadius = UDim.new(1, 0)
-
 local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18)
-wmTitle.Position = UDim2.new(0, 24, 0, 6)
+wmTitle.Position = UDim2.new(0, 12, 0, 8)
 wmTitle.BackgroundTransparency = 1
 wmTitle.Text = "DHL VIP"
 wmTitle.TextColor3 = CurrentTheme.Text
@@ -1693,7 +1605,7 @@ wmTitle.Parent = Watermark
 
 local wmInfo = Instance.new("TextLabel")
 wmInfo.Size = UDim2.new(1, 0, 0, 12)
-wmInfo.Position = UDim2.new(0, 24, 0, 22)
+wmInfo.Position = UDim2.new(0, 12, 0, 24)
 wmInfo.BackgroundTransparency = 1
 wmInfo.Text = "60 FPS  |  0 MS"
 wmInfo.TextColor3 = CurrentTheme.SubText
@@ -1724,7 +1636,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- PLAYER LIST LOGIC
+-- PLAYER LIST LOGIC (Yesil nokta YOK)
 -- =============================================
 local playerButtons = {}
 local originalSizes = {}
@@ -1737,17 +1649,15 @@ end
 
 local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~= nil end
 
-local function toggleSelect(player, btn, dot)
+local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
         tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = 0.3})
         btn.TextColor3 = CurrentTheme.SubText
-        if dot then tween(dot, 0.2, {BackgroundColor3 = CurrentTheme.SubText}) end
     else
         Settings.SelectedPlayers[player.Name] = player
         tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = 0.15})
         btn.TextColor3 = CurrentTheme.Text
-        if dot then tween(dot, 0.2, {BackgroundColor3 = Color3.fromRGB(80,200,130)}) end
     end
     updateSelectCount()
 end
@@ -1771,19 +1681,11 @@ local function createPlayerButton(player)
     btn.Parent = PlayerScroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
     
+    -- Sol text padding (yesil nokta yok, sadece padding)
     local textPad = Instance.new("UIPadding", btn)
-    textPad.PaddingLeft = UDim.new(0, 24)
+    textPad.PaddingLeft = UDim.new(0, 14)
     
-    local dot = Instance.new("Frame")
-    dot.Size = UDim2.new(0, 6, 0, 6)
-    dot.Position = UDim2.new(0, 10, 0.5, -3)
-    dot.BackgroundColor3 = sel and Color3.fromRGB(80,200,130) or CurrentTheme.SubText
-    dot.BorderSizePixel = 0
-    dot.ZIndex = 4
-    dot.Parent = btn
-    Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-    
-    btn.MouseButton1Click:Connect(function() toggleSelect(player, btn, dot) end)
+    btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
     btn.MouseEnter:Connect(function()
         if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = 0.15}) end
     end)
@@ -2446,7 +2348,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[DHL VIP] Clean Pro Edition yuklendi!")
+print("[DHL VIP] Clean Pro Edition v2 yuklendi!")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
