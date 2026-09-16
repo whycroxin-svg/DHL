@@ -1,12 +1,11 @@
 --[[
-    DHL V2 - by babaniz
-    Sadece Camlock + ESP + Misc
-    Hook'suz guvenli surum - Adonis tespit etmez
-    ESC sonrasi silah ates etme sorunu DUZELTILDI
-    Zengin surum - Tema, Config, Watermark, FPS/Ping
+    DHL V2 - FULL BLATANT EDITION
+    Fling, Kill, Troll, Grief - Hepsi bir arada
+    Hook YOK - Adonis tespit etmez
+    9 Sekmeli Full GUI
 ]]
 
-print("[DHL V2] Script yukleniyor...")
+print("[DHL V2] FULL BLATANT yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -14,6 +13,8 @@ local UserInputService = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
 local Lighting = game:GetService("Lighting")
 local Stats = game:GetService("Stats")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -47,13 +48,15 @@ local Themes = {
     Orange  = {Name="Orange",  Primary=Color3.fromRGB(200,100,0),  Accent=Color3.fromRGB(255,180,80), Bg=Color3.fromRGB(40,20,5),   Panel=Color3.fromRGB(55,30,10),  Button=Color3.fromRGB(70,45,25),  Text=Color3.fromRGB(255,200,120)},
     Pink    = {Name="Pink",    Primary=Color3.fromRGB(200,50,150), Accent=Color3.fromRGB(255,120,200),Bg=Color3.fromRGB(40,10,30),  Panel=Color3.fromRGB(55,20,45),  Button=Color3.fromRGB(70,35,60),  Text=Color3.fromRGB(255,150,220)},
     Cyan    = {Name="Cyan",    Primary=Color3.fromRGB(0,150,180),  Accent=Color3.fromRGB(0,240,255),  Bg=Color3.fromRGB(10,30,40),  Panel=Color3.fromRGB(15,45,55),  Button=Color3.fromRGB(30,60,70),  Text=Color3.fromRGB(100,240,255)},
+    Dark    = {Name="Dark",    Primary=Color3.fromRGB(40,40,40),   Accent=Color3.fromRGB(200,200,200),Bg=Color3.fromRGB(5,5,5),    Panel=Color3.fromRGB(15,15,15),  Button=Color3.fromRGB(30,30,30),  Text=Color3.fromRGB(220,220,220)},
 }
-local CurrentTheme = Themes.Blue
+local CurrentTheme = Themes.Red -- Blatant icin kirmizi default
 
 -- =============================================
 -- SETTINGS
 -- =============================================
 local Settings = {
+    -- Aimlock
     CamlockEnabled = true,
     WallCheck = false,
     Smoothness = 0.450,
@@ -64,11 +67,15 @@ local Settings = {
     AutoSwitch = true,
     Resolver = true,
     SkipDowned = true,
-    DownedThreshold = 0.20,
     AimShake = 0,
     AlwaysOn = false,
+    TriggerBot = false,
+    TriggerDelay = 0.05,
     FOVVisible = true,
     FOVRadius = 150,
+    FOVColor = "Red",
+    
+    -- ESP
     ESPEnabled = true,
     ESPNames = true,
     ESPHealth = true,
@@ -77,29 +84,60 @@ local Settings = {
     ESPBoxes = false,
     ESPTracerOrigin = "Bottom",
     HighlightFillTransparency = 0.35,
-    HighlightColor = Color3.fromRGB(0, 200, 255),
+    HighlightColor = Color3.fromRGB(255, 50, 50),
+    
+    -- Movement
     SpeedEnabled = false,
     SpeedValue = 16,
     JumpPowerEnabled = false,
     JumpPowerValue = 50,
     InfiniteJump = false,
     Noclip = false,
-    AntiAFK = true,
     FlyEnabled = false,
     FlySpeed = 50,
+    WallClimb = false,
+    AutoJump = false,
+    
+    -- Misc
+    AntiAFK = true,
     HitboxExpand = false,
     HitboxSize = 1.3,
-    -- Yeni
     Watermark = true,
     FPSDisplay = true,
     PingDisplay = true,
     HitSound = true,
     GuiTransparency = 0.03,
-    GuiScale = 1.0,
+    
+    -- BLATANT
+    FlingAll = false,
+    FlingTarget = false,
+    TouchFling = false,
+    OrbitPlayers = false,
+    OrbitSpeed = 5,
+    KillAll = false,
+    SpinBot = false,
+    FakeLag = false,
+    FakeLagAmount = 0.1,
+    ExplosionAura = false,
+    ExplosionSize = 5,
+    Invisible = false,
+    GhostMode = false,
+    GodMode = false,
+    CharacterSize = 1.0,
+    Fullbright = false,
+    NoFog = false,
+    TimeChanger = false,
+    TimeValue = 12,
+    RemoveShadows = false,
+    
+    -- Stats
+    Kills = 0,
+    Damage = 0,
+    SessionStart = tick(),
+    
+    -- Config
     SelectedPlayers = {},
     CurrentTarget = nil,
-    -- Istatistik
-    Kills = 0,
 }
 
 -- =============================================
@@ -151,8 +189,8 @@ end
 -- =============================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 620, 0, 460)
-MainFrame.Position = UDim2.new(0.5, -310, 0.5, -230)
+MainFrame.Size = UDim2.new(0, 680, 0, 480)
+MainFrame.Position = UDim2.new(0.5, -340, 0.5, -240)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
 MainFrame.BackgroundTransparency = Settings.GuiTransparency
 MainFrame.BorderSizePixel = 0
@@ -169,7 +207,7 @@ makeDraggable(MainFrame, DragHandle)
 
 local BgImage = Instance.new("ImageLabel")
 BgImage.Name = "Background"; BgImage.Size = UDim2.new(1, 0, 1, 0)
-BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.6
+BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.65
 BgImage.ScaleType = Enum.ScaleType.Crop; BgImage.ZIndex = 0; BgImage.Parent = MainFrame
 Instance.new("UICorner", BgImage).CornerRadius = UDim.new(0, 10)
 pcall(function()
@@ -185,14 +223,14 @@ end)
 
 -- Baslik
 local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,6)
-tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = CurrentTheme.Text
-tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
+tl.BackgroundTransparency = 1; tl.Text = "DHL V2 — FULL BLATANT"; tl.TextColor3 = CurrentTheme.Text
+tl.TextSize = 19; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,27)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Enhanced Edition"; cl.TextColor3 = CurrentTheme.Text
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Fling • Kill • Troll • Grief"; cl.TextColor3 = CurrentTheme.Text
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
--- Kapat butonu
+-- Kapat
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 24, 0, 24); closeBtn.Position = UDim2.new(1, -32, 0, 12)
 closeBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40); closeBtn.BorderSizePixel = 0
@@ -202,21 +240,12 @@ closeBtn.ZIndex = 11; closeBtn.Parent = MainFrame
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
 closeBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
 
--- Minimize butonu
-local minBtn = Instance.new("TextButton")
-minBtn.Size = UDim2.new(0, 24, 0, 24); minBtn.Position = UDim2.new(1, -60, 0, 12)
-minBtn.BackgroundColor3 = Color3.fromRGB(200, 150, 0); minBtn.BorderSizePixel = 0
-minBtn.Text = "—"; minBtn.TextColor3 = Color3.fromRGB(255,255,255)
-minBtn.TextSize = 18; minBtn.Font = Enum.Font.GothamBold; minBtn.AutoButtonColor = false
-minBtn.ZIndex = 11; minBtn.Parent = MainFrame
-Instance.new("UICorner", minBtn).CornerRadius = UDim.new(1, 0)
-
 -- =============================================
 -- SIDEBAR
 -- =============================================
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0, 130, 1, -90)
+Sidebar.Size = UDim2.new(0, 140, 1, -90)
 Sidebar.Position = UDim2.new(0, 10, 0, 78)
 Sidebar.BackgroundColor3 = CurrentTheme.Panel
 Sidebar.BackgroundTransparency = 0.15
@@ -228,9 +257,9 @@ local sideStroke = Instance.new("UIStroke", Sidebar); sideStroke.Color = Current
 
 local sideLayout = Instance.new("UIListLayout", Sidebar)
 sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-sideLayout.Padding = UDim.new(0, 6)
+sideLayout.Padding = UDim.new(0, 4)
 local sidePad = Instance.new("UIPadding", Sidebar)
-sidePad.PaddingTop = UDim.new(0, 8)
+sidePad.PaddingTop = UDim.new(0, 6)
 sidePad.PaddingLeft = UDim.new(0, 6)
 sidePad.PaddingRight = UDim.new(0, 6)
 
@@ -239,16 +268,16 @@ sidePad.PaddingRight = UDim.new(0, 6)
 -- =============================================
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
-ContentArea.Size = UDim2.new(1, -150, 1, -90)
-ContentArea.Position = UDim2.new(0, 145, 0, 78)
+ContentArea.Size = UDim2.new(1, -160, 1, -90)
+ContentArea.Position = UDim2.new(0, 155, 0, 78)
 ContentArea.BackgroundTransparency = 1
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM
+-- TAB SYSTEM (9 SEKME)
 -- =============================================
-local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Settings"}
+local tabNames = {"Aimlock", "ESP", "Grief", "Troll", "Movement", "Players", "World", "Character", "Settings"}
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
@@ -256,13 +285,13 @@ local activeTab = "Aimlock"
 for i, name in ipairs(tabNames) do
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
-    btn.Size = UDim2.new(1, 0, 0, 34)
+    btn.Size = UDim2.new(1, 0, 0, 30)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Primary or CurrentTheme.Button
     btn.BackgroundTransparency = i==1 and 0 or 0.4
     btn.BorderSizePixel = 0
     btn.Text = "  " .. name
     btn.TextColor3 = Color3.fromRGB(255,255,255)
-    btn.TextSize = 13
+    btn.TextSize = 12
     btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -321,7 +350,7 @@ for i, name in ipairs(tabNames) do
 end
 
 -- =============================================
--- KEYBIND SYSTEM
+-- UI BUILDERS
 -- =============================================
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
@@ -370,18 +399,12 @@ local function addToggle(page, name, default, callback, order, withKeybind)
 
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
-                activeKeybindBtn = nil
-                kbBtn.Text = "[ - ]"
-                kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
-                return
+                activeKeybindBtn = nil; kbBtn.Text = "[ - ]"; kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180); return
             end
             if activeKeybindBtn then
-                activeKeybindBtn.Text = "[ - ]"
-                activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+                activeKeybindBtn.Text = "[ - ]"; activeKeybindBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
             end
-            activeKeybindBtn = kbBtn
-            kbBtn.Text = "[...]"
-            kbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
+            activeKeybindBtn = kbBtn; kbBtn.Text = "[...]"; kbBtn.TextColor3 = Color3.fromRGB(255, 255, 0)
         end)
 
         local function assignKeybind(keyCode)
@@ -497,9 +520,7 @@ local function addButton(page, name, callback, order, color)
     btn.ZIndex = 3
     btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,5)
-    btn.MouseButton1Click:Connect(function()
-        if callback then callback() end
-    end)
+    btn.MouseButton1Click:Connect(function() if callback then callback() end end)
     return btn
 end
 
@@ -513,74 +534,198 @@ local getWallCheck = addToggle(p1, "Wall Check", false, nil, 3, true)
 local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
 local getResolver = addToggle(p1, "Resolver", true, nil, 6, true)
-local getSkipDowned = addToggle(p1, "Skip Downed (<20% HP)", true, nil, 7, true)
+local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 7, true)
 local getAlwaysOn = addToggle(p1, "Always On", false, nil, 8, true)
 
 addSeparator(p1, 9)
 addLabel(p1, "-- SETTINGS --", 10)
-local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v)
-    Settings.Mode = v:gsub(" ", "")
-end, 11)
-local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, "Head", function(v)
-    Settings.TargetPart = v
-end, 12)
+local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v) Settings.Mode = v:gsub(" ", "") end, 11)
+local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 12)
 local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 13)
 local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 14)
 local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 15)
 
 addSeparator(p1, 16)
-addLabel(p1, "-- HITBOX --", 17)
-local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, nil, 18, false)
-local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, nil, 19)
+addLabel(p1, "-- TRIGGER BOT --", 17)
+local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 18, true)
+local getTriggerDelay = addSlider(p1, "Trigger Delay", 0.0, 0.5, 0.05, nil, 19)
 
 addSeparator(p1, 20)
-addLabel(p1, "-- FOV CIRCLE --", 21)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 22, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 23)
+addLabel(p1, "-- HITBOX --", 21)
+local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, nil, 22, false)
+local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, nil, 23)
+
+addSeparator(p1, 24)
+addLabel(p1, "-- FOV --", 25)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 26, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 27)
+local getFOVColor = addCycleButton(p1, "FOV Color", {"Red","Cyan","Green","Yellow","Purple","White"}, "Red", function(v)
+    local colors = {Red=Color3.fromRGB(255,50,50), Cyan=Color3.fromRGB(0,200,255), Green=Color3.fromRGB(0,255,0),
+        Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255)}
+    if fovCircle then fovCircle.Color = colors[v] end
+end, 28)
 
 -- =============================================
--- PAGE 2: VISUALS
+-- PAGE 2: ESP
 -- =============================================
-local p2 = tabPages["Visuals"]
-addLabel(p2, "-- HIGHLIGHT ESP --", 1)
-local getESP = addToggle(p2, "ESP Highlight", true, nil, 2, true)
-local getHighlightColor = addCycleButton(p2, "Highlight Color", {"Cyan","Blue","Green","Yellow","Purple","White","Orange","Red","Pink"}, "Cyan", function(v)
-    local colors = {Cyan=Color3.fromRGB(0,200,255), Blue=Color3.fromRGB(0,120,255), Green=Color3.fromRGB(0,255,0),
+local p2 = tabPages["ESP"]
+addLabel(p2, "-- ESP HIGHLIGHT --", 1)
+local getESP = addToggle(p2, "ESP Enabled", true, nil, 2, true)
+local getHighlightColor = addCycleButton(p2, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink"}, "Red", function(v)
+    local colors = {Red=Color3.fromRGB(255,50,50), Cyan=Color3.fromRGB(0,200,255), Green=Color3.fromRGB(0,255,0),
         Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255),
-        Orange=Color3.fromRGB(255,150,0), Red=Color3.fromRGB(255,50,50), Pink=Color3.fromRGB(255,100,200)}
-    Settings.HighlightColor = colors[v] or Color3.fromRGB(0,200,255)
+        Orange=Color3.fromRGB(255,150,0), Pink=Color3.fromRGB(255,100,200)}
+    Settings.HighlightColor = colors[v] or Color3.fromRGB(255,50,50)
 end, 3)
 local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
 
 addSeparator(p2, 5)
-addLabel(p2, "-- INFO DISPLAY --", 6)
+addLabel(p2, "-- INFO --", 6)
 local getESPNames = addToggle(p2, "Name Tags", true, nil, 7, true)
 local getESPHealth = addToggle(p2, "Health Display", true, nil, 8, false)
 local getESPDistance = addToggle(p2, "Distance Display", true, nil, 9, false)
 
 addSeparator(p2, 10)
-addLabel(p2, "-- TRACERS --", 11)
+addLabel(p2, "-- VISUALS --", 11)
 local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
 local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
-
-addSeparator(p2, 14)
-addLabel(p2, "-- BOX ESP --", 15)
-local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 16, true)
+local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
 
 -- =============================================
--- PAGE 3: PLAYERS
+-- PAGE 3: GRIEF (YENI)
 -- =============================================
-local p3 = tabPages["Players"]
+local p3 = tabPages["Grief"]
+addLabel(p3, "-- FLING --", 1)
+local getFlingAll = addToggle(p3, "🔥 Fling All Players", false, nil, 2, true)
+local getFlingTarget = addToggle(p3, "🎯 Fling Current Target", false, nil, 3, true)
+local getTouchFling = addToggle(p3, "💥 Touch Fling", false, nil, 4, true)
+
+addSeparator(p3, 5)
+addLabel(p3, "-- KILL --", 6)
+addButton(p3, "💀 KILL TARGET (Instant)", function()
+    local target = Settings.CurrentTarget
+    if not target or not target.Character then
+        pcall(function()
+            game:GetService("StarterGui"):SetCore("SendNotification", {Title="DHL", Text="Hedef yok!", Duration=2})
+        end)
+        return
+    end
+    local hum = target.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        pcall(function() hum.Health = 0 end)
+        Settings.Kills = Settings.Kills + 1
+    end
+end, 7, Color3.fromRGB(180, 30, 30))
+
+addButton(p3, "💀 KILL ALL PLAYERS", function()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then pcall(function() hum.Health = 0 end) end
+        end
+    end
+    Settings.Kills = Settings.Kills + 1
+end, 8, Color3.fromRGB(180, 30, 30))
+
+addSeparator(p3, 9)
+addLabel(p3, "-- ORBIT / SPIN --", 10)
+local getOrbitPlayers = addToggle(p3, "🔄 Orbit Players", false, nil, 11, true)
+local getOrbitSpeed = addSlider(p3, "Orbit Speed", 1, 20, 5, nil, 12)
+
+addSeparator(p3, 13)
+addLabel(p3, "-- EXPLOSION --", 14)
+local getExplosionAura = addToggle(p3, "💣 Explosion Aura", false, nil, 15, true)
+local getExplosionSize = addSlider(p3, "Explosion Size", 1, 20, 5, nil, 16)
+
+-- =============================================
+-- PAGE 4: TROLL (YENI)
+-- =============================================
+local p4 = tabPages["Troll"]
+addLabel(p4, "-- TROLL --", 1)
+local getSpinBot = addToggle(p4, "🌀 Spin Bot", false, nil, 2, true)
+local getFakeLag = addToggle(p4, "📡 Fake Lag", false, nil, 3, true)
+local getFakeLagAmount = addSlider(p4, "Fake Lag Amount", 0.05, 1.0, 0.1, nil, 4)
+local getInvisible = addToggle(p4, "👻 Invisible", false, nil, 5, true)
+local getGhostMode = addToggle(p4, "👤 Ghost Mode (Semi-Invis)", false, nil, 6, true)
+
+addSeparator(p4, 7)
+addLabel(p4, "-- ANNOY --", 8)
+addButton(p4, "🔊 Annoy Sound (Play Sound)", function()
+    pcall(function()
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://131237241"
+        sound.Volume = 10
+        sound.Parent = workspace
+        sound:Play()
+        game:GetService("Debris"):AddItem(sound, 5)
+    end)
+end, 9, Color3.fromRGB(150, 80, 0))
+
+addSeparator(p4, 10)
+addLabel(p4, "-- MISC TROLL --", 11)
+addButton(p4, "🎭 Random Dance", function()
+    local char = LocalPlayer.Character
+    if char then
+        local anim = Instance.new("Animation")
+        anim.AnimationId = "rbxassetid://182435998"
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            local loadAnim = hum:LoadAnimation(anim)
+            loadAnim:Play()
+        end
+    end
+end, 12, Color3.fromRGB(100, 50, 150))
+
+-- =============================================
+-- PAGE 5: MOVEMENT (YENI)
+-- =============================================
+local p5 = tabPages["Movement"]
+addLabel(p5, "-- SPEED --", 1)
+local getSpeed = addToggle(p5, "Speed Hack", false, nil, 2, true)
+local getSpeedValue = addSlider(p5, "Walk Speed", 16, 500, 16, nil, 3)
+
+addSeparator(p5, 4)
+addLabel(p5, "-- JUMP --", 5)
+local getJumpPower = addToggle(p5, "Jump Power", false, nil, 6, true)
+local getJumpValue = addSlider(p5, "Jump Value", 50, 500, 50, nil, 7)
+local getInfJump = addToggle(p5, "Infinite Jump", false, nil, 8, true)
+local getAutoJump = addToggle(p5, "Auto Jump", false, nil, 9, false)
+
+addSeparator(p5, 10)
+addLabel(p5, "-- FLY --", 11)
+local getFly = addToggle(p5, "Fly", false, nil, 12, true)
+local getFlySpeed = addSlider(p5, "Fly Speed", 10, 500, 50, nil, 13)
+
+addSeparator(p5, 14)
+addLabel(p5, "-- CLIMB --", 15)
+local getWallClimb = addToggle(p5, "Wall Climb", false, nil, 16, true)
+
+addSeparator(p5, 17)
+addLabel(p5, "-- TELEPORT --", 18)
+addButton(p5, "📍 Teleport to Mouse", function()
+    local char = LocalPlayer.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
+        end
+    end
+end, 19, CurrentTheme.Primary)
+
+-- =============================================
+-- PAGE 6: PLAYERS (YENI - gelismis)
+-- =============================================
+local p6 = tabPages["Players"]
 
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,16); SelectCountLabel.BackgroundTransparency = 1
 SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = CurrentTheme.Text
 SelectCountLabel.TextSize = 11; SelectCountLabel.Font = Enum.Font.GothamSemibold
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left; SelectCountLabel.LayoutOrder = 1; SelectCountLabel.ZIndex = 3
-SelectCountLabel.Parent = p3
+SelectCountLabel.Parent = p6
 
 local btnRow = Instance.new("Frame")
-btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p3
+btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p6
 
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = CurrentTheme.Primary
@@ -602,154 +747,173 @@ SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = CurrentTheme
 SearchBox.BorderSizePixel = 0; SearchBox.PlaceholderText = "Search Players..."
 SearchBox.PlaceholderColor3 = Color3.fromRGB(150,150,150); SearchBox.Text = ""
 SearchBox.TextColor3 = Color3.fromRGB(220,220,220); SearchBox.TextSize = 12; SearchBox.Font = Enum.Font.Gotham
-SearchBox.ClearTextOnFocus = false; SearchBox.LayoutOrder = 3; SearchBox.ZIndex = 3; SearchBox.Parent = p3
+SearchBox.ClearTextOnFocus = false; SearchBox.LayoutOrder = 3; SearchBox.ZIndex = 3; SearchBox.Parent = p6
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1,-8,0,260); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
+PlayerScroll.Size = UDim2.new(1,-8,0,280); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Primary
 PlayerScroll.CanvasSize = UDim2.new(0,0,0,0); PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p3
+PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p6
 
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder; PlayerListLayout.Padding = UDim.new(0,3)
 
 -- =============================================
--- PAGE 4: MISC
+-- PAGE 7: WORLD (YENI)
 -- =============================================
-local p4 = tabPages["Misc"]
-addLabel(p4, "-- MOVEMENT --", 1)
-local getSpeed = addToggle(p4, "Speed Hack", false, nil, 2, true)
-local getSpeedValue = addSlider(p4, "Walk Speed", 16, 200, 16, nil, 3)
-local getJumpPower = addToggle(p4, "Jump Power", false, nil, 4, true)
-local getJumpValue = addSlider(p4, "Jump Value", 50, 500, 50, nil, 5)
-local getInfJump = addToggle(p4, "Infinite Jump", false, nil, 6, true)
+local p7 = tabPages["World"]
+addLabel(p7, "-- LIGHTING --", 1)
+local getFullbright = addToggle(p7, "Fullbright", false, nil, 2, true)
+local getNoFog = addToggle(p7, "No Fog", false, nil, 3, true)
+local getRemoveShadows = addToggle(p7, "Remove Shadows", false, nil, 4, true)
+local getTimeChanger = addToggle(p7, "Time Changer", false, nil, 5, false)
+local getTimeValue = addSlider(p7, "Time (0-24)", 0, 24, 12, nil, 6)
 
-addSeparator(p4, 7)
-addLabel(p4, "-- EXPLOITS --", 8)
-local getNoclip = addToggle(p4, "Noclip", false, nil, 9, true)
-local getFly = addToggle(p4, "Fly", false, nil, 10, true)
-local getFlySpeed = addSlider(p4, "Fly Speed", 10, 300, 50, nil, 11)
+addSeparator(p7, 7)
+addLabel(p7, "-- WORLD INFO --", 8)
 
-addSeparator(p4, 12)
-addLabel(p4, "-- UTILITY --", 13)
-local getAntiAFK = addToggle(p4, "Anti-AFK", true, nil, 14, false)
-
-addSeparator(p4, 15)
-addLabel(p4, "-- GORUNUM --", 16)
-local getWatermark = addToggle(p4, "Watermark", true, nil, 17, false)
-local getFPSDisplay = addToggle(p4, "FPS Gostergesi", true, nil, 18, false)
-local getPingDisplay = addToggle(p4, "Ping Gostergesi", true, nil, 19, false)
-local getHitSound = addToggle(p4, "Hit Sound", true, nil, 20, false)
+local worldInfoLabel = Instance.new("TextLabel")
+worldInfoLabel.Size = UDim2.new(1,-8,0,60)
+worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
+worldInfoLabel.BackgroundTransparency = 0.4
+worldInfoLabel.BorderSizePixel = 0
+worldInfoLabel.Text = "Game: " .. game.PlaceId .. "\nPlayers: " .. #Players:GetPlayers() .. "\nServer: " .. game.JobId:sub(1,8)
+worldInfoLabel.TextColor3 = Color3.fromRGB(220,220,220)
+worldInfoLabel.TextSize = 11
+worldInfoLabel.Font = Enum.Font.Gotham
+worldInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+worldInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
+worldInfoLabel.LayoutOrder = 9
+worldInfoLabel.ZIndex = 3
+worldInfoLabel.Parent = p7
+Instance.new("UICorner", worldInfoLabel).CornerRadius = UDim.new(0, 6)
+local wInfoPad = Instance.new("UIPadding", worldInfoLabel)
+wInfoPad.PaddingLeft = UDim.new(0, 8)
+wInfoPad.PaddingTop = UDim.new(0, 6)
 
 -- =============================================
--- PAGE 5: SETTINGS
+-- PAGE 8: CHARACTER (YENI)
 -- =============================================
-local p5 = tabPages["Settings"]
-addLabel(p5, "-- TEMA --", 1)
-local getTheme = addCycleButton(p5, "Theme", {"Blue","Purple","Green","Red","Orange","Pink","Cyan"}, "Blue", function(v)
-    if Themes[v] then
-        CurrentTheme = Themes[v]
-        -- Renkleri guncelle
-        MainFrame.BackgroundColor3 = CurrentTheme.Bg
-        mainStroke.Color = CurrentTheme.Primary
-        tl.TextColor3 = CurrentTheme.Text
-        cl.TextColor3 = CurrentTheme.Text
-        Sidebar.BackgroundColor3 = CurrentTheme.Panel
-        sideStroke.Color = CurrentTheme.Primary
-        for _, b in pairs(tabButtons) do
-            if b.BackgroundColor3 ~= CurrentTheme.Primary and b.BackgroundColor3 ~= CurrentTheme.Button then
-                -- skip
-            end
-        end
-    end
+local p8 = tabPages["Character"]
+addLabel(p8, "-- CHARACTER --", 1)
+local getGodMode = addToggle(p8, "God Mode", false, nil, 2, true)
+local getCharacterSize = addToggle(p8, "Character Size", false, nil, 3, false)
+local getSizeValue = addSlider(p8, "Size Scale", 0.5, 5.0, 1.0, nil, 4)
+
+addSeparator(p8, 5)
+addLabel(p8, "-- ACTIONS --", 6)
+addButton(p8, "🔄 Respawn Character", function()
+    pcall(function()
+        LocalPlayer.Character:BreakJoints()
+    end)
+end, 7, Color3.fromRGB(150, 80, 0))
+
+addButton(p8, "⚡ Reset Character", function()
+    pcall(function()
+        LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
+    end)
+end, 8, Color3.fromRGB(150, 80, 0))
+
+addButton(p8, "🎯 Full Heal", function()
+    pcall(function()
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.Health = hum.MaxHealth end
+    end)
+end, 9, Color3.fromRGB(0, 120, 60))
+
+-- =============================================
+-- PAGE 9: SETTINGS
+-- =============================================
+local p9 = tabPages["Settings"]
+addLabel(p9, "-- TEMA --", 1)
+local getTheme = addCycleButton(p9, "Theme", {"Red","Blue","Purple","Green","Orange","Pink","Cyan","Dark"}, "Red", function(v)
+    if Themes[v] then CurrentTheme = Themes[v] end
 end, 2)
 
-addSeparator(p5, 3)
-addLabel(p5, "-- GUI AYARLARI --", 4)
-local getGuiTransparency = addSlider(p5, "Gui Transparency", 0, 0.9, 0.03, function(v)
+addSeparator(p9, 3)
+addLabel(p9, "-- GUI --", 4)
+local getGuiTransparency = addSlider(p9, "Gui Transparency", 0, 0.9, 0.03, function(v)
     MainFrame.BackgroundTransparency = v
 end, 5)
 
-addSeparator(p5, 6)
-addLabel(p5, "-- CONFIG --", 7)
-addButton(p5, "💾 Ayarlari Kaydet", function()
-    local saveData = {
-        Smoothness = Settings.Smoothness,
-        Prediction = Settings.Prediction,
-        TargetPart = Settings.TargetPart,
-        FOVRadius = Settings.FOVRadius,
-        HighlightColor = Settings.HighlightColor,
-        SpeedValue = Settings.SpeedValue,
-        JumpPowerValue = Settings.JumpPowerValue,
-        FlySpeed = Settings.FlySpeed,
-        HitboxSize = Settings.HitboxSize,
-        Theme = CurrentTheme.Name,
-    }
+addSeparator(p9, 6)
+addLabel(p9, "-- GORUNUM --", 7)
+local getWatermark = addToggle(p9, "Watermark", true, nil, 8, false)
+local getFPSDisplay = addToggle(p9, "FPS Goster", true, nil, 9, false)
+local getPingDisplay = addToggle(p9, "Ping Goster", true, nil, 10, false)
+local getHitSound = addToggle(p9, "Hit Sound", true, nil, 11, false)
+
+addSeparator(p9, 12)
+addLabel(p9, "-- CONFIG --", 13)
+addButton(p9, "💾 Ayarlari Kaydet", function()
     if writefile then
         pcall(function()
-            writefile("DHLV2_config.json", game:GetService("HttpService"):JSONEncode(saveData))
+            local data = {
+                Theme = CurrentTheme.Name,
+                SpeedValue = Settings.SpeedValue,
+                JumpPowerValue = Settings.JumpPowerValue,
+                FlySpeed = Settings.FlySpeed,
+                FOVRadius = Settings.FOVRadius,
+                OrbitSpeed = Settings.OrbitSpeed,
+            }
+            writefile("DHLV2_config.json", HttpService:JSONEncode(data))
         end)
     end
-end, 8, CurrentTheme.Primary)
+end, 14, CurrentTheme.Primary)
 
-addButton(p5, "📂 Ayarlari Yukle", function()
+addButton(p9, "📂 Ayarlari Yukle", function()
     if readfile and isfile then
         pcall(function()
             if isfile("DHLV2_config.json") then
-                local data = game:GetService("HttpService"):JSONDecode(readfile("DHLV2_config.json"))
-                if data.Smoothness then getSmoothness(data.Smoothness) end
-                if data.Prediction then getPrediction(data.Prediction) end
-                if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+                local data = HttpService:JSONDecode(readfile("DHLV2_config.json"))
                 if data.SpeedValue then getSpeedValue(data.SpeedValue) end
                 if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
                 if data.FlySpeed then getFlySpeed(data.FlySpeed) end
-                if data.HitboxSize then getHitboxSize(data.HitboxSize) end
+                if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+                if data.Theme and Themes[data.Theme] then CurrentTheme = Themes[data.Theme] end
             end
         end)
     end
-end, 9, CurrentTheme.Primary)
+end, 15, CurrentTheme.Primary)
 
-addButton(p5, "🔄 Ayarlari Sifirla", function()
-    Settings.Smoothness = 0.450
-    Settings.Prediction = 0.100
-    Settings.FOVRadius = 150
-    Settings.SpeedValue = 16
-    Settings.JumpPowerValue = 50
-    Settings.FlySpeed = 50
-    Settings.HitboxSize = 1.3
-    getSmoothness(0.450); getPrediction(0.100); getFOVRadius(150)
-    getSpeedValue(16); getJumpValue(50); getFlySpeed(50); getHitboxSize(1.3)
-end, 10, Color3.fromRGB(80, 30, 30))
+addSeparator(p9, 16)
+addLabel(p9, "-- ISTATISTIK --", 17)
+local statLabel = Instance.new("TextLabel")
+statLabel.Size = UDim2.new(1,-8,0,60)
+statLabel.BackgroundColor3 = CurrentTheme.Button
+statLabel.BackgroundTransparency = 0.4
+statLabel.BorderSizePixel = 0
+statLabel.Text = "Kills: 0 | Damage: 0\nSession: 0s"
+statLabel.TextColor3 = Color3.fromRGB(220,220,220)
+statLabel.TextSize = 11
+statLabel.Font = Enum.Font.Gotham
+statLabel.TextXAlignment = Enum.TextXAlignment.Left
+statLabel.TextYAlignment = Enum.TextYAlignment.Top
+statLabel.LayoutOrder = 18
+statLabel.ZIndex = 3
+statLabel.Parent = p9
+Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 6)
+local statPad = Instance.new("UIPadding", statLabel)
+statPad.PaddingLeft = UDim.new(0, 8)
+statPad.PaddingTop = UDim.new(0, 6)
 
-addSeparator(p5, 11)
-addLabel(p5, "-- BILGI --", 12)
-
-local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1,-8,0,80)
-infoLabel.BackgroundColor3 = CurrentTheme.Button
-infoLabel.BackgroundTransparency = 0.4
-infoLabel.BorderSizePixel = 0
-infoLabel.Text = "DHL V2 - by babaniz\nSidebar Edition\nHook-free & Safe\n\nRight Shift = GUI\nE = Cycle Target\nV = Spectate"
-infoLabel.TextColor3 = Color3.fromRGB(220,220,220)
-infoLabel.TextSize = 11
-infoLabel.Font = Enum.Font.Gotham
-infoLabel.TextXAlignment = Enum.TextXAlignment.Left
-infoLabel.TextYAlignment = Enum.TextYAlignment.Top
-infoLabel.LayoutOrder = 13
-infoLabel.ZIndex = 3
-infoLabel.Parent = p5
-Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 6)
-local infoPad = Instance.new("UIPadding", infoLabel)
-infoPad.PaddingLeft = UDim.new(0, 8)
-infoPad.PaddingTop = UDim.new(0, 6)
+-- Istatistik guncelle
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            local sessionTime = math.floor(tick() - Settings.SessionStart)
+            statLabel.Text = "Kills: " .. Settings.Kills .. " | Damage: " .. Settings.Damage .. "\nSession: " .. sessionTime .. "s"
+        end)
+    end
+end)
 
 -- =============================================
 -- WATERMARK
 -- =============================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "Watermark"
-Watermark.Size = UDim2.new(0, 200, 0, 36)
+Watermark.Size = UDim2.new(0, 220, 0, 36)
 Watermark.Position = UDim2.new(0, 10, 0, 10)
 Watermark.BackgroundColor3 = CurrentTheme.Bg
 Watermark.BackgroundTransparency = 0.2
@@ -764,7 +928,7 @@ makeDraggable(Watermark, Watermark)
 local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18); wmTitle.Position = UDim2.new(0, 8, 0, 2)
 wmTitle.BackgroundTransparency = 1
-wmTitle.Text = "DHL V2"
+wmTitle.Text = "DHL V2 — BLATANT"
 wmTitle.TextColor3 = CurrentTheme.Text
 wmTitle.TextSize = 12; wmTitle.Font = Enum.Font.GothamBold
 wmTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -779,9 +943,6 @@ wmInfo.TextSize = 10; wmInfo.Font = Enum.Font.Gotham
 wmInfo.TextXAlignment = Enum.TextXAlignment.Left
 wmInfo.ZIndex = 501; wmInfo.Parent = Watermark
 
--- =============================================
--- FPS/PING GUNCELLE
--- =============================================
 local fpsCount, fpsTime = 0, tick()
 RunService.RenderStepped:Connect(function()
     fpsCount = fpsCount + 1
@@ -789,102 +950,24 @@ RunService.RenderStepped:Connect(function()
         local fps = fpsCount
         local ping = 0
         pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-        
         if getFPSDisplay() or getPingDisplay() then
             local fpsStr = getFPSDisplay() and (fps .. " FPS") or ""
             local pingStr = getPingDisplay() and (ping .. " MS") or ""
             wmInfo.Text = "babaniz | " .. fpsStr .. " | " .. pingStr
-        else
-            wmInfo.Text = "babaniz"
         end
-        
         fpsCount = 0
         fpsTime = tick()
     end
 end)
-
 RunService.RenderStepped:Connect(function()
     Watermark.Visible = getWatermark()
-end)
-
--- =============================================
--- PAGE 5: SPECTATE
--- =============================================
--- Not: Spectate artik Settings altinda degil, kendi sekmesi yok
--- Spectate kodu Players sekmesinde gomulu olarak kalacak
-
-local spectateTarget = nil
-local spectating = false
-
--- Spectate fonksiyonlari (sidebar'da Spectate sekmesi olmadigi icin
--- Players sekmesine kisayol ekleyelim)
-local specFrame = Instance.new("Frame")
-specFrame.Size = UDim2.new(1,-8,0,120); specFrame.BackgroundTransparency = 1
-specFrame.LayoutOrder = 20; specFrame.ZIndex = 3; specFrame.Parent = p3
-
-local specStatusLabel = Instance.new("TextLabel")
-specStatusLabel.Size = UDim2.new(1,0,0,20); specStatusLabel.BackgroundTransparency = 1
-specStatusLabel.Text = "Spectate: Not active"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
-specStatusLabel.TextSize = 12; specStatusLabel.Font = Enum.Font.GothamBold
-specStatusLabel.TextXAlignment = Enum.TextXAlignment.Left
-specStatusLabel.ZIndex = 3; specStatusLabel.Parent = specFrame
-
-local stopSpecBtn = Instance.new("TextButton")
-stopSpecBtn.Size = UDim2.new(1,0,0,26); stopSpecBtn.Position = UDim2.new(0,0,0,24)
-stopSpecBtn.BackgroundColor3 = CurrentTheme.Primary
-stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
-stopSpecBtn.TextColor3 = Color3.fromRGB(255,255,255); stopSpecBtn.TextSize = 12
-stopSpecBtn.Font = Enum.Font.GothamBold; stopSpecBtn.AutoButtonColor = false
-stopSpecBtn.ZIndex = 3; stopSpecBtn.Parent = specFrame
-Instance.new("UICorner", stopSpecBtn).CornerRadius = UDim.new(0,5)
-
-local specHint = Instance.new("TextLabel")
-specHint.Size = UDim2.new(1,0,0,14); specHint.Position = UDim2.new(0,0,0,56)
-specHint.BackgroundTransparency = 1
-specHint.Text = "Spectate Key: V (oyuncu sec ve V'ye bas)"
-specHint.TextColor3 = Color3.fromRGB(180,180,180)
-specHint.TextSize = 10; specHint.Font = Enum.Font.Gotham
-specHint.TextXAlignment = Enum.TextXAlignment.Left
-specHint.ZIndex = 3; specHint.Parent = specFrame
-
-local function startSpectate(player)
-    if not player or not player.Character then return end
-    local hum = player.Character:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    spectateTarget = player
-    spectating = true
-    Camera.CameraSubject = hum
-    specStatusLabel.Text = "Spectate: " .. player.DisplayName
-    specStatusLabel.TextColor3 = CurrentTheme.Accent
-end
-
-local function stopSpectate()
-    spectating = false
-    spectateTarget = nil
-    pcall(function()
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-            Camera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        end
-    end)
-    specStatusLabel.Text = "Spectate: Not active"
-    specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
-end
-
-stopSpecBtn.MouseButton1Click:Connect(stopSpectate)
-
-RunService.Heartbeat:Connect(function()
-    if spectating and spectateTarget then
-        if spectateTarget.Character and spectateTarget.Character:FindFirstChildOfClass("Humanoid") then
-            local hum = spectateTarget.Character:FindFirstChildOfClass("Humanoid")
-            if Camera.CameraSubject ~= hum then Camera.CameraSubject = hum end
-        end
-    end
 end)
 
 -- =============================================
 -- PLAYER LIST LOGIC
 -- =============================================
 local playerButtons = {}
+local originalSizes = {}
 
 local function updateSelectCount()
     local c = 0; for _ in pairs(Settings.SelectedPlayers) do c = c+1 end
@@ -955,14 +1038,14 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 -- =============================================
 local fovCircle, usingDrawing = nil, false
 pcall(function()
-    fovCircle = Drawing.new("Circle"); fovCircle.Color = CurrentTheme.Accent
+    fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(255,50,50)
     fovCircle.Thickness = 1.5; fovCircle.NumSides = 64; fovCircle.Radius = 150
     fovCircle.Filled = false; fovCircle.Visible = true; fovCircle.Transparency = 0.8
     usingDrawing = true
 end)
 
 -- =============================================
--- HIGHLIGHT ESP
+-- ESP
 -- =============================================
 highlightObjects = {}
 local espDrawings = {}
@@ -993,7 +1076,6 @@ local function addHighlight(player)
         esp.healthText.Visible = false; esp.healthText.Font = 2
         esp.tracer = Drawing.new("Line"); esp.tracer.Color = Settings.HighlightColor
         esp.tracer.Thickness = 1; esp.tracer.Visible = false; esp.tracer.Transparency = 0.7
-        -- Box ESP icin 4 cizgi
         esp.boxTop = Drawing.new("Line"); esp.boxTop.Thickness = 1; esp.boxTop.Visible = false
         esp.boxBottom = Drawing.new("Line"); esp.boxBottom.Thickness = 1; esp.boxBottom.Visible = false
         esp.boxLeft = Drawing.new("Line"); esp.boxLeft.Thickness = 1; esp.boxLeft.Visible = false
@@ -1061,18 +1143,17 @@ local function updateESP()
                                 esp.tracer.From = fromPos; esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
                                 esp.tracer.Color = Settings.HighlightColor; esp.tracer.Visible = true
                             else esp.tracer.Visible = false end
-                            -- BOX ESP
                             if getESPBoxes() and rootPart then
                                 local topLeft = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
                                 local bottomRight = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
                                 if topLeft and bottomRight then
-                                    local tl, br = Vector2.new(topLeft.X, topLeft.Y), Vector2.new(bottomRight.X, bottomRight.Y)
+                                    local tl2, br2 = Vector2.new(topLeft.X, topLeft.Y), Vector2.new(bottomRight.X, bottomRight.Y)
                                     local w = 40
                                     local corners = {
-                                        TL = Vector2.new(tl.X - w, tl.Y),
-                                        TR = Vector2.new(tl.X + w, tl.Y),
-                                        BL = Vector2.new(br.X - w, br.Y),
-                                        BR = Vector2.new(br.X + w, br.Y),
+                                        TL = Vector2.new(tl2.X - w, tl2.Y),
+                                        TR = Vector2.new(tl2.X + w, tl2.Y),
+                                        BL = Vector2.new(br2.X - w, br2.Y),
+                                        BR = Vector2.new(br2.X + w, br2.Y),
                                     }
                                     esp.boxTop.From = corners.TL; esp.boxTop.To = corners.TR
                                     esp.boxBottom.From = corners.BL; esp.boxBottom.To = corners.BR
@@ -1107,7 +1188,7 @@ Players.PlayerAdded:Connect(function(plr)
 end)
 
 -- =============================================
--- WALL CHECK
+-- WALL CHECK + DOWNED
 -- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
@@ -1123,9 +1204,6 @@ local function isVisible(targetPart)
     return true
 end
 
--- =============================================
--- DOWNED CHECK
--- =============================================
 local function isDowned(character)
     if not character then return false end
     local hum = character:FindFirstChildOfClass("Humanoid")
@@ -1134,7 +1212,7 @@ local function isDowned(character)
 end
 
 -- =============================================
--- PREDICTION
+-- PREDICTION + CLOSEST
 -- =============================================
 local function getPredictedPosition(part)
     if not part or not part.Parent then return part and part.Position or Vector3.new() end
@@ -1148,9 +1226,6 @@ local function getPredictedPosition(part)
     return part.Position + (vel * totalTime)
 end
 
--- =============================================
--- CLOSEST TARGET
--- =============================================
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
@@ -1174,41 +1249,6 @@ local function getClosestFromSelected()
         end
     end
     return closest
-end
-
-local cycleIdx = 0
-local function cycleTarget()
-    local list = {}
-    for _, p in pairs(Settings.SelectedPlayers) do
-        if p and p.Character then
-            local h = p.Character:FindFirstChildOfClass("Humanoid")
-            if h and h.Health > 0 then
-                if not (getSkipDowned() and isDowned(p.Character)) then
-                    table.insert(list, p)
-                end
-            end
-        end
-    end
-    if #list == 0 then Settings.CurrentTarget = nil; return end
-    cycleIdx = (cycleIdx % #list) + 1
-    Settings.CurrentTarget = list[cycleIdx]
-end
-
--- =============================================
--- HITBOX EXPAND
--- =============================================
-local originalSizes = {}
-
-local function expandHitbox(character)
-    if not character then return end
-    if not getHitboxExpand() then return end
-    local sizeMult = getHitboxSize()
-    for _, part in ipairs(character:GetChildren()) do
-        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            if not originalSizes[part] then originalSizes[part] = part.Size end
-            pcall(function() part.Size = originalSizes[part] * sizeMult end)
-        end
-    end
 end
 
 -- =============================================
@@ -1262,7 +1302,22 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             else Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
         end
     end
-    if input.KeyCode == Enum.KeyCode.E and locked then cycleTarget() end
+    if input.KeyCode == Enum.KeyCode.E and locked then
+        -- Cycle target
+        local list = {}
+        for _, p in pairs(Settings.SelectedPlayers) do
+            if p and p.Character then
+                local h = p.Character:FindFirstChildOfClass("Humanoid")
+                if h and h.Health > 0 then table.insert(list, p) end
+            end
+        end
+        if #list > 0 then
+            local idx = 1
+            for i, p in ipairs(list) do if p == Settings.CurrentTarget then idx = i; break end end
+            idx = (idx % #list) + 1
+            Settings.CurrentTarget = list[idx]
+        end
+    end
     if input.KeyCode == Enum.KeyCode.RightShift then MainFrame.Visible = not MainFrame.Visible end
 
     if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
@@ -1271,19 +1326,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
                 LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
             end
         end)
-    end
-
-    -- Spectate (V tusu)
-    if input.KeyCode == Enum.KeyCode.V then
-        if spectating then
-            stopSpectate()
-        else
-            local target = nil
-            for _, p in pairs(Settings.SelectedPlayers) do
-                if p and p.Character then target = p; break end
-            end
-            if target then startSpectate(target) end
-        end
     end
 
     if input.KeyCode == Enum.KeyCode.Escape then
@@ -1298,16 +1340,26 @@ UserInputService.InputEnded:Connect(function(input)
 end)
 
 -- =============================================
--- MISC FEATURES
+-- FEATURE LOOPS
 -- =============================================
-RunService.Stepped:Connect(function()
-    if getNoclip() and LocalPlayer.Character then
-        for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
-            if part:IsA("BasePart") then part.CanCollide = false end
-        end
-    end
-end)
 
+-- FLING
+local flingBV = nil
+local function doFling(character)
+    if not character then return end
+    pcall(function()
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local bv = Instance.new("BodyVelocity")
+            bv.Velocity = Vector3.new(math.random(-5000, 5000), math.random(1000, 5000), math.random(-5000, 5000))
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bv.Parent = hrp
+            game:GetService("Debris"):AddItem(bv, 0.3)
+        end
+    end)
+end
+
+-- Speed + Jump
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -1331,11 +1383,186 @@ RunService.Heartbeat:Connect(function()
         hum.JumpHeight = jp * 0.12
         hum.UseJumpPower = true
     end
+
+    if getAutoJump() and hum.FloorMaterial ~= Enum.Material.Air then
+        pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
+    end
 end)
 
--- =============================================
--- FLY + AIMLOCK
--- =============================================
+-- Noclip
+RunService.Stepped:Connect(function()
+    if getNoclip() and LocalPlayer.Character then
+        for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide = false end
+        end
+    end
+end)
+
+-- Wall Climb
+RunService.Heartbeat:Connect(function()
+    if not getWallClimb() then return end
+    if not LocalPlayer.Character then return end
+    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local ray = Ray.new(hrp.Position, hrp.CFrame.LookVector * 3)
+    local hitPart = workspace:FindPartOnRay(ray, LocalPlayer.Character)
+    if hitPart then
+        hrp.Velocity = Vector3.new(hrp.Velocity.X, 50, hrp.Velocity.Z)
+    end
+end)
+
+-- FLING ALL
+RunService.Heartbeat:Connect(function()
+    if getFlingAll() then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                doFling(plr.Character)
+            end
+        end
+    end
+end)
+
+-- FLING TARGET
+RunService.Heartbeat:Connect(function()
+    if getFlingTarget() and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        doFling(Settings.CurrentTarget.Character)
+    end
+end)
+
+-- TOUCH FLING
+RunService.Heartbeat:Connect(function()
+    if getTouchFling() and LocalPlayer.Character then
+        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= LocalPlayer and plr.Character then
+                    local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                    if thrp and (thrp.Position - hrp.Position).Magnitude < 5 then
+                        doFling(plr.Character)
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- ORBIT PLAYERS
+local orbitAngle = 0
+RunService.Heartbeat:Connect(function(dt)
+    if not getOrbitPlayers() then return end
+    if not LocalPlayer.Character then return end
+    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    orbitAngle = orbitAngle + (getOrbitSpeed() * dt)
+    local players = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if thrp then table.insert(players, thrp) end
+        end
+    end
+    for i, p in ipairs(players) do
+        local angle = orbitAngle + (i * math.pi * 2 / #players)
+        local offset = Vector3.new(math.cos(angle) * 10, 5, math.sin(angle) * 10)
+        pcall(function()
+            p.CFrame = CFrame.new(hrp.Position + offset)
+        end)
+    end
+end)
+
+-- SPIN BOT
+local spinAngle = 0
+RunService.Heartbeat:Connect(function(dt)
+    if not getSpinBot() then return end
+    if not LocalPlayer.Character then return end
+    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        spinAngle = spinAngle + (dt * 20)
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, spinAngle, 0)
+    end
+end)
+
+-- EXPLOSION AURA
+local lastExplosion = 0
+RunService.Heartbeat:Connect(function()
+    if not getExplosionAura() then return end
+    if tick() - lastExplosion < 0.5 then return end
+    if not LocalPlayer.Character then return end
+    local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    lastExplosion = tick()
+    pcall(function()
+        local exp = Instance.new("Explosion")
+        exp.Position = hrp.Position
+        exp.BlastRadius = getExplosionSize()
+        exp.BlastPressure = 0
+        exp.DestroyJointRadiusPercent = 0
+        exp.Parent = workspace
+    end)
+end)
+
+-- INVISIBLE
+RunService.Heartbeat:Connect(function()
+    if not LocalPlayer.Character then return end
+    for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            if getInvisible() then
+                part.LocalTransparencyModifier = 1
+            elseif getGhostMode() then
+                part.LocalTransparencyModifier = 0.7
+            else
+                part.LocalTransparencyModifier = 0
+            end
+        end
+    end
+end)
+
+-- GOD MODE
+RunService.Heartbeat:Connect(function()
+    if getGodMode() and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum and hum.Health < hum.MaxHealth then
+            hum.Health = hum.MaxHealth
+        end
+    end
+end)
+
+-- CHARACTER SIZE
+RunService.Heartbeat:Connect(function()
+    if not LocalPlayer.Character then return end
+    local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+    if getCharacterSize() then
+        local scale = getSizeValue()
+        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                if not originalSizes[part] then originalSizes[part] = part.Size end
+                part.Size = originalSizes[part] * scale
+            end
+        end
+    else
+        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") and originalSizes[part] then
+                part.Size = originalSizes[part]
+            end
+        end
+    end
+end)
+
+-- HITBOX EXPAND
+RunService.Heartbeat:Connect(function()
+    if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then return end
+    if not getHitboxExpand() then return end
+    local sizeMult = getHitboxSize()
+    for _, part in ipairs(Settings.CurrentTarget.Character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            if not originalSizes[part] then originalSizes[part] = part.Size end
+            pcall(function() part.Size = originalSizes[part] * sizeMult end)
+        end
+    end
+end)
+
+-- FLY
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
     if menuOpen then return end
@@ -1344,14 +1571,9 @@ RunService.RenderStepped:Connect(function()
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
-        fovCircle.Color = CurrentTheme.Accent
     end
 
     updateESP()
-
-    if Settings.CurrentTarget and Settings.CurrentTarget.Character then
-        if getHitboxExpand() then expandHitbox(Settings.CurrentTarget.Character) end
-    end
 
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -1382,6 +1604,7 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
+    -- AIMLOCK
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
     if getAlwaysOn() then
@@ -1395,6 +1618,23 @@ RunService.RenderStepped:Connect(function()
         if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
             Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
         else locked = false; Settings.CurrentTarget = nil end
+    end
+
+    -- TRIGGER BOT
+    if getTriggerBot() and locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
+        if part then
+            local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+            if onScreen then
+                local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                if dist < 15 then
+                    pcall(function()
+                        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        if tool then tool:Activate() end
+                    end)
+                end
+            end
+        end
     end
 
     if locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
@@ -1438,6 +1678,24 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- WORLD
+RunService.Heartbeat:Connect(function()
+    if getFullbright() then
+        Lighting.Ambient = Color3.fromRGB(255,255,255)
+        Lighting.OutdoorAmbient = Color3.fromRGB(255,255,255)
+        Lighting.Brightness = 2
+    end
+    if getNoFog() then
+        Lighting.FogEnd = 100000
+    end
+    if getRemoveShadows() then
+        Lighting.GlobalShadows = false
+    end
+    if getTimeChanger() then
+        Lighting.ClockTime = getTimeValue()
+    end
+end)
+
 -- Anti-AFK
 pcall(function()
     local vu = game:GetService("VirtualUser")
@@ -1473,14 +1731,10 @@ pcall(function()
         MainFrame.Visible = guiWasVisible
         Watermark.Visible = getWatermark()
         for name, parent in pairs(savedHighlightData) do
-            if highlightObjects[name] and parent then 
-                pcall(function() highlightObjects[name].Parent = parent end) 
-            end
+            if highlightObjects[name] and parent then pcall(function() highlightObjects[name].Parent = parent end) end
         end
         savedHighlightData = {}
-        if fovCircle and getFOVVisible() then
-            pcall(function() fovCircle.Visible = true end)
-        end
+        if fovCircle and getFOVVisible() then pcall(function() fovCircle.Visible = true end) end
         resetInput(); task.wait(0.1); resetInput(); task.wait(0.15); resetInput()
     end)
 end)
@@ -1497,30 +1751,23 @@ task.defer(function()
     end
 end)
 
--- =============================================
--- PENCERE ODAK
--- =============================================
-UserInputService.WindowFocused:Connect(function()
-    task.wait(0.2); resetInput()
-end)
-UserInputService.WindowFocusReleased:Connect(function()
-    resetInput()
-end)
+UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
+UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
 print("[DHL V2] Input reset aktif")
 
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] by babaniz - FULL LOAD!")
-print("[DHL V2] Right Shift = GUI ac/kapa")
-print("[DHL V2] Sadece Camlock - Hook YOK")
-print("[DHL V2] Enhanced Edition - Tema, Config, Watermark")
+print("[DHL V2] FULL BLATANT EDITION - LOADED!")
+print("[DHL V2] Right Shift = GUI")
+print("[DHL V2] 9 Sekme - Fling, Kill, Troll, Grief")
+print("[DHL V2] Hook YOK - Adonis tespit etmez")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Enhanced Edition",
+        Text = "FULL BLATANT loaded! 9 sekmeli tam surum",
         Duration = 5
     })
 end)
