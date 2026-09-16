@@ -2,6 +2,7 @@
     DHL V2 - by babaniz
     Sadece Camlock + ESP + Misc
     Hook'suz guvenli surum - Adonis tespit etmez
+    ESC sonrasi silah ates etme sorunu DUZELTILDI
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -192,7 +193,7 @@ for i, name in ipairs(tabNames) do
 
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1,0,1,0); page.BackgroundTransparency = 1; page.BorderSizePixel = 0
-    page.ScrollBarThickness = 3; page.ScrollBarImageColor3 = Color3.fromRGB(139,0,0)
+    page.ScrollBarThickness = 3; page.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
     page.CanvasSize = UDim2.new(0,0,0,0); page.AutomaticCanvasSize = Enum.AutomaticSize.Y
     page.Visible = (i==1); page.ZIndex = 2; page.Active = true; page.Parent = ContentArea
 
@@ -253,7 +254,8 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.TextSize = 10; kbBtn.Font = Enum.Font.GothamBold; kbBtn.AutoButtonColor = false; kbBtn.ZIndex = 4
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
-local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(0,60,100); kbStroke.Thickness = 1
+        local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(0,60,100); kbStroke.Thickness = 1
+
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
@@ -284,7 +286,8 @@ local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRG
     return function() return state end, function(v)
         state = v
         btn.Text = name .. ": " .. (state and "ON" or "OFF")
-btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)        if callback then callback(state) end
+        btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
+        if callback then callback(state) end
     end
 end
 
@@ -308,13 +311,13 @@ local function addSlider(page, name, min, max, default, callback, order)
 
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new((default-min)/(max-min),0,1,0)
-    fill.BackgroundColor3 = Color3.fromRGB(180,0,0); fill.BorderSizePixel = 0; fill.ZIndex = 3; fill.Parent = bg
+    fill.BackgroundColor3 = Color3.fromRGB(0,120,200); fill.BorderSizePixel = 0; fill.ZIndex = 3; fill.Parent = bg
     Instance.new("UICorner", fill).CornerRadius = UDim.new(0,4)
 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,12,0,12); knob.AnchorPoint = Vector2.new(0.5,0.5)
     knob.Position = UDim2.new((default-min)/(max-min),0,0.5,0)
-    knob.BackgroundColor3 = Color3.fromRGB(200,0,0); knob.BorderSizePixel = 0; knob.ZIndex = 4; knob.Parent = bg
+    knob.BackgroundColor3 = Color3.fromRGB(0,150,230); knob.BorderSizePixel = 0; knob.ZIndex = 4; knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
 
     local value = default
@@ -342,12 +345,12 @@ local function addCycleButton(page, name, options, default, callback, order)
     local idx = 1
     for i,v in ipairs(options) do if v == default then idx = i; break end end
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,-8,0,28); btn.BackgroundColor3 = Color3.fromRGB(50,50,50); btn.BorderSizePixel = 0
+    btn.Size = UDim2.new(1,-8,0,28); btn.BackgroundColor3 = Color3.fromRGB(30,40,60); btn.BorderSizePixel = 0
     btn.Text = name .. ": " .. options[idx]; btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.TextSize = 12; btn.Font = Enum.Font.GothamBold; btn.AutoButtonColor = false
     btn.LayoutOrder = order or 0; btn.ZIndex = 3; btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,5)
-    local s = Instance.new("UIStroke", btn); s.Color = Color3.fromRGB(80,0,0); s.Thickness = 1
+    local s = Instance.new("UIStroke", btn); s.Color = Color3.fromRGB(0,60,100); s.Thickness = 1
     btn.MouseButton1Click:Connect(function()
         idx = idx % #options + 1; btn.Text = name .. ": " .. options[idx]
         if callback then callback(options[idx]) end
@@ -357,13 +360,13 @@ end
 
 local function addSeparator(page, order)
     local sep = Instance.new("Frame"); sep.Size = UDim2.new(1,-16,0,1)
-    sep.BackgroundColor3 = Color3.fromRGB(80,0,0); sep.BorderSizePixel = 0
+    sep.BackgroundColor3 = Color3.fromRGB(0,60,100); sep.BorderSizePixel = 0
     sep.LayoutOrder = order or 0; sep.ZIndex = 3; sep.Parent = page
 end
 
 local function addLabel(page, text, order)
     local lbl = Instance.new("TextLabel"); lbl.Size = UDim2.new(1,-8,0,18); lbl.BackgroundTransparency = 1
-    lbl.Text = text; lbl.TextColor3 = Color3.fromRGB(255,80,80); lbl.TextSize = 11
+    lbl.Text = text; lbl.TextColor3 = Color3.fromRGB(100,200,255); lbl.TextSize = 11
     lbl.Font = Enum.Font.GothamBold; lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.LayoutOrder = order or 0; lbl.ZIndex = 3; lbl.Parent = page
 end
@@ -434,7 +437,7 @@ local p3 = tabPages["Players"]
 
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,16); SelectCountLabel.BackgroundTransparency = 1
-SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = Color3.fromRGB(255,100,100)
+SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = Color3.fromRGB(100,200,255)
 SelectCountLabel.TextSize = 11; SelectCountLabel.Font = Enum.Font.GothamSemibold
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left; SelectCountLabel.LayoutOrder = 1; SelectCountLabel.ZIndex = 3
 SelectCountLabel.Parent = p3
@@ -458,7 +461,7 @@ ClearAllBtn.ZIndex = 3; ClearAllBtn.Parent = btnRow
 Instance.new("UICorner", ClearAllBtn).CornerRadius = UDim.new(0,4)
 
 local SearchBox = Instance.new("TextBox")
-SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = Color3.fromRGB(30,40,60)
 SearchBox.BorderSizePixel = 0; SearchBox.PlaceholderText = "Search Players..."
 SearchBox.PlaceholderColor3 = Color3.fromRGB(150,150,150); SearchBox.Text = ""
 SearchBox.TextColor3 = Color3.fromRGB(220,220,220); SearchBox.TextSize = 12; SearchBox.Font = Enum.Font.Gotham
@@ -467,7 +470,7 @@ Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
 PlayerScroll.Size = UDim2.new(1,-8,0,220); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
-PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = Color3.fromRGB(139,0,0)
+PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
 PlayerScroll.CanvasSize = UDim2.new(0,0,0,0); PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p3
 
@@ -514,7 +517,7 @@ specStatusLabel.ZIndex = 3; specStatusLabel.Parent = p5
 addSeparator(p5, 3)
 
 local specSearch = Instance.new("TextBox")
-specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(40,40,40)
+specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(30,40,60)
 specSearch.BorderSizePixel = 0; specSearch.PlaceholderText = "Search player to spectate..."
 specSearch.PlaceholderColor3 = Color3.fromRGB(150,150,150); specSearch.Text = ""
 specSearch.TextColor3 = Color3.fromRGB(220,220,220); specSearch.TextSize = 12; specSearch.Font = Enum.Font.Gotham
@@ -523,7 +526,7 @@ Instance.new("UICorner", specSearch).CornerRadius = UDim.new(0,4)
 
 local specScroll = Instance.new("ScrollingFrame")
 specScroll.Size = UDim2.new(1,-8,0,180); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
-specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,150,255)
+specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
 specScroll.CanvasSize = UDim2.new(0,0,0,0); specScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 specScroll.LayoutOrder = 5; specScroll.ZIndex = 3; specScroll.Active = true; specScroll.Parent = p5
 local specLayout = Instance.new("UIListLayout", specScroll)
@@ -532,7 +535,7 @@ specLayout.SortOrder = Enum.SortOrder.LayoutOrder; specLayout.Padding = UDim.new
 addSeparator(p5, 6)
 
 local stopSpecBtn = Instance.new("TextButton")
-stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(180,0,0)
+stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(0,120,200)
 stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
 stopSpecBtn.TextColor3 = Color3.fromRGB(255,255,255); stopSpecBtn.TextSize = 13
 stopSpecBtn.Font = Enum.Font.GothamBold; stopSpecBtn.AutoButtonColor = false
@@ -610,7 +613,7 @@ local function refreshSpecList()
                 local isSpec = spectateTarget == player
                 local btn = Instance.new("TextButton")
                 btn.Name = "SPEC_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
-                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,100,180) or Color3.fromRGB(45,45,45)
+                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,100,180) or Color3.fromRGB(30,40,60)
                 btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
                 btn.TextColor3 = isSpec and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
                 btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -665,10 +668,10 @@ local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~
 local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
-        btn.BackgroundColor3 = Color3.fromRGB(45,45,45); btn.TextColor3 = Color3.fromRGB(200,200,200)
+        btn.BackgroundColor3 = Color3.fromRGB(30,40,60); btn.TextColor3 = Color3.fromRGB(200,200,200)
     else
         Settings.SelectedPlayers[player.Name] = player
-        btn.BackgroundColor3 = Color3.fromRGB(139,0,0); btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.BackgroundColor3 = Color3.fromRGB(0,120,200); btn.TextColor3 = Color3.fromRGB(255,255,255)
     end
     updateSelectCount()
 end
@@ -678,7 +681,7 @@ local function createPlayerButton(player)
     local sel = isSelected(player)
     local btn = Instance.new("TextButton")
     btn.Name = "PLR_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
-    btn.BackgroundColor3 = sel and Color3.fromRGB(139,0,0) or Color3.fromRGB(45,45,45)
+    btn.BackgroundColor3 = sel and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
     btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
     btn.TextColor3 = sel and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
     btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -724,7 +727,7 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 -- =============================================
 local fovCircle, usingDrawing = nil, false
 pcall(function()
-    fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(255,0,0)
+    fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(0,200,255)
     fovCircle.Thickness = 1.5; fovCircle.NumSides = 64; fovCircle.Radius = 150
     fovCircle.Filled = false; fovCircle.Visible = true; fovCircle.Transparency = 0.8
     usingDrawing = true
@@ -966,7 +969,22 @@ end
 local locked = false
 local menuOpen = false
 
+-- Mouse reset fonksiyonu (ESC sonrasi takilmayi onler)
+local function resetInput()
+    pcall(function()
+        if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        end
+        if not UserInputService.MouseIconEnabled then
+            UserInputService.MouseIconEnabled = true
+        end
+        locked = false
+        Settings.CurrentTarget = nil
+    end)
+end
+
 UserInputService.InputBegan:Connect(function(input, gpe)
+    -- Keybind dinleme
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
             local assignFunc = _G.DHL_KeybindAssigners and _G.DHL_KeybindAssigners[activeKeybindBtn]
@@ -984,7 +1002,8 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         keybindCallbacks[input.KeyCode]()
     end
 
-    if gpe then return end
+    -- Yazı kutusu dışındaysa gpe'yi yoksay (silah ateş etme sorunu için)
+    if gpe and not UserInputService:GetFocusedTextBox() then return end
 
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         if getCamlock() then
@@ -1106,14 +1125,12 @@ RunService.RenderStepped:Connect(function()
 
     updateESP()
 
-    -- Hitbox expand (aktif hedef icin)
     if Settings.CurrentTarget and Settings.CurrentTarget.Character then
         if getHitboxExpand() then
             expandHitbox(Settings.CurrentTarget.Character)
         end
     end
 
-    -- Fly
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
@@ -1215,17 +1232,15 @@ pcall(function()
 end)
 
 -- =============================================
--- ESC MENU
+-- ESC MENU — DUZELTILDI (silah ates etme sorunu cozuldu)
 -- =============================================
 local guiWasVisible = true
-local lockWasActive = false
 local savedHighlightData = {}
 
 pcall(function()
     GuiService.MenuOpened:Connect(function()
         menuOpen = true
         guiWasVisible = MainFrame.Visible
-        lockWasActive = locked
         MainFrame.Visible = false
         
         savedHighlightData = {}
@@ -1246,13 +1261,16 @@ pcall(function()
             pcall(function() fovCircle.Visible = false end) 
         end
         
+        -- Kilitleri bırak
         locked = false
+        Settings.CurrentTarget = nil
     end)
 
     GuiService.MenuClosed:Connect(function()
         menuOpen = false
         MainFrame.Visible = guiWasVisible
         
+        -- Highlight'ları geri ekle
         for name, parent in pairs(savedHighlightData) do
             if highlightObjects[name] and parent then 
                 pcall(function() highlightObjects[name].Parent = parent end) 
@@ -1260,27 +1278,24 @@ pcall(function()
         end
         savedHighlightData = {}
         
+        -- FOV'u geri getir
         if fovCircle and getFOVVisible() then
             pcall(function() fovCircle.Visible = true end)
         end
         
-        -- INPUT RESET (silah ateş etme sorunu için)
-        task.wait(0.1)
-        pcall(function()
-            locked = false
-            Settings.CurrentTarget = nil
-            
-            if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
-                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-            end
-            if not UserInputService.MouseIconEnabled then
-                UserInputService.MouseIconEnabled = true
-            end
-        end)
+        -- ============================================
+        -- INPUT RESET — SILAH ATES ETME SORUNU ICIN
+        -- ============================================
+        -- Birden fazla kez dene (Roblox bazen 1. denemede kabul etmez)
+        resetInput()
         
-        if lockWasActive and Settings.CurrentTarget then 
-            locked = true 
-        end
+        task.wait(0.1)
+        resetInput()
+        
+        task.wait(0.15)
+        resetInput()
+        
+        -- ⚠️ "if lockWasActive..." satiri SILINDI — mouse kilidi tekrar aktif olmasin
     end)
 end)
 
@@ -1295,22 +1310,9 @@ task.defer(function()
         if child:IsA("GuiObject") and child ~= BgImage and child.ZIndex < 2 then child.ZIndex = 2 end
     end
 end)
--- =============================================
--- INPUT RESET (ESC sonrası takılmayı önler)
--- =============================================
-local function resetInput()
-    pcall(function()
-        if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
-            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-        end
-        if not UserInputService.MouseIconEnabled then
-            UserInputService.MouseIconEnabled = true
-        end
-        locked = false
-        Settings.CurrentTarget = nil
-    end)
-end
 
+-- =============================================-- PENCERE ODAK DEGISIMI (input takilmasini onler)
+-- =============================================
 UserInputService.WindowFocused:Connect(function()
     task.wait(0.2)
     resetInput()
@@ -1321,17 +1323,19 @@ UserInputService.WindowFocusReleased:Connect(function()
 end)
 
 print("[DHL V2] Input reset aktif")
+
 -- =============================================
 -- BILDIRIM
 -- =============================================
 print("[DHL V2] by babaniz - FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Sadece Camlock - Hook YOK")
+print("[DHL V2] ESC sonrasi silah ates etme sorunu DUZELTILDI")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Camlock Only (Hook Yok)",
+        Text = "by babaniz | Silah ates etme sorunu duzeltildi!",
         Duration = 5
     })
 end)
