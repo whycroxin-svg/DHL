@@ -3,8 +3,7 @@
     Sadece Camlock + ESP + Misc
     Hook'suz guvenli surum - Adonis tespit etmez
     ESC sonrasi silah ates etme sorunu DUZELTILDI
-    Tum kirmizi ogeler maviye cevrildi
-    YANDAN SEKMELI MODERN TASARIM
+    Zengin surum - Tema, Config, Watermark, FPS/Ping
 ]]
 
 print("[DHL V2] Script yukleniyor...")
@@ -13,6 +12,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
+local Lighting = game:GetService("Lighting")
+local Stats = game:GetService("Stats")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -34,6 +35,20 @@ local function getGuiParent()
     if ok then return game:GetService("CoreGui") end
     return LocalPlayer:WaitForChild("PlayerGui")
 end
+
+-- =============================================
+-- THEMES
+-- =============================================
+local Themes = {
+    Blue    = {Name="Blue",    Primary=Color3.fromRGB(0,120,200),  Accent=Color3.fromRGB(0,200,255),  Bg=Color3.fromRGB(10,20,40),  Panel=Color3.fromRGB(15,25,45),  Button=Color3.fromRGB(30,40,60),  Text=Color3.fromRGB(100,200,255)},
+    Purple  = {Name="Purple",  Primary=Color3.fromRGB(120,0,200),  Accent=Color3.fromRGB(180,100,255),Bg=Color3.fromRGB(20,10,40),  Panel=Color3.fromRGB(30,15,55),  Button=Color3.fromRGB(45,30,70),  Text=Color3.fromRGB(200,150,255)},
+    Green   = {Name="Green",   Primary=Color3.fromRGB(0,150,80),   Accent=Color3.fromRGB(0,255,150),  Bg=Color3.fromRGB(10,30,20),  Panel=Color3.fromRGB(15,45,30),  Button=Color3.fromRGB(30,60,45),  Text=Color3.fromRGB(100,255,180)},
+    Red     = {Name="Red",     Primary=Color3.fromRGB(200,30,30),  Accent=Color3.fromRGB(255,100,100),Bg=Color3.fromRGB(40,10,10),  Panel=Color3.fromRGB(55,15,15),  Button=Color3.fromRGB(70,30,30),  Text=Color3.fromRGB(255,150,150)},
+    Orange  = {Name="Orange",  Primary=Color3.fromRGB(200,100,0),  Accent=Color3.fromRGB(255,180,80), Bg=Color3.fromRGB(40,20,5),   Panel=Color3.fromRGB(55,30,10),  Button=Color3.fromRGB(70,45,25),  Text=Color3.fromRGB(255,200,120)},
+    Pink    = {Name="Pink",    Primary=Color3.fromRGB(200,50,150), Accent=Color3.fromRGB(255,120,200),Bg=Color3.fromRGB(40,10,30),  Panel=Color3.fromRGB(55,20,45),  Button=Color3.fromRGB(70,35,60),  Text=Color3.fromRGB(255,150,220)},
+    Cyan    = {Name="Cyan",    Primary=Color3.fromRGB(0,150,180),  Accent=Color3.fromRGB(0,240,255),  Bg=Color3.fromRGB(10,30,40),  Panel=Color3.fromRGB(15,45,55),  Button=Color3.fromRGB(30,60,70),  Text=Color3.fromRGB(100,240,255)},
+}
+local CurrentTheme = Themes.Blue
 
 -- =============================================
 -- SETTINGS
@@ -59,6 +74,7 @@ local Settings = {
     ESPHealth = true,
     ESPDistance = true,
     ESPTracers = true,
+    ESPBoxes = false,
     ESPTracerOrigin = "Bottom",
     HighlightFillTransparency = 0.35,
     HighlightColor = Color3.fromRGB(0, 200, 255),
@@ -73,8 +89,17 @@ local Settings = {
     FlySpeed = 50,
     HitboxExpand = false,
     HitboxSize = 1.3,
+    -- Yeni
+    Watermark = true,
+    FPSDisplay = true,
+    PingDisplay = true,
+    HitSound = true,
+    GuiTransparency = 0.03,
+    GuiScale = 1.0,
     SelectedPlayers = {},
     CurrentTarget = nil,
+    -- Istatistik
+    Kills = 0,
 }
 
 -- =============================================
@@ -128,14 +153,14 @@ local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 620, 0, 460)
 MainFrame.Position = UDim2.new(0.5, -310, 0.5, -230)
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 20, 40)
-MainFrame.BackgroundTransparency = 0.03
+MainFrame.BackgroundColor3 = CurrentTheme.Bg
+MainFrame.BackgroundTransparency = Settings.GuiTransparency
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = false
 MainFrame.Parent = ScreenGui
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
-local ms = Instance.new("UIStroke", MainFrame); ms.Color = Color3.fromRGB(0, 120, 200); ms.Thickness = 1.5
+local mainStroke = Instance.new("UIStroke", MainFrame); mainStroke.Color = CurrentTheme.Primary; mainStroke.Thickness = 1.5
 
 local DragHandle = Instance.new("TextButton")
 DragHandle.Size = UDim2.new(1, 0, 0, 45); DragHandle.BackgroundTransparency = 1
@@ -151,38 +176,55 @@ pcall(function()
     local fn = "dhl_bg.jpg"
     local url = "https://raw.githubusercontent.com/whycroxin-svg/ahh/main/hile%20gui%20arka%20plan.jpg"
     if writefile and isfile and getcustomasset then
-        if not isfile(fn) then
-            writefile(fn, game:HttpGet(url))
-        end
+        if not isfile(fn) then writefile(fn, game:HttpGet(url)) end
         BgImage.Image = getcustomasset(fn)
     else
         BgImage.Image = url
     end
 end)
 
--- Başlık
+-- Baslik
 local tl = Instance.new("TextLabel"); tl.Size = UDim2.new(1,0,0,22); tl.Position = UDim2.new(0,0,0,6)
-tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = Color3.fromRGB(100, 200, 255)
+tl.BackgroundTransparency = 1; tl.Text = "DHL V2"; tl.TextColor3 = CurrentTheme.Text
 tl.TextSize = 20; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,27)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Sidebar Edition"; cl.TextColor3 = Color3.fromRGB(100, 200, 255)
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Enhanced Edition"; cl.TextColor3 = CurrentTheme.Text
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
+-- Kapat butonu
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 24, 0, 24); closeBtn.Position = UDim2.new(1, -32, 0, 12)
+closeBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40); closeBtn.BorderSizePixel = 0
+closeBtn.Text = "×"; closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+closeBtn.TextSize = 18; closeBtn.Font = Enum.Font.GothamBold; closeBtn.AutoButtonColor = false
+closeBtn.ZIndex = 11; closeBtn.Parent = MainFrame
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
+closeBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
+
+-- Minimize butonu
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 24, 0, 24); minBtn.Position = UDim2.new(1, -60, 0, 12)
+minBtn.BackgroundColor3 = Color3.fromRGB(200, 150, 0); minBtn.BorderSizePixel = 0
+minBtn.Text = "—"; minBtn.TextColor3 = Color3.fromRGB(255,255,255)
+minBtn.TextSize = 18; minBtn.Font = Enum.Font.GothamBold; minBtn.AutoButtonColor = false
+minBtn.ZIndex = 11; minBtn.Parent = MainFrame
+Instance.new("UICorner", minBtn).CornerRadius = UDim.new(1, 0)
+
 -- =============================================
--- SIDEBAR (Sol Tarafta Dikey Sekmeler)
+-- SIDEBAR
 -- =============================================
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.new(0, 130, 1, -90)
 Sidebar.Position = UDim2.new(0, 10, 0, 78)
-Sidebar.BackgroundColor3 = Color3.fromRGB(15, 25, 45)
+Sidebar.BackgroundColor3 = CurrentTheme.Panel
 Sidebar.BackgroundTransparency = 0.15
 Sidebar.BorderSizePixel = 0
 Sidebar.ZIndex = 4
 Sidebar.Parent = MainFrame
 Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 8)
-local sideStroke = Instance.new("UIStroke", Sidebar); sideStroke.Color = Color3.fromRGB(0, 80, 140); sideStroke.Thickness = 1
+local sideStroke = Instance.new("UIStroke", Sidebar); sideStroke.Color = CurrentTheme.Primary; sideStroke.Thickness = 1
 
 local sideLayout = Instance.new("UIListLayout", Sidebar)
 sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -193,7 +235,7 @@ sidePad.PaddingLeft = UDim.new(0, 6)
 sidePad.PaddingRight = UDim.new(0, 6)
 
 -- =============================================
--- CONTENT AREA (Sag Tarafta Sekme Icerikleri)
+-- CONTENT AREA
 -- =============================================
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
@@ -204,19 +246,18 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM (Sidebar Butonlari)
+-- TAB SYSTEM
 -- =============================================
-local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Spectate"}
+local tabNames = {"Aimlock", "Visuals", "Players", "Misc", "Settings"}
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
 
 for i, name in ipairs(tabNames) do
-    -- Sidebar butonu
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
     btn.Size = UDim2.new(1, 0, 0, 34)
-    btn.BackgroundColor3 = i==1 and Color3.fromRGB(0,120,200) or Color3.fromRGB(25, 35, 55)
+    btn.BackgroundColor3 = i==1 and CurrentTheme.Primary or CurrentTheme.Button
     btn.BackgroundTransparency = i==1 and 0 or 0.4
     btn.BorderSizePixel = 0
     btn.Text = "  " .. name
@@ -230,13 +271,12 @@ for i, name in ipairs(tabNames) do
     btn.Parent = Sidebar
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     
-    -- Aktif gosterge (sol kenar mavi cizgi)
     local indicator = Instance.new("Frame")
     indicator.Name = "Indicator"
     indicator.Size = UDim2.new(0, 3, 0.6, 0)
     indicator.Position = UDim2.new(0, 3, 0.5, 0)
     indicator.AnchorPoint = Vector2.new(0, 0.5)
-    indicator.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    indicator.BackgroundColor3 = CurrentTheme.Accent
     indicator.BorderSizePixel = 0
     indicator.Visible = (i == 1)
     indicator.ZIndex = 6
@@ -245,13 +285,12 @@ for i, name in ipairs(tabNames) do
     
     tabButtons[name] = btn
 
-    -- Icerik sayfasi
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, 0, 1, 0)
     page.BackgroundTransparency = 1
     page.BorderSizePixel = 0
     page.ScrollBarThickness = 3
-    page.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
+    page.ScrollBarImageColor3 = CurrentTheme.Primary
     page.CanvasSize = UDim2.new(0,0,0,0)
     page.AutomaticCanvasSize = Enum.AutomaticSize.Y
     page.Visible = (i==1)
@@ -273,7 +312,7 @@ for i, name in ipairs(tabNames) do
         activeTab = name
         for n,p in pairs(tabPages) do p.Visible = (n==name) end
         for n,b in pairs(tabButtons) do 
-            b.BackgroundColor3 = (n==name) and Color3.fromRGB(0,120,200) or Color3.fromRGB(25, 35, 55)
+            b.BackgroundColor3 = (n==name) and CurrentTheme.Primary or CurrentTheme.Button
             b.BackgroundTransparency = (n==name) and 0 or 0.4
             local ind = b:FindFirstChild("Indicator")
             if ind then ind.Visible = (n==name) end
@@ -299,7 +338,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
 
     local btn = Instance.new("TextButton")
     btn.Size = toggleWidth
-    btn.BackgroundColor3 = default and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
+    btn.BackgroundColor3 = default and CurrentTheme.Primary or CurrentTheme.Button
     btn.BorderSizePixel = 0
     btn.Text = name .. ": " .. (default and "ON" or "OFF")
     btn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -311,7 +350,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local function doToggle()
         state = not state
         btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
+        btn.BackgroundColor3 = state and CurrentTheme.Primary or CurrentTheme.Button
         if callback then callback(state) end
     end
     btn.MouseButton1Click:Connect(doToggle)
@@ -320,14 +359,14 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local kbBtn = Instance.new("TextButton")
         kbBtn.Size = UDim2.new(0, 60, 1, 0)
         kbBtn.Position = UDim2.new(1, -60, 0, 0)
-        kbBtn.BackgroundColor3 = Color3.fromRGB(25, 35, 55)
+        kbBtn.BackgroundColor3 = CurrentTheme.Button
         kbBtn.BorderSizePixel = 0
         kbBtn.Text = "[ - ]"
         kbBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
         kbBtn.TextSize = 10; kbBtn.Font = Enum.Font.GothamBold; kbBtn.AutoButtonColor = false; kbBtn.ZIndex = 4
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
-        local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(0,60,100); kbStroke.Thickness = 1
+        local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = CurrentTheme.Primary; kbStroke.Thickness = 1
 
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
@@ -359,7 +398,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     return function() return state end, function(v)
         state = v
         btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
+        btn.BackgroundColor3 = state and CurrentTheme.Primary or CurrentTheme.Button
         if callback then callback(state) end
     end
 end
@@ -378,19 +417,19 @@ local function addSlider(page, name, min, max, default, callback, order)
 
     local bg = Instance.new("TextButton")
     bg.Size = UDim2.new(1,0,0,10); bg.Position = UDim2.new(0,0,0,18)
-    bg.BackgroundColor3 = Color3.fromRGB(30,40,60); bg.BorderSizePixel = 0
+    bg.BackgroundColor3 = CurrentTheme.Button; bg.BorderSizePixel = 0
     bg.Text = ""; bg.AutoButtonColor = false; bg.ZIndex = 3; bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(0,4)
 
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new((default-min)/(max-min),0,1,0)
-    fill.BackgroundColor3 = Color3.fromRGB(0,120,200); fill.BorderSizePixel = 0; fill.ZIndex = 3; fill.Parent = bg
+    fill.BackgroundColor3 = CurrentTheme.Primary; fill.BorderSizePixel = 0; fill.ZIndex = 3; fill.Parent = bg
     Instance.new("UICorner", fill).CornerRadius = UDim.new(0,4)
 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,12,0,12); knob.AnchorPoint = Vector2.new(0.5,0.5)
     knob.Position = UDim2.new((default-min)/(max-min),0,0.5,0)
-    knob.BackgroundColor3 = Color3.fromRGB(0,150,230); knob.BorderSizePixel = 0; knob.ZIndex = 4; knob.Parent = bg
+    knob.BackgroundColor3 = CurrentTheme.Accent; knob.BorderSizePixel = 0; knob.ZIndex = 4; knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
 
     local value = default
@@ -418,12 +457,12 @@ local function addCycleButton(page, name, options, default, callback, order)
     local idx = 1
     for i,v in ipairs(options) do if v == default then idx = i; break end end
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,-8,0,28); btn.BackgroundColor3 = Color3.fromRGB(30,40,60); btn.BorderSizePixel = 0
+    btn.Size = UDim2.new(1,-8,0,28); btn.BackgroundColor3 = CurrentTheme.Button; btn.BorderSizePixel = 0
     btn.Text = name .. ": " .. options[idx]; btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.TextSize = 12; btn.Font = Enum.Font.GothamBold; btn.AutoButtonColor = false
     btn.LayoutOrder = order or 0; btn.ZIndex = 3; btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,5)
-    local s = Instance.new("UIStroke", btn); s.Color = Color3.fromRGB(0,60,100); s.Thickness = 1
+    local s = Instance.new("UIStroke", btn); s.Color = CurrentTheme.Primary; s.Thickness = 1
     btn.MouseButton1Click:Connect(function()
         idx = idx % #options + 1; btn.Text = name .. ": " .. options[idx]
         if callback then callback(options[idx]) end
@@ -433,15 +472,35 @@ end
 
 local function addSeparator(page, order)
     local sep = Instance.new("Frame"); sep.Size = UDim2.new(1,-16,0,1)
-    sep.BackgroundColor3 = Color3.fromRGB(0,60,100); sep.BorderSizePixel = 0
+    sep.BackgroundColor3 = CurrentTheme.Primary; sep.BorderSizePixel = 0
     sep.LayoutOrder = order or 0; sep.ZIndex = 3; sep.Parent = page
 end
 
 local function addLabel(page, text, order)
     local lbl = Instance.new("TextLabel"); lbl.Size = UDim2.new(1,-8,0,18); lbl.BackgroundTransparency = 1
-    lbl.Text = text; lbl.TextColor3 = Color3.fromRGB(100,200,255); lbl.TextSize = 11
+    lbl.Text = text; lbl.TextColor3 = CurrentTheme.Text; lbl.TextSize = 11
     lbl.Font = Enum.Font.GothamBold; lbl.TextXAlignment = Enum.TextXAlignment.Left
     lbl.LayoutOrder = order or 0; lbl.ZIndex = 3; lbl.Parent = page
+end
+
+local function addButton(page, name, callback, order, color)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1,-8,0,30)
+    btn.BackgroundColor3 = color or CurrentTheme.Primary
+    btn.BorderSizePixel = 0
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.TextSize = 12
+    btn.Font = Enum.Font.GothamBold
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = order or 0
+    btn.ZIndex = 3
+    btn.Parent = page
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,5)
+    btn.MouseButton1Click:Connect(function()
+        if callback then callback() end
+    end)
+    return btn
 end
 
 -- =============================================
@@ -485,9 +544,10 @@ local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 23)
 local p2 = tabPages["Visuals"]
 addLabel(p2, "-- HIGHLIGHT ESP --", 1)
 local getESP = addToggle(p2, "ESP Highlight", true, nil, 2, true)
-local getHighlightColor = addCycleButton(p2, "Highlight Color", {"Cyan","Blue","Green","Yellow","Purple","White","Orange"}, "Cyan", function(v)
+local getHighlightColor = addCycleButton(p2, "Highlight Color", {"Cyan","Blue","Green","Yellow","Purple","White","Orange","Red","Pink"}, "Cyan", function(v)
     local colors = {Cyan=Color3.fromRGB(0,200,255), Blue=Color3.fromRGB(0,120,255), Green=Color3.fromRGB(0,255,0),
-        Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255), Orange=Color3.fromRGB(255,150,0)}
+        Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255),
+        Orange=Color3.fromRGB(255,150,0), Red=Color3.fromRGB(255,50,50), Pink=Color3.fromRGB(255,100,200)}
     Settings.HighlightColor = colors[v] or Color3.fromRGB(0,200,255)
 end, 3)
 local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
@@ -503,6 +563,10 @@ addLabel(p2, "-- TRACERS --", 11)
 local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
 local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
 
+addSeparator(p2, 14)
+addLabel(p2, "-- BOX ESP --", 15)
+local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 16, true)
+
 -- =============================================
 -- PAGE 3: PLAYERS
 -- =============================================
@@ -510,7 +574,7 @@ local p3 = tabPages["Players"]
 
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,16); SelectCountLabel.BackgroundTransparency = 1
-SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = Color3.fromRGB(100,200,255)
+SelectCountLabel.Text = "Selected: 0"; SelectCountLabel.TextColor3 = CurrentTheme.Text
 SelectCountLabel.TextSize = 11; SelectCountLabel.Font = Enum.Font.GothamSemibold
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left; SelectCountLabel.LayoutOrder = 1; SelectCountLabel.ZIndex = 3
 SelectCountLabel.Parent = p3
@@ -519,7 +583,7 @@ local btnRow = Instance.new("Frame")
 btnRow.Size = UDim2.new(1,-8,0,24); btnRow.BackgroundTransparency = 1; btnRow.LayoutOrder = 2; btnRow.ZIndex = 3; btnRow.Parent = p3
 
 local SelectAllBtn = Instance.new("TextButton")
-SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = Color3.fromRGB(0,120,200)
+SelectAllBtn.Size = UDim2.new(0.48,0,1,0); SelectAllBtn.BackgroundColor3 = CurrentTheme.Primary
 SelectAllBtn.BorderSizePixel = 0; SelectAllBtn.Text = "Select All"; SelectAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
 SelectAllBtn.TextSize = 11; SelectAllBtn.Font = Enum.Font.GothamBold; SelectAllBtn.AutoButtonColor = false
 SelectAllBtn.ZIndex = 3; SelectAllBtn.Parent = btnRow
@@ -527,14 +591,14 @@ Instance.new("UICorner", SelectAllBtn).CornerRadius = UDim.new(0,4)
 
 local ClearAllBtn = Instance.new("TextButton")
 ClearAllBtn.Size = UDim2.new(0.48,0,1,0); ClearAllBtn.Position = UDim2.new(0.52,0,0,0)
-ClearAllBtn.BackgroundColor3 = Color3.fromRGB(0,80,150); ClearAllBtn.BorderSizePixel = 0
+ClearAllBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 30); ClearAllBtn.BorderSizePixel = 0
 ClearAllBtn.Text = "Clear"; ClearAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
 ClearAllBtn.TextSize = 11; ClearAllBtn.Font = Enum.Font.GothamBold; ClearAllBtn.AutoButtonColor = false
 ClearAllBtn.ZIndex = 3; ClearAllBtn.Parent = btnRow
 Instance.new("UICorner", ClearAllBtn).CornerRadius = UDim.new(0,4)
 
 local SearchBox = Instance.new("TextBox")
-SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = Color3.fromRGB(30,40,60)
+SearchBox.Size = UDim2.new(1,-8,0,26); SearchBox.BackgroundColor3 = CurrentTheme.Button
 SearchBox.BorderSizePixel = 0; SearchBox.PlaceholderText = "Search Players..."
 SearchBox.PlaceholderColor3 = Color3.fromRGB(150,150,150); SearchBox.Text = ""
 SearchBox.TextColor3 = Color3.fromRGB(220,220,220); SearchBox.TextSize = 12; SearchBox.Font = Enum.Font.Gotham
@@ -543,7 +607,7 @@ Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
 PlayerScroll.Size = UDim2.new(1,-8,0,260); PlayerScroll.BackgroundTransparency = 1; PlayerScroll.BorderSizePixel = 0
-PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
+PlayerScroll.ScrollBarThickness = 3; PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Primary
 PlayerScroll.CanvasSize = UDim2.new(0,0,0,0); PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerScroll.LayoutOrder = 4; PlayerScroll.ZIndex = 3; PlayerScroll.Active = true; PlayerScroll.Parent = p3
 
@@ -571,83 +635,217 @@ addSeparator(p4, 12)
 addLabel(p4, "-- UTILITY --", 13)
 local getAntiAFK = addToggle(p4, "Anti-AFK", true, nil, 14, false)
 
+addSeparator(p4, 15)
+addLabel(p4, "-- GORUNUM --", 16)
+local getWatermark = addToggle(p4, "Watermark", true, nil, 17, false)
+local getFPSDisplay = addToggle(p4, "FPS Gostergesi", true, nil, 18, false)
+local getPingDisplay = addToggle(p4, "Ping Gostergesi", true, nil, 19, false)
+local getHitSound = addToggle(p4, "Hit Sound", true, nil, 20, false)
+
+-- =============================================
+-- PAGE 5: SETTINGS
+-- =============================================
+local p5 = tabPages["Settings"]
+addLabel(p5, "-- TEMA --", 1)
+local getTheme = addCycleButton(p5, "Theme", {"Blue","Purple","Green","Red","Orange","Pink","Cyan"}, "Blue", function(v)
+    if Themes[v] then
+        CurrentTheme = Themes[v]
+        -- Renkleri guncelle
+        MainFrame.BackgroundColor3 = CurrentTheme.Bg
+        mainStroke.Color = CurrentTheme.Primary
+        tl.TextColor3 = CurrentTheme.Text
+        cl.TextColor3 = CurrentTheme.Text
+        Sidebar.BackgroundColor3 = CurrentTheme.Panel
+        sideStroke.Color = CurrentTheme.Primary
+        for _, b in pairs(tabButtons) do
+            if b.BackgroundColor3 ~= CurrentTheme.Primary and b.BackgroundColor3 ~= CurrentTheme.Button then
+                -- skip
+            end
+        end
+    end
+end, 2)
+
+addSeparator(p5, 3)
+addLabel(p5, "-- GUI AYARLARI --", 4)
+local getGuiTransparency = addSlider(p5, "Gui Transparency", 0, 0.9, 0.03, function(v)
+    MainFrame.BackgroundTransparency = v
+end, 5)
+
+addSeparator(p5, 6)
+addLabel(p5, "-- CONFIG --", 7)
+addButton(p5, "💾 Ayarlari Kaydet", function()
+    local saveData = {
+        Smoothness = Settings.Smoothness,
+        Prediction = Settings.Prediction,
+        TargetPart = Settings.TargetPart,
+        FOVRadius = Settings.FOVRadius,
+        HighlightColor = Settings.HighlightColor,
+        SpeedValue = Settings.SpeedValue,
+        JumpPowerValue = Settings.JumpPowerValue,
+        FlySpeed = Settings.FlySpeed,
+        HitboxSize = Settings.HitboxSize,
+        Theme = CurrentTheme.Name,
+    }
+    if writefile then
+        pcall(function()
+            writefile("DHLV2_config.json", game:GetService("HttpService"):JSONEncode(saveData))
+        end)
+    end
+end, 8, CurrentTheme.Primary)
+
+addButton(p5, "📂 Ayarlari Yukle", function()
+    if readfile and isfile then
+        pcall(function()
+            if isfile("DHLV2_config.json") then
+                local data = game:GetService("HttpService"):JSONDecode(readfile("DHLV2_config.json"))
+                if data.Smoothness then getSmoothness(data.Smoothness) end
+                if data.Prediction then getPrediction(data.Prediction) end
+                if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+                if data.SpeedValue then getSpeedValue(data.SpeedValue) end
+                if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
+                if data.FlySpeed then getFlySpeed(data.FlySpeed) end
+                if data.HitboxSize then getHitboxSize(data.HitboxSize) end
+            end
+        end)
+    end
+end, 9, CurrentTheme.Primary)
+
+addButton(p5, "🔄 Ayarlari Sifirla", function()
+    Settings.Smoothness = 0.450
+    Settings.Prediction = 0.100
+    Settings.FOVRadius = 150
+    Settings.SpeedValue = 16
+    Settings.JumpPowerValue = 50
+    Settings.FlySpeed = 50
+    Settings.HitboxSize = 1.3
+    getSmoothness(0.450); getPrediction(0.100); getFOVRadius(150)
+    getSpeedValue(16); getJumpValue(50); getFlySpeed(50); getHitboxSize(1.3)
+end, 10, Color3.fromRGB(80, 30, 30))
+
+addSeparator(p5, 11)
+addLabel(p5, "-- BILGI --", 12)
+
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1,-8,0,80)
+infoLabel.BackgroundColor3 = CurrentTheme.Button
+infoLabel.BackgroundTransparency = 0.4
+infoLabel.BorderSizePixel = 0
+infoLabel.Text = "DHL V2 - by babaniz\nSidebar Edition\nHook-free & Safe\n\nRight Shift = GUI\nE = Cycle Target\nV = Spectate"
+infoLabel.TextColor3 = Color3.fromRGB(220,220,220)
+infoLabel.TextSize = 11
+infoLabel.Font = Enum.Font.Gotham
+infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+infoLabel.TextYAlignment = Enum.TextYAlignment.Top
+infoLabel.LayoutOrder = 13
+infoLabel.ZIndex = 3
+infoLabel.Parent = p5
+Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 6)
+local infoPad = Instance.new("UIPadding", infoLabel)
+infoPad.PaddingLeft = UDim.new(0, 8)
+infoPad.PaddingTop = UDim.new(0, 6)
+
+-- =============================================
+-- WATERMARK
+-- =============================================
+local Watermark = Instance.new("Frame")
+Watermark.Name = "Watermark"
+Watermark.Size = UDim2.new(0, 200, 0, 36)
+Watermark.Position = UDim2.new(0, 10, 0, 10)
+Watermark.BackgroundColor3 = CurrentTheme.Bg
+Watermark.BackgroundTransparency = 0.2
+Watermark.BorderSizePixel = 0
+Watermark.Visible = true
+Watermark.ZIndex = 500
+Watermark.Parent = ScreenGui
+Instance.new("UICorner", Watermark).CornerRadius = UDim.new(0, 6)
+local wmStroke = Instance.new("UIStroke", Watermark); wmStroke.Color = CurrentTheme.Primary; wmStroke.Thickness = 1
+makeDraggable(Watermark, Watermark)
+
+local wmTitle = Instance.new("TextLabel")
+wmTitle.Size = UDim2.new(1, 0, 0, 18); wmTitle.Position = UDim2.new(0, 8, 0, 2)
+wmTitle.BackgroundTransparency = 1
+wmTitle.Text = "DHL V2"
+wmTitle.TextColor3 = CurrentTheme.Text
+wmTitle.TextSize = 12; wmTitle.Font = Enum.Font.GothamBold
+wmTitle.TextXAlignment = Enum.TextXAlignment.Left
+wmTitle.ZIndex = 501; wmTitle.Parent = Watermark
+
+local wmInfo = Instance.new("TextLabel")
+wmInfo.Size = UDim2.new(1, 0, 0, 14); wmInfo.Position = UDim2.new(0, 8, 0, 19)
+wmInfo.BackgroundTransparency = 1
+wmInfo.Text = "babaniz | 60 FPS | 0 MS"
+wmInfo.TextColor3 = Color3.fromRGB(200, 200, 200)
+wmInfo.TextSize = 10; wmInfo.Font = Enum.Font.Gotham
+wmInfo.TextXAlignment = Enum.TextXAlignment.Left
+wmInfo.ZIndex = 501; wmInfo.Parent = Watermark
+
+-- =============================================
+-- FPS/PING GUNCELLE
+-- =============================================
+local fpsCount, fpsTime = 0, tick()
+RunService.RenderStepped:Connect(function()
+    fpsCount = fpsCount + 1
+    if tick() - fpsTime >= 1 then
+        local fps = fpsCount
+        local ping = 0
+        pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+        
+        if getFPSDisplay() or getPingDisplay() then
+            local fpsStr = getFPSDisplay() and (fps .. " FPS") or ""
+            local pingStr = getPingDisplay() and (ping .. " MS") or ""
+            wmInfo.Text = "babaniz | " .. fpsStr .. " | " .. pingStr
+        else
+            wmInfo.Text = "babaniz"
+        end
+        
+        fpsCount = 0
+        fpsTime = tick()
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    Watermark.Visible = getWatermark()
+end)
+
 -- =============================================
 -- PAGE 5: SPECTATE
 -- =============================================
-local p5 = tabPages["Spectate"]
+-- Not: Spectate artik Settings altinda degil, kendi sekmesi yok
+-- Spectate kodu Players sekmesinde gomulu olarak kalacak
+
 local spectateTarget = nil
 local spectating = false
 
-addLabel(p5, "-- SPECTATE MODE --", 1)
+-- Spectate fonksiyonlari (sidebar'da Spectate sekmesi olmadigi icin
+-- Players sekmesine kisayol ekleyelim)
+local specFrame = Instance.new("Frame")
+specFrame.Size = UDim2.new(1,-8,0,120); specFrame.BackgroundTransparency = 1
+specFrame.LayoutOrder = 20; specFrame.ZIndex = 3; specFrame.Parent = p3
 
 local specStatusLabel = Instance.new("TextLabel")
-specStatusLabel.Size = UDim2.new(1,-8,0,22); specStatusLabel.BackgroundTransparency = 1
-specStatusLabel.Text = "Not Spectating"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
-specStatusLabel.TextSize = 13; specStatusLabel.Font = Enum.Font.GothamBold
-specStatusLabel.TextXAlignment = Enum.TextXAlignment.Center; specStatusLabel.LayoutOrder = 2
-specStatusLabel.ZIndex = 3; specStatusLabel.Parent = p5
-
-addSeparator(p5, 3)
-
-local specSearch = Instance.new("TextBox")
-specSearch.Size = UDim2.new(1,-8,0,26); specSearch.BackgroundColor3 = Color3.fromRGB(30,40,60)
-specSearch.BorderSizePixel = 0; specSearch.PlaceholderText = "Search player to spectate..."
-specSearch.PlaceholderColor3 = Color3.fromRGB(150,150,150); specSearch.Text = ""
-specSearch.TextColor3 = Color3.fromRGB(220,220,220); specSearch.TextSize = 12; specSearch.Font = Enum.Font.Gotham
-specSearch.ClearTextOnFocus = false; specSearch.LayoutOrder = 4; specSearch.ZIndex = 3; specSearch.Parent = p5
-Instance.new("UICorner", specSearch).CornerRadius = UDim.new(0,4)
-
-local specScroll = Instance.new("ScrollingFrame")
-specScroll.Size = UDim2.new(1,-8,0,220); specScroll.BackgroundTransparency = 1; specScroll.BorderSizePixel = 0
-specScroll.ScrollBarThickness = 3; specScroll.ScrollBarImageColor3 = Color3.fromRGB(0,120,200)
-specScroll.CanvasSize = UDim2.new(0,0,0,0); specScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-specScroll.LayoutOrder = 5; specScroll.ZIndex = 3; specScroll.Active = true; specScroll.Parent = p5
-local specLayout = Instance.new("UIListLayout", specScroll)
-specLayout.SortOrder = Enum.SortOrder.LayoutOrder; specLayout.Padding = UDim.new(0,3)
-
-addSeparator(p5, 6)
+specStatusLabel.Size = UDim2.new(1,0,0,20); specStatusLabel.BackgroundTransparency = 1
+specStatusLabel.Text = "Spectate: Not active"; specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
+specStatusLabel.TextSize = 12; specStatusLabel.Font = Enum.Font.GothamBold
+specStatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+specStatusLabel.ZIndex = 3; specStatusLabel.Parent = specFrame
 
 local stopSpecBtn = Instance.new("TextButton")
-stopSpecBtn.Size = UDim2.new(1,-8,0,30); stopSpecBtn.BackgroundColor3 = Color3.fromRGB(0,120,200)
+stopSpecBtn.Size = UDim2.new(1,0,0,26); stopSpecBtn.Position = UDim2.new(0,0,0,24)
+stopSpecBtn.BackgroundColor3 = CurrentTheme.Primary
 stopSpecBtn.BorderSizePixel = 0; stopSpecBtn.Text = "Stop Spectating"
-stopSpecBtn.TextColor3 = Color3.fromRGB(255,255,255); stopSpecBtn.TextSize = 13
+stopSpecBtn.TextColor3 = Color3.fromRGB(255,255,255); stopSpecBtn.TextSize = 12
 stopSpecBtn.Font = Enum.Font.GothamBold; stopSpecBtn.AutoButtonColor = false
-stopSpecBtn.LayoutOrder = 7; stopSpecBtn.ZIndex = 3; stopSpecBtn.Parent = p5
+stopSpecBtn.ZIndex = 3; stopSpecBtn.Parent = specFrame
 Instance.new("UICorner", stopSpecBtn).CornerRadius = UDim.new(0,5)
 
-local specKeybindRow = Instance.new("Frame")
-specKeybindRow.Size = UDim2.new(1,-8,0,28); specKeybindRow.BackgroundTransparency = 1
-specKeybindRow.LayoutOrder = 8; specKeybindRow.ZIndex = 3; specKeybindRow.Parent = p5
-
-local specKeyLabel = Instance.new("TextLabel")
-specKeyLabel.Size = UDim2.new(1,-68,1,0); specKeyLabel.BackgroundTransparency = 1
-specKeyLabel.Text = "Spectate Key:"; specKeyLabel.TextColor3 = Color3.fromRGB(200,200,200)
-specKeyLabel.TextSize = 12; specKeyLabel.Font = Enum.Font.GothamBold
-specKeyLabel.TextXAlignment = Enum.TextXAlignment.Left; specKeyLabel.ZIndex = 3; specKeyLabel.Parent = specKeybindRow
-
-local specKeyBtn = Instance.new("TextButton")
-specKeyBtn.Size = UDim2.new(0,60,1,0); specKeyBtn.Position = UDim2.new(1,-60,0,0)
-specKeyBtn.BackgroundColor3 = Color3.fromRGB(25,35,55); specKeyBtn.BorderSizePixel = 0
-specKeyBtn.Text = "[ V ]"; specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
-specKeyBtn.TextSize = 10; specKeyBtn.Font = Enum.Font.GothamBold; specKeyBtn.AutoButtonColor = false
-specKeyBtn.ZIndex = 4; specKeyBtn.Parent = specKeybindRow
-Instance.new("UICorner", specKeyBtn).CornerRadius = UDim.new(0,4)
-local skStroke = Instance.new("UIStroke", specKeyBtn); skStroke.Color = Color3.fromRGB(0,80,120); skStroke.Thickness = 1
-
-local spectateKey = Enum.KeyCode.V
-local specKeyListening = false
-
-specKeyBtn.MouseButton1Click:Connect(function()
-    if specKeyListening then
-        specKeyListening = false
-        specKeyBtn.Text = spectateKey and "["..spectateKey.Name.."]" or "[ - ]"
-        specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
-        return
-    end
-    specKeyListening = true
-    specKeyBtn.Text = "[...]"
-    specKeyBtn.TextColor3 = Color3.fromRGB(255,255,0)
-end)
+local specHint = Instance.new("TextLabel")
+specHint.Size = UDim2.new(1,0,0,14); specHint.Position = UDim2.new(0,0,0,56)
+specHint.BackgroundTransparency = 1
+specHint.Text = "Spectate Key: V (oyuncu sec ve V'ye bas)"
+specHint.TextColor3 = Color3.fromRGB(180,180,180)
+specHint.TextSize = 10; specHint.Font = Enum.Font.Gotham
+specHint.TextXAlignment = Enum.TextXAlignment.Left
+specHint.ZIndex = 3; specHint.Parent = specFrame
 
 local function startSpectate(player)
     if not player or not player.Character then return end
@@ -656,8 +854,8 @@ local function startSpectate(player)
     spectateTarget = player
     spectating = true
     Camera.CameraSubject = hum
-    specStatusLabel.Text = "Spectating: " .. player.DisplayName
-    specStatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+    specStatusLabel.Text = "Spectate: " .. player.DisplayName
+    specStatusLabel.TextColor3 = CurrentTheme.Accent
 end
 
 local function stopSpectate()
@@ -668,60 +866,17 @@ local function stopSpectate()
             Camera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         end
     end)
-    specStatusLabel.Text = "Not Spectating"
+    specStatusLabel.Text = "Spectate: Not active"
     specStatusLabel.TextColor3 = Color3.fromRGB(200,200,200)
 end
 
 stopSpecBtn.MouseButton1Click:Connect(stopSpectate)
 
-local specButtons = {}
-
-local function refreshSpecList()
-    for _,b in pairs(specButtons) do if b and b.Parent then b:Destroy() end end
-    specButtons = {}
-    local search = specSearch.Text:lower()
-    for _,player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            if search == "" or player.DisplayName:lower():find(search,1,true) or player.Name:lower():find(search,1,true) then
-                local isSpec = spectateTarget == player
-                local btn = Instance.new("TextButton")
-                btn.Name = "SPEC_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
-                btn.BackgroundColor3 = isSpec and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
-                btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
-                btn.TextColor3 = isSpec and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
-                btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
-                btn.AutoButtonColor = false; btn.ZIndex = 3; btn.Parent = specScroll
-                Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
-
-                btn.MouseButton1Click:Connect(function()
-                    if spectateTarget == player and spectating then
-                        stopSpectate()
-                    else
-                        startSpectate(player)
-                    end
-                    refreshSpecList()
-                end)
-                specButtons[player.Name] = btn
-            end
-        end
-    end
-end
-
-refreshSpecList()
-specSearch:GetPropertyChangedSignal("Text"):Connect(refreshSpecList)
-Players.PlayerAdded:Connect(function() task.wait(0.5); refreshSpecList() end)
-Players.PlayerRemoving:Connect(function(player)
-    if spectateTarget == player then stopSpectate() end
-    task.wait(0.1); refreshSpecList()
-end)
-
 RunService.Heartbeat:Connect(function()
     if spectating and spectateTarget then
         if spectateTarget.Character and spectateTarget.Character:FindFirstChildOfClass("Humanoid") then
             local hum = spectateTarget.Character:FindFirstChildOfClass("Humanoid")
-            if Camera.CameraSubject ~= hum then
-                Camera.CameraSubject = hum
-            end
+            if Camera.CameraSubject ~= hum then Camera.CameraSubject = hum end
         end
     end
 end)
@@ -741,10 +896,10 @@ local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~
 local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
-        btn.BackgroundColor3 = Color3.fromRGB(30,40,60); btn.TextColor3 = Color3.fromRGB(200,200,200)
+        btn.BackgroundColor3 = CurrentTheme.Button; btn.TextColor3 = Color3.fromRGB(200,200,200)
     else
         Settings.SelectedPlayers[player.Name] = player
-        btn.BackgroundColor3 = Color3.fromRGB(0,120,200); btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.BackgroundColor3 = CurrentTheme.Primary; btn.TextColor3 = Color3.fromRGB(255,255,255)
     end
     updateSelectCount()
 end
@@ -754,7 +909,7 @@ local function createPlayerButton(player)
     local sel = isSelected(player)
     local btn = Instance.new("TextButton")
     btn.Name = "PLR_"..player.Name; btn.Size = UDim2.new(1,-4,0,26)
-    btn.BackgroundColor3 = sel and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
+    btn.BackgroundColor3 = sel and CurrentTheme.Primary or CurrentTheme.Button
     btn.BorderSizePixel = 0; btn.Text = "  "..player.DisplayName
     btn.TextColor3 = sel and Color3.fromRGB(255,255,255) or Color3.fromRGB(200,200,200)
     btn.TextSize = 12; btn.Font = Enum.Font.Gotham; btn.TextXAlignment = Enum.TextXAlignment.Left
@@ -800,7 +955,7 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 -- =============================================
 local fovCircle, usingDrawing = nil, false
 pcall(function()
-    fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(0,200,255)
+    fovCircle = Drawing.new("Circle"); fovCircle.Color = CurrentTheme.Accent
     fovCircle.Thickness = 1.5; fovCircle.NumSides = 64; fovCircle.Radius = 150
     fovCircle.Filled = false; fovCircle.Visible = true; fovCircle.Transparency = 0.8
     usingDrawing = true
@@ -838,6 +993,11 @@ local function addHighlight(player)
         esp.healthText.Visible = false; esp.healthText.Font = 2
         esp.tracer = Drawing.new("Line"); esp.tracer.Color = Settings.HighlightColor
         esp.tracer.Thickness = 1; esp.tracer.Visible = false; esp.tracer.Transparency = 0.7
+        -- Box ESP icin 4 cizgi
+        esp.boxTop = Drawing.new("Line"); esp.boxTop.Thickness = 1; esp.boxTop.Visible = false
+        esp.boxBottom = Drawing.new("Line"); esp.boxBottom.Thickness = 1; esp.boxBottom.Visible = false
+        esp.boxLeft = Drawing.new("Line"); esp.boxLeft.Thickness = 1; esp.boxLeft.Visible = false
+        esp.boxRight = Drawing.new("Line"); esp.boxRight.Thickness = 1; esp.boxRight.Visible = false
         espDrawings[player.Name] = esp
     end
 end
@@ -901,6 +1061,34 @@ local function updateESP()
                                 esp.tracer.From = fromPos; esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
                                 esp.tracer.Color = Settings.HighlightColor; esp.tracer.Visible = true
                             else esp.tracer.Visible = false end
+                            -- BOX ESP
+                            if getESPBoxes() and rootPart then
+                                local topLeft = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
+                                local bottomRight = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
+                                if topLeft and bottomRight then
+                                    local tl, br = Vector2.new(topLeft.X, topLeft.Y), Vector2.new(bottomRight.X, bottomRight.Y)
+                                    local w = 40
+                                    local corners = {
+                                        TL = Vector2.new(tl.X - w, tl.Y),
+                                        TR = Vector2.new(tl.X + w, tl.Y),
+                                        BL = Vector2.new(br.X - w, br.Y),
+                                        BR = Vector2.new(br.X + w, br.Y),
+                                    }
+                                    esp.boxTop.From = corners.TL; esp.boxTop.To = corners.TR
+                                    esp.boxBottom.From = corners.BL; esp.boxBottom.To = corners.BR
+                                    esp.boxLeft.From = corners.TL; esp.boxLeft.To = corners.BL
+                                    esp.boxRight.From = corners.TR; esp.boxRight.To = corners.BR
+                                    esp.boxTop.Color = Settings.HighlightColor
+                                    esp.boxBottom.Color = Settings.HighlightColor
+                                    esp.boxLeft.Color = Settings.HighlightColor
+                                    esp.boxRight.Color = Settings.HighlightColor
+                                    esp.boxTop.Visible = true; esp.boxBottom.Visible = true
+                                    esp.boxLeft.Visible = true; esp.boxRight.Visible = true
+                                end
+                            else
+                                esp.boxTop.Visible = false; esp.boxBottom.Visible = false
+                                esp.boxLeft.Visible = false; esp.boxRight.Visible = false
+                            end
                         else hideDrawings(player.Name) end
                     end
                 else removeHighlight(player.Name) end
@@ -936,7 +1124,7 @@ local function isVisible(targetPart)
 end
 
 -- =============================================
--- DOWNED CHECK (HP < 20%)
+-- DOWNED CHECK
 -- =============================================
 local function isDowned(character)
     if not character then return false end
@@ -946,22 +1134,16 @@ local function isDowned(character)
 end
 
 -- =============================================
--- GELISMIS PREDICTION (Ping + Hiz)
+-- PREDICTION
 -- =============================================
 local function getPredictedPosition(part)
     if not part or not part.Parent then return part and part.Position or Vector3.new() end
     local predAmount = getPrediction()
     if predAmount <= 0 then return part.Position end
-
     local vel = Vector3.new(0,0,0)
     pcall(function() vel = part.AssemblyLinearVelocity end)
-
     local ping = 0
-    pcall(function()
-        local stats = game:GetService("Stats")
-        ping = stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
-    end)
-
+    pcall(function() ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000 end)
     local totalTime = (predAmount * 0.3) + (ping * 0.5)
     return part.Position + (vel * totalTime)
 end
@@ -975,15 +1157,12 @@ local function getClosestFromSelected()
     local hasSelected = false
     for _ in pairs(Settings.SelectedPlayers) do hasSelected = true; break end
     if not hasSelected then return nil end
-
     for _, player in pairs(Settings.SelectedPlayers) do
         if player and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
             local hum = player.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                if getSkipDowned() and isDowned(player.Character) then
-                    continue
-                end
+                if getSkipDowned() and isDowned(player.Character) then continue end
                 local sp, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
                     local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
@@ -1026,12 +1205,8 @@ local function expandHitbox(character)
     local sizeMult = getHitboxSize()
     for _, part in ipairs(character:GetChildren()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            if not originalSizes[part] then
-                originalSizes[part] = part.Size
-            end
-            pcall(function()
-                part.Size = originalSizes[part] * sizeMult
-            end)
+            if not originalSizes[part] then originalSizes[part] = part.Size end
+            pcall(function() part.Size = originalSizes[part] * sizeMult end)
         end
     end
 end
@@ -1097,40 +1272,22 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             end
         end)
     end
-    if specKeyListening and input.UserInputType == Enum.UserInputType.Keyboard then
-        if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
-            spectateKey = input.KeyCode
-            specKeyBtn.Text = "["..input.KeyCode.Name.."]"
-            specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
-            specKeyListening = false
-            return
-        else
-            specKeyListening = false
-            specKeyBtn.Text = spectateKey and "["..spectateKey.Name.."]" or "[ - ]"
-            specKeyBtn.TextColor3 = Color3.fromRGB(0,255,150)
-            return
-        end
-    end
 
-    if input.KeyCode == spectateKey and not specKeyListening then
+    -- Spectate (V tusu)
+    if input.KeyCode == Enum.KeyCode.V then
         if spectating then
             stopSpectate()
-            refreshSpecList()
         else
             local target = nil
             for _, p in pairs(Settings.SelectedPlayers) do
                 if p and p.Character then target = p; break end
             end
-            if target then
-                startSpectate(target)
-                refreshSpecList()
-            end
+            if target then startSpectate(target) end
         end
     end
 
     if input.KeyCode == Enum.KeyCode.Escape then
         if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
-        if specSearch:IsFocused() then specSearch:ReleaseFocus() end
     end
 end)
 
@@ -1163,11 +1320,7 @@ RunService.Heartbeat:Connect(function()
         if hrp and spd > 16 then
             local moveDir = hum.MoveDirection
             if moveDir.Magnitude > 0 then
-                hrp.Velocity = Vector3.new(
-                    moveDir.X * spd,
-                    hrp.Velocity.Y,
-                    moveDir.Z * spd
-                )
+                hrp.Velocity = Vector3.new(moveDir.X * spd, hrp.Velocity.Y, moveDir.Z * spd)
             end
         end
     end
@@ -1181,7 +1334,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- =============================================
--- FLY + AIMLOCK ANA DONGU
+-- FLY + AIMLOCK
 -- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
@@ -1191,14 +1344,13 @@ RunService.RenderStepped:Connect(function()
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
+        fovCircle.Color = CurrentTheme.Accent
     end
 
     updateESP()
 
     if Settings.CurrentTarget and Settings.CurrentTarget.Character then
-        if getHitboxExpand() then
-            expandHitbox(Settings.CurrentTarget.Character)
-        end
+        if getHitboxExpand() then expandHitbox(Settings.CurrentTarget.Character) end
     end
 
     if getFly() then
@@ -1247,9 +1399,7 @@ RunService.RenderStepped:Connect(function()
 
     if locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
         local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
-        if not part then
-            part = Settings.CurrentTarget.Character:FindFirstChild("HumanoidRootPart")
-        end
+        if not part then part = Settings.CurrentTarget.Character:FindFirstChild("HumanoidRootPart") end
         if part then
             local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
@@ -1259,21 +1409,17 @@ RunService.RenderStepped:Connect(function()
                     else locked = false; Settings.CurrentTarget = nil end
                     return
                 end
-
                 local canSee = isVisible(part)
                 if canSee or getStickyAim() then
                     local smoothness = getSmoothness()
                     local shake = getAimShake()
-
                     local predictedPos = getPredictedPosition(part)
-
                     if shake > 0 then
                         predictedPos = predictedPos + Vector3.new(
                             math.random(-shake*10, shake*10)/10,
                             math.random(-shake*10, shake*10)/10,
                             math.random(-shake*10, shake*10)/10)
                     end
-
                     local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
                     Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, smoothness)
                 else
@@ -1299,7 +1445,7 @@ pcall(function()
 end)
 
 -- =============================================
--- ESC MENU — DUZELTILDI
+-- ESC MENU
 -- =============================================
 local guiWasVisible = true
 local savedHighlightData = {}
@@ -1309,25 +1455,15 @@ pcall(function()
         menuOpen = true
         guiWasVisible = MainFrame.Visible
         MainFrame.Visible = false
-        
+        Watermark.Visible = false
         savedHighlightData = {}
         for name, hl in pairs(highlightObjects) do
-            pcall(function()
-                savedHighlightData[name] = hl.Parent
-                hl.Parent = nil
-            end)
+            pcall(function() savedHighlightData[name] = hl.Parent; hl.Parent = nil end)
         end
-        
         for _, esp in pairs(espDrawings) do 
-            for _, obj in pairs(esp) do 
-                pcall(function() obj.Visible = false end) 
-            end 
+            for _, obj in pairs(esp) do pcall(function() obj.Visible = false end) end 
         end
-        
-        if fovCircle then 
-            pcall(function() fovCircle.Visible = false end) 
-        end
-        
+        if fovCircle then pcall(function() fovCircle.Visible = false end) end
         locked = false
         Settings.CurrentTarget = nil
     end)
@@ -1335,23 +1471,17 @@ pcall(function()
     GuiService.MenuClosed:Connect(function()
         menuOpen = false
         MainFrame.Visible = guiWasVisible
-        
+        Watermark.Visible = getWatermark()
         for name, parent in pairs(savedHighlightData) do
             if highlightObjects[name] and parent then 
                 pcall(function() highlightObjects[name].Parent = parent end) 
             end
         end
         savedHighlightData = {}
-        
         if fovCircle and getFOVVisible() then
             pcall(function() fovCircle.Visible = true end)
         end
-        
-        resetInput()
-        task.wait(0.1)
-        resetInput()
-        task.wait(0.15)
-        resetInput()
+        resetInput(); task.wait(0.1); resetInput(); task.wait(0.15); resetInput()
     end)
 end)
 
@@ -1368,13 +1498,11 @@ task.defer(function()
 end)
 
 -- =============================================
--- PENCERE ODAK DEGISIMI
+-- PENCERE ODAK
 -- =============================================
 UserInputService.WindowFocused:Connect(function()
-    task.wait(0.2)
-    resetInput()
+    task.wait(0.2); resetInput()
 end)
-
 UserInputService.WindowFocusReleased:Connect(function()
     resetInput()
 end)
@@ -1387,12 +1515,12 @@ print("[DHL V2] Input reset aktif")
 print("[DHL V2] by babaniz - FULL LOAD!")
 print("[DHL V2] Right Shift = GUI ac/kapa")
 print("[DHL V2] Sadece Camlock - Hook YOK")
-print("[DHL V2] Sidebar modu aktif - sekmeler yanda")
+print("[DHL V2] Enhanced Edition - Tema, Config, Watermark")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL V2",
-        Text = "by babaniz | Sidebar Edition",
+        Text = "by babaniz | Enhanced Edition",
         Duration = 5
     })
 end)
