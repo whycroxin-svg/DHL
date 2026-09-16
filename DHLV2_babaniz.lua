@@ -141,14 +141,19 @@ makeDraggable(MainFrame, DragHandle)
 
 local BgImage = Instance.new("ImageLabel")
 BgImage.Name = "Background"; BgImage.Size = UDim2.new(1, 0, 1, 0)
-BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.85
+BgImage.BackgroundTransparency = 1; BgImage.ImageTransparency = 0.6
 BgImage.ScaleType = Enum.ScaleType.Crop; BgImage.ZIndex = 0; BgImage.Parent = MainFrame
 Instance.new("UICorner", BgImage).CornerRadius = UDim.new(0, 8)
 pcall(function()
-    local fn = "DHLV2_bg.png"
+    local fn = "dhl_bg.jpg"
+    local url = "https://raw.githubusercontent.com/whycroxin-svg/ahh/main/hile%20gui%20arka%20plan.jpg"
     if writefile and isfile and getcustomasset then
-        if not isfile(fn) then writefile(fn, game:HttpGet("https://raw.githubusercontent.com/whycroxin-svg/DHL/main/bg.png")) end
+        if not isfile(fn) then
+            writefile(fn, game:HttpGet(url))
+        end
         BgImage.Image = getcustomasset(fn)
+    else
+        BgImage.Image = url
     end
 end)
 
