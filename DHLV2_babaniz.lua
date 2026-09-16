@@ -1,10 +1,11 @@
 --[[
-    DHL VIP - CLEAN PRO EDITION v2
-    Yesil noktalar kaldirildi
-    Sade, minimal, kurumsal tasarim
+    DHL VIP - CLEAN PRO EDITION v3
+    Theme Customization Sekmesi
+    15 Tema (7 Klasik + 8 Ozel)
+    GUI Transparency 0-500 arasi
 ]]
 
-print("[DHL VIP] Clean Pro Edition v2 yukleniyor...")
+print("[DHL VIP] Clean Pro Edition v3 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -38,16 +39,27 @@ local function getGuiParent()
 end
 
 -- =============================================
--- PRO THEMES
+-- PRO THEMES (15 TEMA - 7 KLASIK + 8 OZEL)
 -- =============================================
 local Themes = {
-    Obsidian = {Name="Obsidian", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
-    Cobalt   = {Name="Cobalt",   Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
-    Noir     = {Name="Noir",     Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
-    Crimson  = {Name="Crimson",  Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120), G1=Color3.fromRGB(200,60,90), G2=Color3.fromRGB(100,20,40)},
-    Emerald  = {Name="Emerald",  Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
-    Violet   = {Name="Violet",   Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
-    Slate    = {Name="Slate",    Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
+    -- ===== KLASIK TEMALAR =====
+    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
+    Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
+    Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
+    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120), G1=Color3.fromRGB(200,60,90), G2=Color3.fromRGB(100,20,40)},
+    Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
+    Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
+    Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
+    
+    -- ===== OZEL TEMALAR =====
+    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
+    Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90),  G1=Color3.fromRGB(255,140,60), G2=Color3.fromRGB(160,60,20)},
+    Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90),  G1=Color3.fromRGB(220,180,110),G2=Color3.fromRGB(140,90,50)},
+    Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200), G1=Color3.fromRGB(60,160,240), G2=Color3.fromRGB(20,80,160)},
+    Sakura   = {Name="Sakura",   Category="Special", Primary=Color3.fromRGB(245,165,184), Accent=Color3.fromRGB(255,209,220), Bg=Color3.fromRGB(26,13,18),  Panel=Color3.fromRGB(42,21,32),  Button=Color3.fromRGB(58,31,46),  Text=Color3.fromRGB(255,225,235), SubText=Color3.fromRGB(210,160,180), G1=Color3.fromRGB(255,180,210), G2=Color3.fromRGB(200,120,160)},
+    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220), G1=Color3.fromRGB(255,0,170), G2=Color3.fromRGB(0,255,255)},
+    Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160), G1=Color3.fromRGB(230,60,60), G2=Color3.fromRGB(20,140,60)},
+    Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150), G1=Color3.fromRGB(255,140,90), G2=Color3.fromRGB(180,60,120)},
 }
 local CurrentTheme = Themes.Obsidian
 
@@ -77,7 +89,7 @@ local Settings = {
     InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
     
     AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
-    Watermark = true, FPSDisplay = true, PingDisplay = true, GuiTransparency = 0,
+    Watermark = true, FPSDisplay = true, PingDisplay = true, GuiTransparency = 500,
     
     FollowPlayer = false, FollowTarget = nil,
     DamageAura = false, DamageAuraRange = 10, DamageAuraAmount = 5,
@@ -90,6 +102,9 @@ local Settings = {
     SelectedPlayers = {}, CurrentTarget = nil,
     ParticlesEnabled = true,
 }
+
+-- GuiTransparency 500 = tam opak (Roblox 0-1 arasi oldugu icin 500/500 = 1)
+-- Yani 500 = background transparency 0 (opak)
 
 -- =============================================
 -- CLEANUP
@@ -362,7 +377,7 @@ MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 700, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
-MainFrame.BackgroundTransparency = 0
+MainFrame.BackgroundTransparency = 0  -- GuiTransparency 500 = opak
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = false
 MainFrame.Visible = false
@@ -421,7 +436,7 @@ local versionLbl = Instance.new("TextLabel")
 versionLbl.Size = UDim2.new(0, 60, 0, 14)
 versionLbl.Position = UDim2.new(1, -120, 0, 20)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v6.0.2"
+versionLbl.Text = "v6.0.3"
 versionLbl.TextColor3 = CurrentTheme.SubText
 versionLbl.TextSize = 10
 versionLbl.Font = Enum.Font.Gotham
@@ -564,7 +579,7 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM
+-- TAB SYSTEM (8 sekme - THEMES eklendi)
 -- =============================================
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting system"},
@@ -573,6 +588,7 @@ local tabConfig = {
     {Name = "PLAYERS",   Sub = "Player actions"},
     {Name = "WORLD",     Sub = "Environment"},
     {Name = "CHARACTER", Sub = "Player state"},
+    {Name = "THEMES",    Sub = "Appearance"},
     {Name = "SETTINGS",  Sub = "Configuration"},
 }
 
@@ -713,7 +729,7 @@ for i, config in ipairs(tabConfig) do
 end
 
 -- =============================================
--- UI BUILDERS (Yesil nokta YOK)
+-- UI BUILDERS
 -- =============================================
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
@@ -740,11 +756,9 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     btn.Parent = row
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
     
-    -- Yesil nokta YOK! Sadece text padding
     local textPad = Instance.new("UIPadding", btn)
     textPad.PaddingLeft = UDim.new(0, 14)
     
-    -- Durum text (sagda) - biraz buyutuldu
     local stateLbl = Instance.new("TextLabel")
     stateLbl.Size = UDim2.new(0, 40, 1, 0)
     stateLbl.Position = UDim2.new(1, -48, 0, 0)
@@ -838,6 +852,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     end
 end
 
+-- GuiTransparency slider 0-500 arasi (500 = opak)
 local function addSlider(page, name, min, max, default, callback, order)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1,-8,0,46)
@@ -862,7 +877,7 @@ local function addSlider(page, name, min, max, default, callback, order)
     valueLbl.Size = UDim2.new(0.4, -4, 0, 16)
     valueLbl.Position = UDim2.new(0.6, 0, 0, 0)
     valueLbl.BackgroundTransparency = 1
-    valueLbl.Text = string.format("%.3f", default)
+    valueLbl.Text = tostring(math.floor(default))
     valueLbl.TextColor3 = CurrentTheme.Accent
     valueLbl.TextSize = 11
     valueLbl.Font = Enum.Font.GothamBold
@@ -912,7 +927,7 @@ local function addSlider(page, name, min, max, default, callback, order)
         value = min + (max-min)*p
         tween(fill, 0.06, {Size = UDim2.new(p,0,1,0)})
         tween(knob, 0.06, {Position = UDim2.new(p,0,0.5,0)})
-        valueLbl.Text = string.format("%.3f", value)
+        valueLbl.Text = tostring(math.floor(value))
         if callback then callback(value) end
     end
     bg.MouseButton1Down:Connect(function(x) sliding = true; update(x) end)
@@ -1056,10 +1071,119 @@ local function getFOVThemeColor()
 end
 
 -- =============================================
--- PAGES
+-- TEMA UYGULAMA FONKSIYONU
 -- =============================================
+local function applyTheme(themeName)
+    if not Themes[themeName] then return end
+    CurrentTheme = Themes[themeName]
+    
+    MainFrame.BackgroundColor3 = CurrentTheme.Bg
+    mainStroke.Color = CurrentTheme.Button
+    topAccent.BackgroundColor3 = CurrentTheme.Primary
+    tl.TextColor3 = CurrentTheme.Text
+    cl.TextColor3 = CurrentTheme.SubText
+    versionLbl.TextColor3 = CurrentTheme.SubText
+    Sidebar.BackgroundColor3 = CurrentTheme.Panel
+    sideStroke.Color = CurrentTheme.Button
+    profileFrame.BackgroundColor3 = CurrentTheme.Button
+    avatarCircle.BackgroundColor3 = CurrentTheme.Button
+    avatarRing.Color = CurrentTheme.Primary
+    profileName.TextColor3 = CurrentTheme.Text
+    profileStatus.TextColor3 = CurrentTheme.SubText
+    
+    mainGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(CurrentTheme.Bg.R*255 + 4, CurrentTheme.Bg.G*255 + 4, CurrentTheme.Bg.B*255 + 4)),
+        ColorSequenceKeypoint.new(1, CurrentTheme.Bg),
+    })
+    
+    for _, data in ipairs(uiElements) do
+        if data.element and data.element.Parent then
+            if data.type == "toggle" then
+                data.element.TextColor3 = CurrentTheme.Text
+                local stateLbl = data.element:FindFirstChildOfClass("TextLabel")
+                if stateLbl then
+                    if stateLbl.Text == "ON" then
+                        stateLbl.TextColor3 = CurrentTheme.Accent
+                    else
+                        stateLbl.TextColor3 = CurrentTheme.SubText
+                    end
+                end
+            elseif data.type == "fill" then
+                data.element.BackgroundColor3 = CurrentTheme.Accent
+            elseif data.type == "knob" then
+                data.element.BackgroundColor3 = Color3.fromRGB(255,255,255)
+            elseif data.type == "bg" then
+                data.element.BackgroundColor3 = CurrentTheme.Button
+            elseif data.type == "keybindBg" then
+                data.element.BackgroundColor3 = CurrentTheme.Button
+            elseif data.type == "separatorLine" then
+                data.element.BackgroundColor3 = CurrentTheme.Button
+            elseif data.type == "sectionLabel" then
+                data.element.TextColor3 = CurrentTheme.SubText
+            elseif data.type == "subLabel" then
+                data.element.TextColor3 = CurrentTheme.SubText
+            elseif data.type == "stroke" then
+                data.element.Color = CurrentTheme.Button
+            end
+        end
+    end
+    
+    for n,b in pairs(tabButtons) do 
+        local isActive = (n == activeTab)
+        b.BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0)
+        local ind = b:FindFirstChild("Indicator")
+        if ind then ind.BackgroundColor3 = CurrentTheme.Primary end
+        local labels = b:GetChildren()
+        for _, lbl in ipairs(labels) do
+            if lbl:IsA("TextLabel") and lbl.Name ~= "Indicator" then
+                local isMain = lbl.TextSize == 11
+                if isMain then
+                    lbl.TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText
+                else
+                    lbl.TextColor3 = CurrentTheme.SubText
+                end
+            end
+        end
+    end
+    
+    for _, page in pairs(tabPages) do
+        page.ScrollBarImageColor3 = CurrentTheme.Button
+    end
+    PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Button
+    SideScroll.ScrollBarImageColor3 = CurrentTheme.Button
+    
+    if fovCircle and Settings.FOVUseTheme then
+        fovCircle.Color = CurrentTheme.Accent
+    end
+    
+    Watermark.BackgroundColor3 = CurrentTheme.Panel
+    wmStroke.Color = CurrentTheme.Button
+    wmTitle.TextColor3 = CurrentTheme.Text
+    wmInfo.TextColor3 = CurrentTheme.SubText
+    wmAccent.BackgroundColor3 = CurrentTheme.Primary
+    
+    -- Theme preview butonlarini guncelle
+    for _, btn in pairs(_G.DHL_ThemeButtons or {}) do
+        if btn.Parent then
+            local isActive = btn:GetAttribute("ThemeName") == themeName
+            if isActive then
+                btn.BackgroundColor3 = CurrentTheme.Button
+                local stroke = btn:FindFirstChildOfClass("UIStroke")
+                if stroke then stroke.Transparency = 0; stroke.Color = CurrentTheme.Primary end
+            else
+                btn.BackgroundColor3 = CurrentTheme.Bg
+                local stroke = btn:FindFirstChildOfClass("UIStroke")
+                if stroke then stroke.Transparency = 0.7; stroke.Color = CurrentTheme.Button end
+            end
+        end
+    end
+    
+    showToast("Theme Applied", CurrentTheme.Name .. " • " .. CurrentTheme.Category, "success")
+end
 
+-- =============================================
 -- PAGE 1: AIMLOCK
+-- =============================================
 local p1 = tabPages["AIMLOCK"]
 addLabel(p1, "CAMLOCK", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
@@ -1410,114 +1534,256 @@ addButton(p6, "Full Heal", function()
     showToast("Character", "Health restored", "success")
 end, 14, CurrentTheme.Button)
 
--- PAGE 7: SETTINGS
-local p7 = tabPages["SETTINGS"]
-addLabel(p7, "THEME", 1)
-local getTheme = addCycleButton(p7, "Theme", {"Obsidian","Cobalt","Noir","Crimson","Emerald","Violet","Slate"}, "Obsidian", function(v)
-    if Themes[v] then
-        CurrentTheme = Themes[v]
+-- =============================================
+-- PAGE 7: THEMES (YENI!)
+-- =============================================
+local p7 = tabPages["THEMES"]
+
+-- Bilgi label
+addLabel(p7, "SELECT A THEME", 1)
+
+-- Klasik temalar basligi
+local classicHeader = Instance.new("TextLabel")
+classicHeader.Size = UDim2.new(1,-8,0,24)
+classicHeader.BackgroundTransparency = 1
+classicHeader.Text = "  CLASSIC"
+classicHeader.TextColor3 = CurrentTheme.SubText
+classicHeader.TextSize = 10
+classicHeader.Font = Enum.Font.GothamBold
+classicHeader.TextXAlignment = Enum.TextXAlignment.Left
+classicHeader.LayoutOrder = 2
+classicHeader.ZIndex = 3
+classicHeader.Parent = p7
+table.insert(uiElements, {element=classicHeader, type="sectionLabel"})
+
+-- Klasik tema grid
+local classicGrid = Instance.new("Frame")
+classicGrid.Size = UDim2.new(1, -8, 0, 200)
+classicGrid.BackgroundTransparency = 1
+classicGrid.LayoutOrder = 3
+classicGrid.ZIndex = 3
+classicGrid.Parent = p7
+
+local classicLayout = Instance.new("UIGridLayout", classicGrid)
+classicLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
+classicLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+classicLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+_G.DHL_ThemeButtons = _G.DHL_ThemeButtons or {}
+
+-- Klasik tema kartlari
+for name, theme in pairs(Themes) do
+    if theme.Category == "Classic" then
+        local btn = Instance.new("TextButton")
+        btn.Name = "ThemeBtn_" .. name
+        btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.AutoButtonColor = false
+        btn.ZIndex = 3
+        btn.Parent = classicGrid
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
         
-        MainFrame.BackgroundColor3 = CurrentTheme.Bg
-        mainStroke.Color = CurrentTheme.Button
-        topAccent.BackgroundColor3 = CurrentTheme.Primary
-        tl.TextColor3 = CurrentTheme.Text
-        cl.TextColor3 = CurrentTheme.SubText
-        versionLbl.TextColor3 = CurrentTheme.SubText
-        Sidebar.BackgroundColor3 = CurrentTheme.Panel
-        sideStroke.Color = CurrentTheme.Button
-        profileFrame.BackgroundColor3 = CurrentTheme.Button
-        avatarCircle.BackgroundColor3 = CurrentTheme.Button
-        avatarRing.Color = CurrentTheme.Primary
-        profileName.TextColor3 = CurrentTheme.Text
-        profileStatus.TextColor3 = CurrentTheme.SubText
+        local stroke = Instance.new("UIStroke", btn)
+        stroke.Color = CurrentTheme.Button
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.7
         
-        mainGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(CurrentTheme.Bg.R*255 + 4, CurrentTheme.Bg.G*255 + 4, CurrentTheme.Bg.B*255 + 4)),
-            ColorSequenceKeypoint.new(1, CurrentTheme.Bg),
-        })
+        -- Renk preview (3 kucuk daire)
+        local colorRow = Instance.new("Frame")
+        colorRow.Size = UDim2.new(1, -16, 0, 20)
+        colorRow.Position = UDim2.new(0, 8, 0, 8)
+        colorRow.BackgroundTransparency = 1
+        colorRow.ZIndex = 4
+        colorRow.Parent = btn
         
-        for _, data in ipairs(uiElements) do
-            if data.element and data.element.Parent then
-                if data.type == "toggle" then
-                    data.element.TextColor3 = CurrentTheme.Text
-                elseif data.type == "fill" then
-                    data.element.BackgroundColor3 = CurrentTheme.Accent
-                elseif data.type == "knob" then
-                    data.element.BackgroundColor3 = Color3.fromRGB(255,255,255)
-                elseif data.type == "bg" then
-                    data.element.BackgroundColor3 = CurrentTheme.Button
-                elseif data.type == "keybindBg" then
-                    data.element.BackgroundColor3 = CurrentTheme.Button
-                elseif data.type == "separatorLine" then
-                    data.element.BackgroundColor3 = CurrentTheme.Button
-                elseif data.type == "sectionLabel" then
-                    data.element.TextColor3 = CurrentTheme.SubText
-                elseif data.type == "subLabel" then
-                    data.element.TextColor3 = CurrentTheme.SubText
-                elseif data.type == "stroke" then
-                    data.element.Color = CurrentTheme.Button
-                end
+        local colorLayout = Instance.new("UIListLayout", colorRow)
+        colorLayout.FillDirection = Enum.FillDirection.Horizontal
+        colorLayout.Padding = UDim.new(0, 3)
+        
+        for i, c in ipairs({theme.Primary, theme.Accent, theme.Panel}) do
+            local dot = Instance.new("Frame")
+            dot.Size = UDim2.new(0, 14, 0, 14)
+            dot.BackgroundColor3 = c
+            dot.BorderSizePixel = 0
+            dot.ZIndex = 5
+            dot.Parent = colorRow
+            Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+        end
+        
+        -- Isim
+        local nameLbl = Instance.new("TextLabel")
+        nameLbl.Size = UDim2.new(1, -8, 0, 16)
+        nameLbl.Position = UDim2.new(0, 4, 1, -22)
+        nameLbl.BackgroundTransparency = 1
+        nameLbl.Text = theme.Name
+        nameLbl.TextColor3 = CurrentTheme.Text
+        nameLbl.TextSize = 10
+        nameLbl.Font = Enum.Font.GothamBold
+        nameLbl.ZIndex = 4
+        nameLbl.Parent = btn
+        
+        btn:SetAttribute("ThemeName", name)
+        _G.DHL_ThemeButtons[name] = btn
+        
+        -- Aktif tema ise
+        if name == CurrentTheme.Name then
+            stroke.Transparency = 0
+            stroke.Color = CurrentTheme.Primary
+            btn.BackgroundColor3 = CurrentTheme.Button
+        end
+        
+        btn.MouseEnter:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Button})
+                tween(stroke, 0.15, {Transparency = 0.3})
             end
-        end
+        end)
+        btn.MouseLeave:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Bg})
+                tween(stroke, 0.15, {Transparency = 0.7})
+            end
+        end)
         
-        for n,b in pairs(tabButtons) do 
-            local isActive = (n == activeTab)
-            b.BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0)
-            local ind = b:FindFirstChild("Indicator")
-            if ind then ind.BackgroundColor3 = CurrentTheme.Primary end
-            local nameLbl = b:FindFirstChildOfClass("TextLabel")
-            if nameLbl then nameLbl.TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText end
-        end
-        
-        for _, page in pairs(tabPages) do
-            page.ScrollBarImageColor3 = CurrentTheme.Button
-        end
-        PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Button
-        SideScroll.ScrollBarImageColor3 = CurrentTheme.Button
-        
-        if fovCircle and Settings.FOVUseTheme then
-            fovCircle.Color = CurrentTheme.Accent
-        end
-        
-        Watermark.BackgroundColor3 = CurrentTheme.Panel
-        wmStroke.Color = CurrentTheme.Button
-        wmTitle.TextColor3 = CurrentTheme.Text
-        wmInfo.TextColor3 = CurrentTheme.SubText
-        wmAccent.BackgroundColor3 = CurrentTheme.Primary
-        
-        showToast("Theme", CurrentTheme.Name .. " applied", "info")
+        btn.MouseButton1Click:Connect(function()
+            applyTheme(name)
+        end)
     end
+end
+
+-- Ozel temalar basligi
+local specialHeader = Instance.new("TextLabel")
+specialHeader.Size = UDim2.new(1,-8,0,24)
+specialHeader.BackgroundTransparency = 1
+specialHeader.Text = "  SPECIAL"
+specialHeader.TextColor3 = CurrentTheme.SubText
+specialHeader.TextSize = 10
+specialHeader.Font = Enum.Font.GothamBold
+specialHeader.TextXAlignment = Enum.TextXAlignment.Left
+specialHeader.LayoutOrder = 4
+specialHeader.ZIndex = 3
+specialHeader.Parent = p7
+table.insert(uiElements, {element=specialHeader, type="sectionLabel"})
+
+-- Ozel tema grid
+local specialGrid = Instance.new("Frame")
+specialGrid.Size = UDim2.new(1, -8, 0, 280)
+specialGrid.BackgroundTransparency = 1
+specialGrid.LayoutOrder = 5
+specialGrid.ZIndex = 3
+specialGrid.Parent = p7
+
+local specialLayout = Instance.new("UIGridLayout", specialGrid)
+specialLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
+specialLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+specialLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+for name, theme in pairs(Themes) do
+    if theme.Category == "Special" then
+        local btn = Instance.new("TextButton")
+        btn.Name = "ThemeBtn_" .. name
+        btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.AutoButtonColor = false
+        btn.ZIndex = 3
+        btn.Parent = specialGrid
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+        
+        local stroke = Instance.new("UIStroke", btn)
+        stroke.Color = CurrentTheme.Button
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.7
+        
+        local colorRow = Instance.new("Frame")
+        colorRow.Size = UDim2.new(1, -16, 0, 20)
+        colorRow.Position = UDim2.new(0, 8, 0, 8)
+        colorRow.BackgroundTransparency = 1
+        colorRow.ZIndex = 4
+        colorRow.Parent = btn
+        
+        local colorLayout = Instance.new("UIListLayout", colorRow)
+        colorLayout.FillDirection = Enum.FillDirection.Horizontal
+        colorLayout.Padding = UDim.new(0, 3)
+        
+        for i, c in ipairs({theme.Primary, theme.Accent, theme.Panel}) do
+            local dot = Instance.new("Frame")
+            dot.Size = UDim2.new(0, 14, 0, 14)
+            dot.BackgroundColor3 = c
+            dot.BorderSizePixel = 0
+            dot.ZIndex = 5
+            dot.Parent = colorRow
+            Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+        end
+        
+        local nameLbl = Instance.new("TextLabel")
+        nameLbl.Size = UDim2.new(1, -8, 0, 16)
+        nameLbl.Position = UDim2.new(0, 4, 1, -22)
+        nameLbl.BackgroundTransparency = 1
+        nameLbl.Text = theme.Name
+        nameLbl.TextColor3 = CurrentTheme.Text
+        nameLbl.TextSize = 10
+        nameLbl.Font = Enum.Font.GothamBold
+        nameLbl.ZIndex = 4
+        nameLbl.Parent = btn
+        
+        btn:SetAttribute("ThemeName", name)
+        _G.DHL_ThemeButtons[name] = btn
+        
+        btn.MouseEnter:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Button})
+                tween(stroke, 0.15, {Transparency = 0.3})
+            end
+        end)
+        btn.MouseLeave:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Bg})
+                tween(stroke, 0.15, {Transparency = 0.7})
+            end
+        end)
+        
+        btn.MouseButton1Click:Connect(function()
+            applyTheme(name)
+        end)
+    end
+end
+
+-- =============================================
+-- PAGE 8: SETTINGS
+-- =============================================
+local p8 = tabPages["SETTINGS"]
+addLabel(p8, "INTERFACE", 1)
+local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, 500, function(v)
+    -- 500 = opak (transparency 0), 0 = tam saydam (transparency 1)
+    local transparency = 1 - (v / 500)
+    MainFrame.BackgroundTransparency = transparency
 end, 2)
 
-addSeparator(p7, 3)
-addLabel(p7, "INTERFACE", 4)
-local getGuiTransparency = addSlider(p7, "Gui Transparency", 0, 0.9, 0, function(v)
-    MainFrame.BackgroundTransparency = v
-end, 5)
+addSeparator(p8, 3)
+addLabel(p8, "OVERLAY", 4)
+local getWatermark = addToggle(p8, "Watermark", true, nil, 5, false)
+local getFPSDisplay = addToggle(p8, "FPS Display", true, nil, 6, false)
+local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 7, false)
 
-addSeparator(p7, 6)
-addLabel(p7, "OVERLAY", 7)
-local getWatermark = addToggle(p7, "Watermark", true, nil, 8, false)
-local getFPSDisplay = addToggle(p7, "FPS Display", true, nil, 9, false)
-local getPingDisplay = addToggle(p7, "Ping Display", true, nil, 10, false)
-
-addSeparator(p7, 11)
-addLabel(p7, "CONFIGURATION", 12)
-addButton(p7, "Save Config", function()
+addSeparator(p8, 8)
+addLabel(p8, "CONFIGURATION", 9)
+addButton(p8, "Save Config", function()
     if writefile then
         pcall(function()
             local data = {
                 Theme = CurrentTheme.Name, SpeedValue = Settings.SpeedValue,
                 JumpPowerValue = Settings.JumpPowerValue, FlySpeed = Settings.FlySpeed,
-                FOVRadius = Settings.FOVRadius,
+                FOVRadius = Settings.FOVRadius, GuiTransparency = Settings.GuiTransparency,
             }
             writefile("DHLVIP_config.json", HttpService:JSONEncode(data))
         end)
     end
     showToast("Config", "Settings saved", "success")
-end, 13, CurrentTheme.Button)
+end, 10, CurrentTheme.Button)
 
-addButton(p7, "Load Config", function()
+addButton(p8, "Load Config", function()
     if readfile and isfile then
         pcall(function()
             if isfile("DHLVIP_config.json") then
@@ -1526,15 +1792,15 @@ addButton(p7, "Load Config", function()
                 if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
                 if data.FlySpeed then getFlySpeed(data.FlySpeed) end
                 if data.FOVRadius then getFOVRadius(data.FOVRadius) end
-                if data.Theme and Themes[data.Theme] then CurrentTheme = Themes[data.Theme] end
+                if data.Theme and Themes[data.Theme] then applyTheme(data.Theme) end
             end
         end)
     end
     showToast("Config", "Settings loaded", "success")
-end, 14, CurrentTheme.Button)
+end, 11, CurrentTheme.Button)
 
-addSeparator(p7, 15)
-addLabel(p7, "SESSION", 16)
+addSeparator(p8, 12)
+addLabel(p8, "SESSION", 13)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,80)
 statLabel.BackgroundColor3 = CurrentTheme.Button
@@ -1546,9 +1812,9 @@ statLabel.TextSize = 10
 statLabel.Font = Enum.Font.Code
 statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
-statLabel.LayoutOrder = 17
+statLabel.LayoutOrder = 14
 statLabel.ZIndex = 3
-statLabel.Parent = p7
+statLabel.Parent = p8
 Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 4)
 table.insert(uiElements, {element=statLabel, type="bg"})
 local statPad = Instance.new("UIPadding", statLabel)
@@ -1565,7 +1831,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- WATERMARK (Yesil nokta YOK)
+-- WATERMARK
 -- =============================================
 local Watermark = Instance.new("Frame")
 Watermark.Name = "Watermark"
@@ -1636,7 +1902,7 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- PLAYER LIST LOGIC (Yesil nokta YOK)
+-- PLAYER LIST LOGIC
 -- =============================================
 local playerButtons = {}
 local originalSizes = {}
@@ -1681,7 +1947,6 @@ local function createPlayerButton(player)
     btn.Parent = PlayerScroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
     
-    -- Sol text padding (yesil nokta yok, sadece padding)
     local textPad = Instance.new("UIPadding", btn)
     textPad.PaddingLeft = UDim.new(0, 14)
     
@@ -2348,7 +2613,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[DHL VIP] Clean Pro Edition v2 yuklendi!")
+print("[DHL VIP] Clean Pro Edition v3 yuklendi! Themes sekmesi aktif.")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2365,13 +2630,13 @@ task.spawn(function()
     task.wait(0.7)
     showToast("DHL VIP", "Connection established", "success")
     task.wait(0.6)
-    showToast("Interface", "Press Right Shift to toggle", "info")
+    showToast("Interface", "15 themes available in THEMES tab", "info")
 end)
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL VIP",
-        Text = "Professional Edition loaded",
+        Text = "Theme Customization loaded!",
         Duration = 5
     })
 end)
