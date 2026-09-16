@@ -225,7 +225,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
 
     local btn = Instance.new("TextButton")
     btn.Size = toggleWidth
-    btn.BackgroundColor3 = default and Color3.fromRGB(180,0,0) or Color3.fromRGB(50,50,50)
+    btn.BackgroundColor3 = default and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
     btn.BorderSizePixel = 0
     btn.Text = name .. ": " .. (default and "ON" or "OFF")
     btn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -237,7 +237,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local function doToggle()
         state = not state
         btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(180,0,0) or Color3.fromRGB(50,50,50)
+        btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)
         if callback then callback(state) end
     end
     btn.MouseButton1Click:Connect(doToggle)
@@ -253,8 +253,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.TextSize = 10; kbBtn.Font = Enum.Font.GothamBold; kbBtn.AutoButtonColor = false; kbBtn.ZIndex = 4
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
-        local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(80,0,0); kbStroke.Thickness = 1
-
+local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = Color3.fromRGB(0,60,100); kbStroke.Thickness = 1
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
@@ -285,8 +284,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     return function() return state end, function(v)
         state = v
         btn.Text = name .. ": " .. (state and "ON" or "OFF")
-        btn.BackgroundColor3 = state and Color3.fromRGB(180,0,0) or Color3.fromRGB(50,50,50)
-        if callback then callback(state) end
+btn.BackgroundColor3 = state and Color3.fromRGB(0,120,200) or Color3.fromRGB(30,40,60)        if callback then callback(state) end
     end
 end
 
