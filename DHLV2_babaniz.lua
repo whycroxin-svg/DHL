@@ -1046,6 +1046,7 @@ end)
 -- =============================================
 -- MISC FEATURES
 -- =============================================
+-- Noclip
 RunService.Stepped:Connect(function()
     if getNoclip() and LocalPlayer.Character then
         for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
@@ -1054,13 +1055,38 @@ RunService.Stepped:Connect(function()
     end
 end)
 
+-- Speed + Jump Power (agresif â€” Da Hood icin)
+local lastSpeedSet = 0
 RunService.Heartbeat:Connect(function()
-    if LocalPlayer.Character then
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if hum then
-            if getSpeed() then hum.WalkSpeed = getSpeedValue() end
-            if getJumpPower() then hum.JumpPower = getJumpValue() end
+    if not LocalPlayer.Character then return end
+    local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    -- Speed Hack
+    if getSpeed() then
+        local spd = getSpeedValue()
+        hum.WalkSpeed = spd
+        -- Da Hood override'ina karsi: Velocity boost
+        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and spd > 16 then
+            local moveDir = hum.MoveDirection
+            if moveDir.Magnitude > 0 then
+                local boost = (spd - 16) / 16
+                hrp.Velocity = Vector3.new(
+                    moveDir.X * spd,
+                    hrp.Velocity.Y,
+                    moveDir.Z * spd
+                )
+            end
         end
+    end
+
+    -- Jump Power
+    if getJumpPower() then
+        local jp = getJumpValue()
+        hum.JumpPower = jp
+        hum.JumpHeight = jp * 0.12 -- yeni Roblox jump sistemi icin
+        hum.UseJumpPower = true
     end
 end)
 
