@@ -1140,6 +1140,7 @@ RunService.RenderStepped:Connect(function()
     updateESP()
 
     -- Camlock
+    if menuOpen then return end -- ESC menusu acikken camlock isleme
     if not getCamlock() then
         locked = false; Settings.CurrentTarget = nil; return
     end
@@ -1210,26 +1211,87 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- ESC MENU HIDE
+-- ESC MENU â€” Highlight gizle + lock koru
 -- =============================================
 local guiWasVisible = true
+local lockWasActive = false
+local menuOpen = false
+
+local function hideAllHighlights()
+    for name, hl in pairs(highlightObjects) do
+        pcall(function() hl.Enabled = false end)
+    end
+    -- Drawing objelerini gizle
+    for name, esp in pairs(espDrawings) do
+        for _, obj in pairs(esp) do
+            pcall(function() obj.Visible = false end)
+        end
+    end
+    -- FOV circle gizle
+    if fovCircle then pcall(function() fovCircle.Visible = false end) end
+end
+
+local function showAllHighlights()
+    if not getESP() then return end
+    for name, hl in pairs(highlightObjects) do
+        pcall(function() hl.Enabled = true end)
+    end
+    if fovCircle and getFOVVisible() then
+        pcall(function() fovCircle.Visible = true end)
+    end
+end
+
 pcall(function()
     GuiService.MenuOpened:Connect(function()
+        menuOpen = true
         guiWasVisible = MainFrame.Visible
+        lockWasActive = locked
         MainFrame.Visible = false
+        hideAllHighlights()
     end)
+
     GuiService.MenuClosed:Connect(function()
+        menuOpen = false
         MainFrame.Visible = guiWasVisible
+        showAllHighlights()
+        -- Lock'u geri yukle
+        if lockWasActive and Settings.CurrentTarget then
+            locked = true
+        end
     end)
 end)
 
--- Cleanup on death
+-- =============================================
+-- INPUT PASSTHROUGH FIX
+-- =============================================
+-- ScreenGui oyun inputunu engelemesin
+pcall(function()
+    ScreenGui.IgnoreGuiInset = false
+end)
+
+-- MainFrame disina tiklaninca oyun inputu gecsin
+MainFrame.Active = false
+
+-- Sadece icerik panelleri input alsin, MainFrame gecirgen kalsin
+task.defer(function()
+    task.wait(0.2)
+    -- Tab panellerinin Active'ini ayarla
+    for _, page in pairs(tabPages) do
+        page.Active = true
+    end
+end)
+
+-- =============================================
+-- CLEANUP ON DEATH
+-- =============================================
 LocalPlayer.CharacterRemoving:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
     if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
 end)
 
--- ZIndex fix
+-- =============================================
+-- ZINDEX FIX
+-- =============================================
 task.defer(function()
     task.wait(0.3)
     for _, child in ipairs(MainFrame:GetDescendants()) do
