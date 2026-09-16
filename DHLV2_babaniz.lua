@@ -1,14 +1,12 @@
 --[[
-    DHL V2 - FULL BLATANT EDITION v2
-    Troll, Fling, Kill - Hepsi bir arada
+    DHL V2 - FULL BLATANT v3
+    Server Hop + Rejoin
+    FOV Renk Tema Uyumlu
+    Keybind Tema Uyumlu
     Hook YOK - Adonis tespit etmez
-    8 Sekmeli Full GUI
-    Grief kaldirildi - Troll'e tasindi
-    World ozellikleri duzeltildi (geri alinabilir)
-    Tema degisimi duzeltildi
 ]]
 
-print("[DHL V2] FULL BLATANT v2 yukleniyor...")
+print("[DHL V2] FULL BLATANT v3 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -18,6 +16,7 @@ local Lighting = game:GetService("Lighting")
 local Stats = game:GetService("Stats")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
@@ -56,7 +55,7 @@ local Themes = {
 local CurrentTheme = Themes.Red
 
 -- =============================================
--- ORIGINAL LIGHTING VALUES (geri almak icin)
+-- ORIGINAL LIGHTING VALUES
 -- =============================================
 local OriginalLighting = {
     Ambient = Lighting.Ambient,
@@ -87,7 +86,7 @@ local Settings = {
     TriggerDelay = 0.05,
     FOVVisible = true,
     FOVRadius = 150,
-    FOVColor = "Red",
+    FOVUseTheme = true, -- FOV rengi tema ile uyumlu olsun
     
     ESPEnabled = true,
     ESPNames = true,
@@ -119,7 +118,6 @@ local Settings = {
     HitSound = true,
     GuiTransparency = 0.03,
     
-    -- TROLL
     FlingAll = false,
     FlingTarget = false,
     TouchFling = false,
@@ -136,16 +134,13 @@ local Settings = {
     CharacterSize = false,
     CharacterSizeValue = 1.0,
     
-    -- WORLD
     Fullbright = false,
     NoFog = false,
     RemoveShadows = false,
     TimeChanger = false,
     TimeValue = 12,
     
-    -- Teleport
     TeleportMouseKey = nil,
-    TeleportMouseKeyName = "[ - ]",
     
     Kills = 0,
     Damage = 0,
@@ -241,7 +236,7 @@ tl.BackgroundTransparency = 1; tl.Text = "DHL V2 — BLATANT"; tl.TextColor3 = C
 tl.TextSize = 19; tl.Font = Enum.Font.GothamBold; tl.ZIndex = 5; tl.Parent = MainFrame
 
 local cl = Instance.new("TextLabel"); cl.Size = UDim2.new(1,0,0,14); cl.Position = UDim2.new(0,0,0,27)
-cl.BackgroundTransparency = 1; cl.Text = "By babaniz | Fling • Kill • Troll"; cl.TextColor3 = CurrentTheme.Text
+cl.BackgroundTransparency = 1; cl.Text = "By babaniz | v3 - Server Hop"; cl.TextColor3 = CurrentTheme.Text
 cl.TextSize = 11; cl.Font = Enum.Font.GothamSemibold; cl.ZIndex = 5; cl.Parent = MainFrame
 
 local closeBtn = Instance.new("TextButton")
@@ -288,7 +283,7 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM (8 SEKME - GRIEF KALDIRILDI)
+-- TAB SYSTEM
 -- =============================================
 local tabNames = {"Aimlock", "ESP", "Troll", "Movement", "Players", "World", "Character", "Settings"}
 local tabPages = {}
@@ -367,7 +362,8 @@ end
 -- =============================================
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
-local uiElements = {} -- tema guncellemesi icin
+local uiElements = {}
+local keybindButtons = {} -- keybind butonlarini ayri tut
 
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
@@ -411,6 +407,10 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
         local kbStroke = Instance.new("UIStroke", kbBtn); kbStroke.Color = CurrentTheme.Primary; kbStroke.Thickness = 1
+        
+        -- Tema uyumu icin kaydet
+        table.insert(uiElements, {element=kbBtn, type="keybindBg"})
+        table.insert(uiElements, {element=kbStroke, type="stroke"})
 
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
@@ -546,6 +546,16 @@ local function addButton(page, name, callback, order, color)
 end
 
 -- =============================================
+-- HELPER: FOV rengini temaya gore al
+-- =============================================
+local function getFOVThemeColor()
+    if Settings.FOVUseTheme then
+        return CurrentTheme.Accent
+    end
+    return Color3.fromRGB(255,50,50)
+end
+
+-- =============================================
 -- PAGE 1: AIMLOCK
 -- =============================================
 local p1 = tabPages["Aimlock"]
@@ -580,11 +590,9 @@ addSeparator(p1, 24)
 addLabel(p1, "-- FOV --", 25)
 local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 26, true)
 local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 27)
-local getFOVColor = addCycleButton(p1, "FOV Color", {"Red","Cyan","Green","Yellow","Purple","White"}, "Red", function(v)
-    local colors = {Red=Color3.fromRGB(255,50,50), Cyan=Color3.fromRGB(0,200,255), Green=Color3.fromRGB(0,255,0),
-        Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255)}
-    if fovCircle then fovCircle.Color = colors[v] end
-end, 28)
+local getFOVUseTheme = addToggle(p1, "FOV Follow Theme", true, function(v)
+    Settings.FOVUseTheme = v
+end, 28, false)
 
 -- =============================================
 -- PAGE 2: ESP
@@ -613,7 +621,7 @@ local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","
 local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
 
 -- =============================================
--- PAGE 3: TROLL (GRIEF OZELLIKLERI BURAYA TASINDI)
+-- PAGE 3: TROLL
 -- =============================================
 local p3 = tabPages["Troll"]
 addLabel(p3, "-- FLING --", 1)
@@ -719,7 +727,7 @@ local getWallClimb = addToggle(p4, "Wall Climb", false, nil, 16, true)
 addSeparator(p4, 17)
 addLabel(p4, "-- TELEPORT --", 18)
 
--- Teleport to Mouse keybind
+-- Teleport to Mouse with keybind
 local tpRow = Instance.new("Frame")
 tpRow.Size = UDim2.new(1, -8, 0, 28)
 tpRow.BackgroundTransparency = 1
@@ -748,6 +756,10 @@ tpKbBtn.TextSize = 10; tpKbBtn.Font = Enum.Font.GothamBold; tpKbBtn.AutoButtonCo
 tpKbBtn.ZIndex = 4; tpKbBtn.Parent = tpRow
 Instance.new("UICorner", tpKbBtn).CornerRadius = UDim.new(0, 4)
 local tpStroke = Instance.new("UIStroke", tpKbBtn); tpStroke.Color = CurrentTheme.Primary; tpStroke.Thickness = 1
+
+-- Tema uyumu
+table.insert(uiElements, {element=tpKbBtn, type="keybindBg"})
+table.insert(uiElements, {element=tpStroke, type="stroke"})
 
 local function teleportToMouse()
     local char = LocalPlayer.Character
@@ -845,7 +857,58 @@ local getTimeChanger = addToggle(p6, "Time Changer", false, nil, 5, false)
 local getTimeValue = addSlider(p6, "Time (0-24)", 0, 24, 12, nil, 6)
 
 addSeparator(p6, 7)
-addLabel(p6, "-- WORLD INFO --", 8)
+addLabel(p6, "-- SERVER --", 8)
+addButton(p6, "🔄 Server Rejoin (Ayni Sunucu)", function()
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "DHL V2",
+            Text = "Sunucuya yeniden baglaniliyor...",
+            Duration = 3
+        })
+    end)
+    task.wait(0.5)
+    pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
+end, 9, CurrentTheme.Primary)
+
+addButton(p6, "🌐 Server Hop (Rastgele Sunucu)", function()
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "DHL V2",
+            Text = "Yeni sunucu aranıyor...",
+            Duration = 3
+        })
+    end)
+    task.wait(0.5)
+    pcall(function()
+        -- Rastgele sunucu bul
+        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+        local success, result = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(url))
+        end)
+        if success and result and result.data then
+            local servers = {}
+            for _, server in ipairs(result.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+            if #servers > 0 then
+                local randomServer = servers[math.random(1, #servers)]
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer, LocalPlayer)
+            else
+                -- Sunucu bulunamadiysa normal hop dene
+                TeleportService:Teleport(game.PlaceId, LocalPlayer)
+            end
+        else
+            TeleportService:Teleport(game.PlaceId, LocalPlayer)
+        end
+    end)
+end, 10, Color3.fromRGB(0, 120, 200))
+
+addSeparator(p6, 11)
+addLabel(p6, "-- WORLD INFO --", 12)
 
 local worldInfoLabel = Instance.new("TextLabel")
 worldInfoLabel.Size = UDim2.new(1,-8,0,60)
@@ -858,7 +921,7 @@ worldInfoLabel.TextSize = 11
 worldInfoLabel.Font = Enum.Font.Gotham
 worldInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
 worldInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
-worldInfoLabel.LayoutOrder = 9
+worldInfoLabel.LayoutOrder = 13
 worldInfoLabel.ZIndex = 3
 worldInfoLabel.Parent = p6
 Instance.new("UICorner", worldInfoLabel).CornerRadius = UDim.new(0, 6)
@@ -903,30 +966,35 @@ addLabel(p8, "-- TEMA --", 1)
 local getTheme = addCycleButton(p8, "Theme", {"Red","Blue","Purple","Green","Orange","Pink","Cyan","Dark"}, "Red", function(v)
     if Themes[v] then
         CurrentTheme = Themes[v]
-        -- Canli tema guncellemesi
+        
+        -- Ana frame
         MainFrame.BackgroundColor3 = CurrentTheme.Bg
         mainStroke.Color = CurrentTheme.Primary
         tl.TextColor3 = CurrentTheme.Text
         cl.TextColor3 = CurrentTheme.Text
+        
+        -- Sidebar
         Sidebar.BackgroundColor3 = CurrentTheme.Panel
         sideStroke.Color = CurrentTheme.Primary
         
+        -- Tum UI elemanlari
         for _, data in ipairs(uiElements) do
             if data.element and data.element.Parent then
-                if data.type == "toggle" or data.type == "solid" then
-                    -- Toggle butonlari durumuna gore ayarla
+                if data.type == "toggle" then
                     if data.element.Text:find(": ON") then
                         data.element.BackgroundColor3 = CurrentTheme.Primary
                     elseif data.element.Text:find(": OFF") then
                         data.element.BackgroundColor3 = CurrentTheme.Button
-                    else
-                        data.element.BackgroundColor3 = CurrentTheme.Primary
                     end
+                elseif data.type == "solid" then
+                    data.element.BackgroundColor3 = CurrentTheme.Primary
                 elseif data.type == "fill" then
                     data.element.BackgroundColor3 = CurrentTheme.Primary
                 elseif data.type == "knob" then
                     data.element.BackgroundColor3 = CurrentTheme.Accent
                 elseif data.type == "bg" then
+                    data.element.BackgroundColor3 = CurrentTheme.Button
+                elseif data.type == "keybindBg" then
                     data.element.BackgroundColor3 = CurrentTheme.Button
                 elseif data.type == "separator" then
                     data.element.BackgroundColor3 = CurrentTheme.Primary
@@ -951,11 +1019,9 @@ local getTheme = addCycleButton(p8, "Theme", {"Red","Blue","Purple","Green","Ora
         end
         PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Primary
         
-        -- FOV Circle
-        if fovCircle then
-            local colors = {Red=Color3.fromRGB(255,50,50), Cyan=Color3.fromRGB(0,200,255), Green=Color3.fromRGB(0,255,0),
-                Yellow=Color3.fromRGB(255,255,0), Purple=Color3.fromRGB(180,0,255), White=Color3.fromRGB(255,255,255)}
-            fovCircle.Color = colors[getFOVColor()] or Color3.fromRGB(255,50,50)
+        -- FOV Circle temasi
+        if fovCircle and Settings.FOVUseTheme then
+            fovCircle.Color = CurrentTheme.Accent
         end
         
         -- Watermark
@@ -989,6 +1055,7 @@ addButton(p8, "💾 Ayarlari Kaydet", function()
                 JumpPowerValue = Settings.JumpPowerValue,
                 FlySpeed = Settings.FlySpeed,
                 FOVRadius = Settings.FOVRadius,
+                FOVUseTheme = Settings.FOVUseTheme,
                 OrbitSpeed = Settings.OrbitSpeed,
             }
             writefile("DHLV2_config.json", HttpService:JSONEncode(data))
@@ -1172,7 +1239,7 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 -- =============================================
 local fovCircle, usingDrawing = nil, false
 pcall(function()
-    fovCircle = Drawing.new("Circle"); fovCircle.Color = Color3.fromRGB(255,50,50)
+    fovCircle = Drawing.new("Circle"); fovCircle.Color = CurrentTheme.Accent
     fovCircle.Thickness = 1.5; fovCircle.NumSides = 64; fovCircle.Radius = 150
     fovCircle.Filled = false; fovCircle.Visible = true; fovCircle.Transparency = 0.8
     usingDrawing = true
@@ -1210,7 +1277,8 @@ local function addHighlight(player)
         esp.healthText.Visible = false; esp.healthText.Font = 2
         esp.tracer = Drawing.new("Line"); esp.tracer.Color = Settings.HighlightColor
         esp.tracer.Thickness = 1; esp.tracer.Visible = false; esp.tracer.Transparency = 0.7
-        esp.boxTop = Drawing.new("Line"); esp.boxTop.Thickness = 1; esp.boxTop.Visible = false        esp.boxBottom = Drawing.new("Line"); esp.boxBottom.Thickness = 1; esp.boxBottom.Visible = false
+        esp.boxTop = Drawing.new("Line"); esp.boxTop.Thickness = 1; esp.boxTop.Visible = false
+        esp.boxBottom = Drawing.new("Line"); esp.boxBottom.Thickness = 1; esp.boxBottom.Visible = false
         esp.boxLeft = Drawing.new("Line"); esp.boxLeft.Thickness = 1; esp.boxLeft.Visible = false
         esp.boxRight = Drawing.new("Line"); esp.boxRight.Thickness = 1; esp.boxRight.Visible = false
         espDrawings[player.Name] = esp
@@ -1676,7 +1744,7 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- =============================================
--- FLY + AIMLOCK + WORLD
+-- FLY + AIMLOCK
 -- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
@@ -1686,6 +1754,8 @@ RunService.RenderStepped:Connect(function()
         fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
         fovCircle.Radius = getFOVRadius()
         fovCircle.Visible = getFOVVisible()
+        -- FOV rengi: tema uyumlu veya kirmizi
+        fovCircle.Color = getFOVThemeColor()
     end
 
     updateESP()
@@ -1719,7 +1789,6 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-    -- AIMLOCK
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
     if getAlwaysOn() then
@@ -1793,10 +1862,9 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- WORLD (DUZELTILDI - AC/KAPA)
+-- WORLD (DUZELTILDI)
 -- =============================================
 RunService.Heartbeat:Connect(function()
-    -- Fullbright
     if getFullbright() then
         Lighting.Ambient = Color3.fromRGB(255,255,255)
         Lighting.OutdoorAmbient = Color3.fromRGB(255,255,255)
@@ -1806,19 +1874,16 @@ RunService.Heartbeat:Connect(function()
         Lighting.OutdoorAmbient = OriginalLighting.OutdoorAmbient
         Lighting.Brightness = OriginalLighting.Brightness
     end
-    -- No Fog
     if getNoFog() then
         Lighting.FogEnd = 100000
     else
         Lighting.FogEnd = OriginalLighting.FogEnd
     end
-    -- Remove Shadows
     if getRemoveShadows() then
         Lighting.GlobalShadows = false
     else
         Lighting.GlobalShadows = OriginalLighting.GlobalShadows
     end
-    -- Time Changer
     if getTimeChanger() then
         Lighting.ClockTime = getTimeValue()
     else
@@ -1889,15 +1954,15 @@ print("[DHL V2] Input reset aktif")
 -- =============================================
 -- BILDIRIM
 -- =============================================
-print("[DHL V2] FULL BLATANT v2 - LOADED!")
-print("[DHL V2] Grief kaldirildi, Troll genisletildi")
-print("[DHL V2] World ozellikleri duzeltildi (ac/kapa)")
-print("[DHL V2] Tema degisimi canli guncelleniyor")
+print("[DHL V2] FULL BLATANT v3 - LOADED!")
+print("[DHL V2] Server Hop + Rejoin eklendi")
+print("[DHL V2] FOV rengi tema uyumlu")
+print("[DHL V2] Keybind butonlari tema uyumlu")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "DHL V2 v2",
-        Text = "FULL BLATANT v2 loaded!",
+        Title = "DHL V2 v3",
+        Text = "Server Hop + FOV Theme loaded!",
         Duration = 5
     })
 end)
