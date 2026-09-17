@@ -1,9 +1,9 @@
 --[[
-    Sou Hub - Winter Edition v5
-    KESIN CALISAN SURUM
+    Sou Hub - Winter Edition v6 FINAL
+    TAMAMEN CALISAN SURUM - Tum tablar ve icerikler
 ]]
 
-print("[Sou Hub] Winter Edition v5 yukleniyor...")
+print("[Sou Hub] v6 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -64,8 +64,7 @@ local Settings = {
     Camlock = true, Smoothness = 0.450, Prediction = 0.100,
     TargetPart = "Head", FOVVisible = true, FOVRadius = 150,
     WallCheck = false, StickyAim = true, AutoSwitch = true,
-    SkipDowned = true, AlwaysOn = false, TriggerBot = false,
-    HitboxExpand = false, HitboxSize = 1.3,
+    SkipDowned = true, AlwaysOn = false,
     AutoKill = false, AutoLock = false, AutoFire = false,
     InstantKill = false, RapidKill = false, RapidKillDelay = 0.05,
     KillRange = 100, AutoKillTarget = nil,
@@ -278,7 +277,9 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- TAB BAR
+-- ============================================
+-- TAB BAR (MANUEL POZISYON - GARANTILI CALISIR)
+-- ============================================
 local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1, 0, 0, 45)
 TabBar.Position = UDim2.new(0, 0, 0, 50)
@@ -288,33 +289,27 @@ TabBar.BorderSizePixel = 0
 TabBar.ZIndex = 5
 TabBar.Parent = MainFrame
 
-local TabBarScroll = Instance.new("ScrollingFrame")
-TabBarScroll.Size = UDim2.new(1, 0, 1, 0)
-TabBarScroll.BackgroundTransparency = 1
-TabBarScroll.BorderSizePixel = 0
-TabBarScroll.ScrollBarThickness = 0
-TabBarScroll.CanvasSize = UDim2.new(0, 2000, 0, 0)
-TabBarScroll.ScrollingDirection = Enum.ScrollingDirection.X
-TabBarScroll.ZIndex = 6
-TabBarScroll.Parent = TabBar
-
-local tabLayout = Instance.new("UIListLayout", TabBarScroll)
-tabLayout.FillDirection = Enum.FillDirection.Horizontal
-tabLayout.Padding = UDim.new(0, 4)
-tabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-local tabPad = Instance.new("UIPadding", TabBarScroll)
-tabPad.PaddingLeft = UDim.new(0, 20)
-tabPad.PaddingTop = UDim.new(0, 6)
+-- Alt cizgi
+local tabLine = Instance.new("Frame")
+tabLine.Size = UDim2.new(1, 0, 0, 1)
+tabLine.Position = UDim2.new(0, 0, 1, -1)
+tabLine.BackgroundColor3 = Theme.Border
+tabLine.BorderSizePixel = 0
+tabLine.ZIndex = 6
+tabLine.Parent = TabBar
 
 -- CONTENT AREA
 local ContentArea = Instance.new("Frame")
 ContentArea.Size = UDim2.new(1, -40, 1, -130)
 ContentArea.Position = UDim2.new(0, 20, 0, 105)
 ContentArea.BackgroundTransparency = 1
+ContentArea.ClipsDescendants = true
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
+-- ============================================
 -- UI BUILDERS
+-- ============================================
 local function addToggle(parent, name, default, callback, order)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, 0, 0, 36)
@@ -486,9 +481,7 @@ local function addButton(parent, name, callback, order, color)
     stroke.Thickness = 1
     btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundColor3 = Theme.ButtonHover, BackgroundTransparency = 0.1}) end)
     btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundColor3 = color or Theme.Button, BackgroundTransparency = 0.2}) end)
-    btn.MouseButton1Click:Connect(function()
-        if callback then callback() end
-    end)
+    btn.MouseButton1Click:Connect(function() if callback then callback() end end)
     return btn
 end
 
@@ -507,10 +500,7 @@ local function addSection(parent, text, order, color)
     return lbl
 end
 
--- ============================================
--- SAYFALARI OLUSTUR
--- ============================================
-local function createPage(visible)
+local function createPage()
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, 0, 1, 0)
     page.BackgroundTransparency = 1
@@ -519,7 +509,7 @@ local function createPage(visible)
     page.ScrollBarImageColor3 = Theme.Accent
     page.CanvasSize = UDim2.new(0, 0, 0, 0)
     page.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    page.Visible = visible or false
+    page.Visible = false
     page.ZIndex = 4
     page.Parent = ContentArea
     local layout = Instance.new("UIListLayout", page)
@@ -528,10 +518,13 @@ local function createPage(visible)
     return page
 end
 
+-- ============================================
+-- SAYFALAR
+-- ============================================
 local pages = {}
 
 -- VISUAL
-pages.Visual = createPage(true)
+pages.Visual = createPage()
 addSection(pages.Visual, "❄ Visual", 1)
 addToggle(pages.Visual, "Speed Hack", false, function(v) Settings.SpeedHack = v end, 2)
 addSlider(pages.Visual, "Speed Value", 0, 1000, 16, function(v) Settings.SpeedHackValue = v end, 3)
@@ -676,7 +669,7 @@ SearchBox.Parent = pages.Players
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0, 4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1, 0, 0, 180)
+PlayerScroll.Size = UDim2.new(1, 0, 0, 160)
 PlayerScroll.BackgroundTransparency = 1
 PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 3
@@ -799,7 +792,7 @@ specStatusLabel.ZIndex = 5
 specStatusLabel.Parent = pages.Spectate
 
 local specScroll = Instance.new("ScrollingFrame")
-specScroll.Size = UDim2.new(1, 0, 0, 180)
+specScroll.Size = UDim2.new(1, 0, 0, 160)
 specScroll.BackgroundTransparency = 1
 specScroll.BorderSizePixel = 0
 specScroll.ScrollBarThickness = 3
@@ -972,15 +965,19 @@ addButton(pages.Misc, "Load Config", function()
 end, 9)
 
 -- ============================================
--- TAB BUTONLARI (EN SON!)
+-- TAB BUTONLARI (MANUEL POZISYON)
 -- ============================================
 local tabNames = {"Visual", "AimBot", "AutoKill", "ESP", "Movement", "Players", "World", "Character", "Spectate", "Themes", "Misc"}
 local tabButtons = {}
 local activeTab = "Visual"
+local tabWidth = 90
+local tabGap = 4
 
 for i, name in ipairs(tabNames) do
     local tabBtn = Instance.new("TextButton")
-    tabBtn.Size = UDim2.new(0, 95, 0, 32)
+    tabBtn.Name = "Tab_" .. name
+    tabBtn.Size = UDim2.new(0, tabWidth, 0, 32)
+    tabBtn.Position = UDim2.new(0, 15 + (i-1) * (tabWidth + tabGap), 0, 6)
     tabBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     tabBtn.BackgroundTransparency = 1
     tabBtn.BorderSizePixel = 0
@@ -989,15 +986,14 @@ for i, name in ipairs(tabNames) do
     tabBtn.TextSize = 12
     tabBtn.Font = Enum.Font.GothamBold
     tabBtn.AutoButtonColor = false
-    tabBtn.LayoutOrder = i
     tabBtn.ZIndex = 6
-    tabBtn.Parent = TabBarScroll
+    tabBtn.Parent = TabBar
     Instance.new("UICorner", tabBtn).CornerRadius = UDim.new(0, 6)
     tabButtons[name] = tabBtn
     
     local indicator = Instance.new("Frame")
     indicator.Name = "Indicator"
-    indicator.Size = UDim2.new(0, i==1 and 0.6 or 0, 0, 2)
+    indicator.Size = UDim2.new(i==1 and 0.6 or 0, 0, 0, 2)
     indicator.Position = UDim2.new(0.5, 0, 1, -2)
     indicator.AnchorPoint = Vector2.new(0.5, 0)
     indicator.BackgroundColor3 = (name == "AutoKill") and Theme.Kill or Theme.Accent
@@ -1014,22 +1010,22 @@ for i, name in ipairs(tabNames) do
             tween(btn, 0.2, {TextColor3 = isActive and Theme.Text or Theme.SubText})
             local ind = btn:FindFirstChild("Indicator")
             if ind then
-                tween(ind, 0.25, {Size = isActive and UDim2.new(0.6, 0, 0, 2) or UDim2.new(0, 0, 0, 2)})
+                tween(ind, 0.25, {Size = UDim2.new(isActive and 0.6 or 0, 0, 0, 2)})
             end
         end
         local targetPage = pages[name]
-        if targetPage then
-            targetPage.Visible = true
-        end
+        if targetPage then targetPage.Visible = true end
         activeTab = name
     end)
 end
+
+-- İlk sayfa
+pages.Visual.Visible = true
 
 -- ============================================
 -- LOOPS
 -- ============================================
 local flyBV = nil
-local originalSizes = {}
 
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
@@ -1342,7 +1338,8 @@ pcall(function()
 end)
 
 -- AIMBOT
-local locked = falselocal function isVisible(targetPart)
+local locked = false
+local function isVisible(targetPart)
     if not Settings.WallCheck then return true end
     local origin = Camera.CFrame.Position
     local rp = RaycastParams.new()
@@ -1438,7 +1435,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- SPECTATE LOOP
 RunService.Heartbeat:Connect(function()
     if Settings.Spectating and Settings.SpectateTarget then
         if Settings.SpectateTarget.Character and Settings.SpectateTarget.Character:FindFirstChildOfClass("Humanoid") then
@@ -1506,15 +1502,15 @@ RunService.RenderStepped:Connect(function()
 end)
 RunService.RenderStepped:Connect(function() Watermark.Visible = Settings.Watermark end)
 
-print("[Sou Hub] Winter Edition v5 yuklendi!")
+print("[Sou Hub] v6 yuklendi!")
 
 task.wait(0.5)
-showToast("❄ Sou Hub", "Winter Edition hazir!", "success")
+showToast("❄ Sou Hub", "Winter Edition v6 hazir!", "success")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "❄ Sou Hub",
-        Text = "Winter Edition loaded!",
+        Text = "v6 loaded!",
         Duration = 5
     })
 end)
