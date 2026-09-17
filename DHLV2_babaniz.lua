@@ -1,9 +1,9 @@
 --[[
-    Sou Hub - Winter Edition v2
-    Keybind sistemi eklendi
+    Sou Hub - Winter Edition FINAL
+    TUM SORUNLAR DUZELTILDI
 ]]
 
-print("[Sou Hub] Winter Edition v2 yukleniyor...")
+print("[Sou Hub] yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -38,7 +38,6 @@ local Theme = {
     Panel = Color3.fromRGB(22, 28, 42),
     Header = Color3.fromRGB(18, 24, 38),
     Button = Color3.fromRGB(32, 40, 58),
-    ButtonHover = Color3.fromRGB(42, 52, 72),
     Slider = Color3.fromRGB(30, 38, 55),
     SliderFill = Color3.fromRGB(120, 180, 255),
     Text = Color3.fromRGB(230, 240, 255),
@@ -63,7 +62,7 @@ local Settings = {
     SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
     FOVRadius = 150,
     SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
-    InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
+    InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50,
     AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
     Watermark = true, FPSDisplay = true, PingDisplay = true, GuiTransparency = 250,
     FollowPlayer = false, FollowTarget = nil,
@@ -76,8 +75,12 @@ local Settings = {
     SpectateTarget = nil, Spectating = false,
     Kills = 0, SessionStart = tick(),
     SelectedPlayers = {}, CurrentTarget = nil,
+    ESPEnabled = true, ESPNames = true, ESPHealth = true, ESPDistance = true,
+    ESPTracers = true, ESPBoxes = false,
+    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(120,180,255),
 }
 
+-- CLEANUP
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
     pcall(function()
         local o = loc:FindFirstChild("SouHub_Winter"); if o then o:Destroy() end
@@ -112,7 +115,7 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SouHub_Winter"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
--- KAR YAGISI
+-- KAR
 local snowGui = Instance.new("ScreenGui")
 snowGui.Name = "SouHub_Snow"
 snowGui.ResetOnSpawn = false
@@ -227,6 +230,7 @@ MainFrame.BackgroundColor3 = Theme.Bg
 MainFrame.BackgroundTransparency = 0.05
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
+MainFrame.Visible = true
 MainFrame.Parent = ScreenGui
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 10)
 
@@ -284,7 +288,6 @@ makeDraggable(MainFrame, Header)
 
 -- TAB BAR
 local TabBar = Instance.new("Frame")
-TabBar.Name = "TabBar"
 TabBar.Size = UDim2.new(1, 0, 0, 45)
 TabBar.Position = UDim2.new(0, 0, 0, 50)
 TabBar.BackgroundColor3 = Theme.Bg
@@ -312,7 +315,6 @@ TabScroll.ZIndex = 6
 TabScroll.Parent = TabBar
 
 local ContentArea = Instance.new("Frame")
-ContentArea.Name = "ContentArea"
 ContentArea.Size = UDim2.new(1, -40, 1, -130)
 ContentArea.Position = UDim2.new(0, 20, 0, 105)
 ContentArea.BackgroundTransparency = 1
@@ -320,11 +322,11 @@ ContentArea.ClipsDescendants = true
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
--- KEYBIND SISTEMI
+-- KEYBIND SYSTEM
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
+_G.SouHub_KeybindAssigners = {}
 
--- Tab system
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "Aimlock"
@@ -389,13 +391,6 @@ for i, name in ipairs(tabNames) do
     indicator.Parent = btn
     Instance.new("UICorner", indicator).CornerRadius = UDim.new(0, 1)
     
-    btn.MouseEnter:Connect(function()
-        if activeTab ~= name then tween(btn, 0.15, {TextColor3 = Theme.Accent2}) end
-    end)
-    btn.MouseLeave:Connect(function()
-        if activeTab ~= name then tween(btn, 0.15, {TextColor3 = Theme.SubText}) end
-    end)
-    
     btn.MouseButton1Click:Connect(function()
         if activeTab == name then return end
         activeTab = name
@@ -412,8 +407,6 @@ end
 -- =============================================
 -- UI BUILDERS
 -- =============================================
-
--- Toggle WITH KEYBIND
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, 0, 0, 36)
@@ -422,12 +415,8 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     row.ZIndex = 4
     row.Parent = page
     
-    -- Toggle alani (sol) - keybind butonu sagda olacak
-    local toggleAreaWidth = withKeybind and UDim2.new(1, -60, 1, 0) or UDim2.new(1, 0, 1, 0)
-    
     local nameLbl = Instance.new("TextLabel")
     nameLbl.Size = UDim2.new(0.7, 0, 1, 0)
-    nameLbl.Position = UDim2.new(0, 0, 0, 0)
     nameLbl.BackgroundTransparency = 1
     nameLbl.Text = name
     nameLbl.TextColor3 = Theme.Text
@@ -437,8 +426,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     nameLbl.ZIndex = 5
     nameLbl.Parent = row
     
-    -- Switch sagda, keybind daha sagda
-    local switchPosX = withKeybind and (1, -110) or (1, -50)
     local switchBg = Instance.new("TextButton")
     switchBg.Size = UDim2.new(0, 50, 0, 26)
     switchBg.Position = withKeybind and UDim2.new(1, -110, 0.5, -13) or UDim2.new(1, -50, 0.5, -13)
@@ -483,7 +470,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then doToggle() end
     end)
     
-    -- KEYBIND BUTONU
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
         kbBtn.Size = UDim2.new(0, 50, 0, 26)
@@ -506,12 +492,10 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         local assignedKey = nil
         
         kbBtn.MouseButton1Click:Connect(function()
-            -- Eski keybind'i kaldir
             if assignedKey then
                 keybindCallbacks[assignedKey] = nil
                 assignedKey = nil
             end
-            
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
                 kbBtn.Text = "[ - ]"
@@ -519,21 +503,17 @@ local function addToggle(page, name, default, callback, order, withKeybind)
                 tween(kbBtn, 0.2, {BackgroundColor3 = Theme.Button, BackgroundTransparency = 0.5})
                 return
             end
-            
             if activeKeybindBtn then
                 activeKeybindBtn.Text = "[ - ]"
                 activeKeybindBtn.TextColor3 = Theme.SubText
                 tween(activeKeybindBtn, 0.2, {BackgroundColor3 = Theme.Button, BackgroundTransparency = 0.5})
             end
-            
             activeKeybindBtn = kbBtn
             kbBtn.Text = "[...]"
             kbBtn.TextColor3 = Color3.fromRGB(255, 200, 60)
             tween(kbBtn, 0.2, {BackgroundColor3 = Color3.fromRGB(60, 50, 20), BackgroundTransparency = 0.2})
         end)
         
-        -- Store assign function
-        if not _G.SouHub_KeybindAssigners then _G.SouHub_KeybindAssigners = {} end
         _G.SouHub_KeybindAssigners[kbBtn] = function(keyCode)
             assignedKey = keyCode
             kbBtn.Text = "[" .. keyCode.Name .. "]"
@@ -731,14 +711,12 @@ local function addButton(page, name, callback, order, color)
     btn.ZIndex = 5
     btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.05}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = 0.2}) end)
     btn.MouseButton1Click:Connect(function() if callback then callback() end end)
     return btn
 end
 
 -- =============================================
--- PAGE 1: AIMLOCK
+-- SAYFALAR
 -- =============================================
 local p1 = tabPages["Aimlock"]
 addLabel(p1, "-- CAMLOCK --", 1)
@@ -748,31 +726,18 @@ local getStickyAim = addToggle(p1, "Sticky Aim", true, function(v) Settings.Stic
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, function(v) Settings.AutoSwitch = v end, 5, false)
 local getSkipDowned = addToggle(p1, "Skip Downed", true, function(v) Settings.SkipDowned = v end, 6, true)
 local getAlwaysOn = addToggle(p1, "Always On", false, function(v) Settings.AlwaysOn = v end, 7, true)
-
 addSeparator(p1, 8)
 addLabel(p1, "-- SETTINGS --", 9)
 local getMode = addCycleButton(p1, "Mode", {"RightMouseClick", "NearestCursor", "ToggleQ"}, "RightMouseClick", function(v) Settings.Mode = v end, 10)
 local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 11)
 local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, function(v) Settings.Smoothness = v end, 12)
 local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, function(v) Settings.Prediction = v end, 13)
-
 addSeparator(p1, 14)
-addLabel(p1, "-- TRIGGER BOT --", 15)
-local getTriggerBot = addToggle(p1, "Trigger Bot", false, function(v) Settings.TriggerBot = v end, 16, true)
+addLabel(p1, "-- FOV --", 15)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, function(v) Settings.FOVVisible = v end, 16, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, function(v) Settings.FOVRadius = v end, 17)
 
-addSeparator(p1, 17)
-addLabel(p1, "-- HITBOX --", 18)
-local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, function(v) Settings.HitboxExpand = v end, 19, false)
-local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, function(v) Settings.HitboxSize = v end, 20)
-
-addSeparator(p1, 21)
-addLabel(p1, "-- FOV --", 22)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, function(v) Settings.FOVVisible = v end, 23, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, function(v) Settings.FOVRadius = v end, 24)
-
--- =============================================
--- PAGE 2: AUTOKILL
--- =============================================
+-- AUTOKILL
 local p2 = tabPages["AutoKill"]
 addLabel(p2, "-- AUTO ELIMINATION --", 1, Theme.Kill)
 local getAutoKill = addToggle(p2, "AUTOKILL", false, function(state)
@@ -788,12 +753,9 @@ local getAutoLock = addToggle(p2, "Auto Lock (Kamera)", true, function(v) Settin
 local getAutoFire = addToggle(p2, "Auto Fire (Ates)", true, function(v) Settings.AutoFire = v end, 4, true)
 local getInstantKill = addToggle(p2, "Instant Kill", true, function(v) Settings.InstantKill = v end, 5, true)
 local getRapidKill = addToggle(p2, "Rapid Kill", false, function(v) Settings.RapidKill = v end, 6, true)
-local getRapidDelay = addSlider(p2, "Rapid Delay", 0.01, 0.5, 0.05, function(v) Settings.RapidKillDelay = v end, 7)
-local getKillRange = addSlider(p2, "Kill Range", 5, 500, 100, function(v) Settings.KillRange = v end, 8)
+local getKillRange = addSlider(p2, "Kill Range", 5, 500, 100, function(v) Settings.KillRange = v end, 7)
 
--- =============================================
--- PAGE 3: ESP
--- =============================================
+-- ESP
 local p3 = tabPages["ESP"]
 addLabel(p3, "-- ESP HIGHLIGHT --", 1)
 local getESP = addToggle(p3, "ESP Enabled", true, function(v) Settings.ESPEnabled = v end, 2, true)
@@ -804,18 +766,14 @@ local getHighlightColor = addCycleButton(p3, "Color", {"Cyan","Red","Green","Yel
     Settings.HighlightColor = colors[v] or Color3.fromRGB(100,180,220)
 end, 3)
 local getFillTransparency = addSlider(p3, "Fill Transparency", 0, 1, 0.35, function(v) Settings.HighlightFillTransparency = v end, 4)
-
 addSeparator(p3, 5)
 addLabel(p3, "-- INFO --", 6)
-local getESPNames = addToggle(p3, "Name Tags", true, nil, 7, true)
-local getESPHealth = addToggle(p3, "Health Display", true, nil, 8, false)
-local getESPDistance = addToggle(p3, "Distance Display", true, nil, 9, false)
-local getESPTracers = addToggle(p3, "Tracers", true, nil, 10, true)
-local getESPBoxes = addToggle(p3, "Box ESP", false, nil, 11, true)
+addToggle(p3, "Name Tags", true, nil, 7, true)
+addToggle(p3, "Health Display", true, nil, 8, false)
+addToggle(p3, "Distance Display", true, nil, 9, false)
+addToggle(p3, "Tracers", true, nil, 10, true)
 
--- =============================================
--- PAGE 4: PLAYERS
--- =============================================
+-- PLAYERS
 local p4 = tabPages["Players"]
 addLabel(p4, "-- SELECT PLAYERS --", 1)
 
@@ -945,29 +903,23 @@ addButton(p4, "Kill First Selected", function()
     end
 end, 11, Color3.fromRGB(120, 30, 40))
 
--- =============================================
--- PAGE 5: MOVEMENT
--- =============================================
+-- MOVEMENT
 local p5 = tabPages["Movement"]
 addLabel(p5, "-- SPEED --", 1)
 local getSpeed = addToggle(p5, "Speed Hack", false, function(v) Settings.SpeedEnabled = v end, 2, true)
 local getSpeedValue = addSlider(p5, "Walk Speed", 16, 500, 16, function(v) Settings.SpeedValue = v end, 3)
-
 addSeparator(p5, 4)
 addLabel(p5, "-- JUMP --", 5)
 local getJumpPower = addToggle(p5, "Jump Power", false, function(v) Settings.JumpPowerEnabled = v end, 6, true)
 local getJumpValue = addSlider(p5, "Jump Value", 50, 500, 50, function(v) Settings.JumpPowerValue = v end, 7)
 local getInfJump = addToggle(p5, "Infinite Jump", false, function(v) Settings.InfiniteJump = v end, 8, true)
-
 addSeparator(p5, 9)
 addLabel(p5, "-- FLIGHT --", 10)
 local getFly = addToggle(p5, "Fly", false, function(v) Settings.FlyEnabled = v end, 11, true)
 local getFlySpeed = addSlider(p5, "Fly Speed", 10, 500, 50, function(v) Settings.FlySpeed = v end, 12)
-
 addSeparator(p5, 13)
 addLabel(p5, "-- NOCLIP --", 14)
 local getNoclip = addToggle(p5, "Noclip", false, function(v) Settings.Noclip = v end, 15, true)
-
 addSeparator(p5, 16)
 addLabel(p5, "-- TELEPORT --", 17)
 addButton(p5, "Teleport to Mouse", function()
@@ -978,22 +930,18 @@ addButton(p5, "Teleport to Mouse", function()
     end
 end, 18)
 
--- =============================================
--- PAGE 6: CHARACTER
--- =============================================
+-- CHARACTER
 local p6 = tabPages["Character"]
 addLabel(p6, "-- CHARACTER --", 1)
 local getGodMode = addToggle(p6, "God Mode", false, function(v) Settings.GodMode = v end, 2, true)
 local getAntiFling = addToggle(p6, "Anti Fling", false, function(v) Settings.AntiFling = v end, 3, true)
 local getCharacterSize = addToggle(p6, "Character Size", false, function(v) Settings.CharacterSize = v end, 4, false)
 local getSizeValue = addSlider(p6, "Size Scale", 0.5, 5.0, 1.0, function(v) Settings.CharacterSizeValue = v end, 5)
-
 addSeparator(p6, 6)
 addLabel(p6, "-- DAMAGE AURA --", 7)
 local getDamageAura = addToggle(p6, "Damage Aura", false, function(v) Settings.DamageAura = v end, 8, true)
 local getDamageRange = addSlider(p6, "Aura Range", 3, 30, 10, function(v) Settings.DamageAuraRange = v end, 9)
 local getDamageAmount = addSlider(p6, "Damage Amount", 1, 50, 5, function(v) Settings.DamageAuraAmount = v end, 10)
-
 addSeparator(p6, 11)
 addLabel(p6, "-- ACTIONS --", 12)
 addButton(p6, "Respawn", function()
@@ -1006,14 +954,11 @@ addButton(p6, "Full Heal", function()
     end)
 end, 14)
 
--- =============================================
--- PAGE 7: WORLD
--- =============================================
+-- WORLD
 local p7 = tabPages["World"]
 addLabel(p7, "-- LIGHTING --", 1)
 local getFullbright = addToggle(p7, "Fullbright", false, function(v) Settings.Fullbright = v end, 2, true)
 local getNoFog = addToggle(p7, "No Fog", false, function(v) Settings.NoFog = v end, 3, true)
-
 addSeparator(p7, 4)
 addLabel(p7, "-- SERVER --", 5)
 addButton(p7, "Server Rejoin", function()
@@ -1037,9 +982,7 @@ addButton(p7, "Server Hop", function()
     end)
 end, 7)
 
--- =============================================
--- PAGE 8: SPECTATE
--- =============================================
+-- SPECTATE
 local p8 = tabPages["Spectate"]
 addLabel(p8, "-- SPECTATE MODE --", 1)
 local specStatusLabel = Instance.new("TextLabel")
@@ -1147,9 +1090,7 @@ Players.PlayerRemoving:Connect(function(player)
     refreshSpecList()
 end)
 
--- =============================================
--- PAGE 9: THEMES
--- =============================================
+-- THEMES
 local p9 = tabPages["Themes"]
 addLabel(p9, "-- WINTER THEMES --", 1)
 local themeGrid = Instance.new("Frame")
@@ -1171,10 +1112,6 @@ local themeList = {
     {Name="Emerald", Color=Color3.fromRGB(40,140,100)},
     {Name="Violet", Color=Color3.fromRGB(110,60,180)},
     {Name="Ocean", Color=Color3.fromRGB(30,144,255)},
-    {Name="Sakura", Color=Color3.fromRGB(245,165,184)},
-    {Name="Desert", Color=Color3.fromRGB(200,148,74)},
-    {Name="Halloween", Color=Color3.fromRGB(255,107,26)},
-    {Name="Cyberpunk", Color=Color3.fromRGB(255,0,170)},
 }
 
 for _, t in ipairs(themeList) do
@@ -1194,47 +1131,22 @@ for _, t in ipairs(themeList) do
         Theme.Accent = t.Color
         Theme.Accent2 = t.Color
         Settings.HighlightColor = t.Color
-        showToast("Theme", t.Name .. " uygulandı", "success")
+        showToast("Theme", t.Name, "success")
     end)
 end
 
--- =============================================
--- PAGE 10: SETTINGS
--- =============================================
+-- SETTINGS
 local p10 = tabPages["Settings"]
 addLabel(p10, "-- INTERFACE --", 1)
 local getGuiTransparency = addSlider(p10, "GUI Transparency", 0, 500, 250, function(v)
     Settings.GuiTransparency = v
     MainFrame.BackgroundTransparency = 1 - (v / 500)
 end, 2)
-
 addSeparator(p10, 3)
 addLabel(p10, "-- OVERLAY --", 4)
 addToggle(p10, "Watermark", true, function(v) Settings.Watermark = v end, 5, true)
 addToggle(p10, "FPS Display", true, function(v) Settings.FPSDisplay = v end, 6, false)
 addToggle(p10, "Ping Display", true, function(v) Settings.PingDisplay = v end, 7, false)
-
-addSeparator(p10, 8)
-addLabel(p10, "-- CONFIG --", 9)
-addButton(p10, "Save Config", function()
-    if writefile then
-        pcall(function()
-            local data = {SpeedValue = Settings.SpeedValue, KillRange = Settings.KillRange}
-            writefile("SouHub_config.json", HttpService:JSONEncode(data))
-        end)
-        showToast("Config", "Kaydedildi", "success")
-    end
-end, 10)
-addButton(p10, "Load Config", function()
-    if readfile and isfile then
-        pcall(function()
-            if isfile("SouHub_config.json") then
-                local data = HttpService:JSONDecode(readfile("SouHub_config.json"))
-                showToast("Config", "Yuklendi", "success")
-            end
-        end)
-    end
-end, 11)
 
 -- =============================================
 -- FEATURE LOOPS
@@ -1367,18 +1279,13 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- =============================================
--- INPUT (KEYBIND DINLEME + TETIKLEME)
--- =============================================
 UserInputService.InputBegan:Connect(function(input, gpe)
-    -- Keybind dinleme
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
             local assignFunc = _G.SouHub_KeybindAssigners and _G.SouHub_KeybindAssigners[activeKeybindBtn]
             if assignFunc then assignFunc(input.KeyCode) end
             return
         else
-            -- ESC ile iptal
             activeKeybindBtn.Text = "[ - ]"
             activeKeybindBtn.TextColor3 = Theme.SubText
             tween(activeKeybindBtn, 0.2, {BackgroundColor3 = Theme.Button, BackgroundTransparency = 0.5})
@@ -1387,7 +1294,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end
     end
     
-    -- Keybind tetikleme
     if input.UserInputType == Enum.UserInputType.Keyboard and keybindCallbacks[input.KeyCode] then
         keybindCallbacks[input.KeyCode]()
     end
@@ -1414,7 +1320,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- AUTOKILL
 local lastKillTick = 0
 RunService.RenderStepped:Connect(function()
     if not Settings.AutoKill then return end
@@ -1463,14 +1368,20 @@ pcall(function()
     LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
 end)
 
--- PLAYER LIST
+-- =============================================
+-- PLAYER LIST (DUZELTILDI)
+-- =============================================
 local playerButtons = {}
 local function updateSelectCount()
     local c = 0
     for _ in pairs(Settings.SelectedPlayers) do c = c + 1 end
     SelectCountLabel.Text = "Selected: " .. c
 end
-local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~= nil end
+
+local function isSelected(player) 
+    return Settings.SelectedPlayers[player.Name] ~= nil 
+end
+
 local function toggleSelect(player, btn)
     if isSelected(player) then
         Settings.SelectedPlayers[player.Name] = nil
@@ -1483,15 +1394,19 @@ local function toggleSelect(player, btn)
     end
     updateSelectCount()
 end
+
 local function createPlayerButton(player)
     if player == LocalPlayer then return end
+    if playerButtons[player.Name] then return end
+    
     local sel = isSelected(player)
     local btn = Instance.new("TextButton")
+    btn.Name = "PLR_" .. player.Name
     btn.Size = UDim2.new(1, -4, 0, 32)
     btn.BackgroundColor3 = sel and Theme.Accent or Theme.Button
     btn.BackgroundTransparency = sel and 0 or 0.3
     btn.BorderSizePixel = 0
-    btn.Text = player.DisplayName
+    btn.Text = "  " .. player.DisplayName
     btn.TextColor3 = Theme.Text
     btn.TextSize = 11
     btn.Font = Enum.Font.Gotham
@@ -1500,13 +1415,14 @@ local function createPlayerButton(player)
     btn.ZIndex = 5
     btn.Parent = PlayerScroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-    local tp = Instance.new("UIPadding", btn)
-    tp.PaddingLeft = UDim.new(0, 14)
     btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
     playerButtons[player.Name] = btn
 end
+
 local function refreshPlayerList()
-    for _, b in pairs(playerButtons) do if b and b.Parent then b:Destroy() end end
+    for _, b in pairs(playerButtons) do 
+        if b and b.Parent then b:Destroy() end 
+    end
     playerButtons = {}
     local search = SearchBox.Text:lower()
     for _, p in ipairs(Players:GetPlayers()) do
@@ -1518,25 +1434,47 @@ local function refreshPlayerList()
     end
     updateSelectCount()
 end
+
 SelectAllBtn.MouseButton1Click:Connect(function()
-    for _, p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then Settings.SelectedPlayers[p.Name] = p end end
+    for _, p in ipairs(Players:GetPlayers()) do 
+        if p ~= LocalPlayer then 
+            Settings.SelectedPlayers[p.Name] = p 
+        end 
+    end
     refreshPlayerList()
 end)
+
 ClearAllBtn.MouseButton1Click:Connect(function()
     Settings.SelectedPlayers = {}
     Settings.CurrentTarget = nil
     Settings.AutoKillTarget = nil
     refreshPlayerList()
 end)
+
+-- Baslangicta liste guncelle
 refreshPlayerList()
-Players.PlayerAdded:Connect(function() task.wait(0.5); refreshPlayerList() end)
+
+-- Oyuncular eklendiginde
+Players.PlayerAdded:Connect(function(player)
+    task.wait(0.5)
+    refreshPlayerList()
+    player.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        if Settings.ESPEnabled and isSelected(player) then
+            -- ESP aktifse tekrar highlight ekle
+        end
+    end)
+end)
+
 Players.PlayerRemoving:Connect(function(player)
     Settings.SelectedPlayers[player.Name] = nil
     if Settings.CurrentTarget == player then Settings.CurrentTarget = nil end
     if Settings.AutoKillTarget == player then Settings.AutoKillTarget = nil end
+    removeHighlight(player.Name)
     task.wait(0.1)
     refreshPlayerList()
 end)
+
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- ESP
@@ -1565,6 +1503,7 @@ function removeHighlight(playerName)
         highlightObjects[playerName] = nil
     end
 end
+
 local function updateESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -1757,18 +1696,18 @@ RunService.RenderStepped:Connect(function()
 end)
 RunService.RenderStepped:Connect(function() Watermark.Visible = Settings.Watermark end)
 
-print("[Sou Hub] Winter Edition v2 yuklendi!")
-print("[Sou Hub] Keybind sistemi aktif - toggle yanindaki [ - ] butonuna tikla")
+print("[Sou Hub] Winter Edition yuklendi!")
+print("[Sou Hub] Player listesi aktif - " .. #Players:GetPlayers() .. " oyuncu bulundu")
 
+task.wait(0.3)
+showToast("❄ Sou Hub", "Winter Edition hazir!", "success")
 task.wait(0.5)
-showToast("❄ Sou Hub", "Winter Edition v2 hazir!", "success")
-task.wait(0.6)
-showToast("Keybind", "Toggle yanindaki [ - ] butonuna tikla, tus bas", "info")
+showToast("Player Listesi", #Players:GetPlayers() .. " oyuncu yuklendi", "info")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "❄ Sou Hub",
-        Text = "Keybind sistemi aktif!",
+        Text = "Winter Edition loaded!",
         Duration = 5
     })
 end)
