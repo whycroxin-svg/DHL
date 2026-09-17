@@ -1,11 +1,10 @@
 --[[
-    DHL VIP - CLEAN PRO EDITION v4
-    Transparency varsayilan: 250 (yarim saydam)
-    Save/Load duzeltildi - gelismis hata yakalama
-    Anime kizi arka plani eklendi
+    SOU HUB - CLEAN PRO EDITION
+    Winter Theme + Kar Yagisi
+    Tum ozellikler aynen korundu
 ]]
 
-print("[DHL VIP] Clean Pro Edition v4 yukleniyor...")
+print("[SOU HUB] Winter Edition yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -42,6 +41,7 @@ end
 -- THEMES
 -- =============================================
 local Themes = {
+    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
     Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
     Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
     Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
@@ -49,7 +49,6 @@ local Themes = {
     Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
     Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
     Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
-    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
     Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90),  G1=Color3.fromRGB(255,140,60), G2=Color3.fromRGB(160,60,20)},
     Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90),  G1=Color3.fromRGB(220,180,110),G2=Color3.fromRGB(140,90,50)},
     Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200), G1=Color3.fromRGB(60,160,240), G2=Color3.fromRGB(20,80,160)},
@@ -58,7 +57,7 @@ local Themes = {
     Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160), G1=Color3.fromRGB(230,60,60), G2=Color3.fromRGB(20,140,60)},
     Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150), G1=Color3.fromRGB(255,140,90), G2=Color3.fromRGB(180,60,120)},
 }
-local CurrentTheme = Themes.Obsidian
+local CurrentTheme = Themes.Winter
 
 local OriginalLighting = {
     Ambient = Lighting.Ambient,
@@ -80,7 +79,7 @@ local Settings = {
     
     ESPEnabled = true, ESPNames = true, ESPHealth = true, ESPDistance = true,
     ESPTracers = true, ESPBoxes = false, ESPTracerOrigin = "Bottom",
-    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,150,170),
+    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,168,200),
     
     SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
     InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
@@ -105,11 +104,19 @@ local Settings = {
 -- CLEANUP
 -- =============================================
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
-    pcall(function() local o = loc:FindFirstChild("DHLV2_babaniz"); if o then o:Destroy() end end)
+    pcall(function() 
+        local o = loc:FindFirstChild("SOUHUB_Winter"); if o then o:Destroy() end
+        local o2 = loc:FindFirstChild("SOUHUB_Snow"); if o2 then o2:Destroy() end
+    end)
 end
-pcall(function() if gethui then local o = gethui():FindFirstChild("DHLV2_babaniz"); if o then o:Destroy() end end end)
+pcall(function() 
+    if gethui then 
+        local o = gethui():FindFirstChild("SOUHUB_Winter"); if o then o:Destroy() end
+        local o2 = gethui():FindFirstChild("SOUHUB_Snow"); if o2 then o2:Destroy() end
+    end 
+end)
 for _, plr in ipairs(Players:GetPlayers()) do
-    pcall(function() if plr.Character then local h = plr.Character:FindFirstChild("DHL_Highlight"); if h then h:Destroy() end end end)
+    pcall(function() if plr.Character then local h = plr.Character:FindFirstChild("SOUHUB_Highlight"); if h then h:Destroy() end end end)
 end
 
 -- =============================================
@@ -127,20 +134,66 @@ end
 -- =============================================
 local guiParent = getGuiParent()
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "DHLV2_babaniz"
+ScreenGui.Name = "SOUHUB_Winter"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 999
 ScreenGui.IgnoreGuiInset = true
 if guiParent:IsA("ScreenGui") then
-    ScreenGui = guiParent; ScreenGui.Name = "DHLV2_babaniz"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
+    ScreenGui = guiParent; ScreenGui.Name = "SOUHUB_Winter"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
+
+-- =============================================
+-- ❄️ KAR YAGISI EFEKTI
+-- =============================================
+local snowGui = Instance.new("ScreenGui")
+snowGui.Name = "SOUHUB_Snow"
+snowGui.ResetOnSpawn = false
+snowGui.DisplayOrder = 1
+snowGui.IgnoreGuiInset = true
+snowGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+snowGui.Parent = guiParent
+
+local snowContainer = Instance.new("Frame")
+snowContainer.Name = "SnowContainer"
+snowContainer.Size = UDim2.new(1, 0, 1, 0)
+snowContainer.BackgroundTransparency = 1
+snowContainer.Parent = snowGui
+
+local function createSnowflake()
+    local sf = Instance.new("TextLabel")
+    sf.Size = UDim2.new(0, math.random(8, 18), 0, math.random(8, 18))
+    sf.Position = UDim2.new(math.random(), 0, -0.05, 0)
+    sf.BackgroundTransparency = 1
+    sf.Text = "❄"
+    sf.TextColor3 = Color3.fromRGB(255, 255, 255)
+    sf.TextSize = math.random(8, 18)
+    sf.TextTransparency = math.random(3, 7) / 10
+    sf.Font = Enum.Font.GothamBold
+    sf.Rotation = math.random(0, 360)
+    sf.Parent = snowContainer
+    local dur = math.random(6, 14)
+    local drift = math.random(-20, 20) / 100
+    local rotate = math.random(-180, 180)
+    tween(sf, dur, {
+        Position = UDim2.new(sf.Position.X.Scale + drift, 0, 1.1, 0),
+        Rotation = sf.Rotation + rotate
+    }, Enum.EasingStyle.Linear)
+    task.delay(dur, function() if sf and sf.Parent then sf:Destroy() end end)
+end
+
+task.spawn(function()
+    while snowContainer.Parent do
+        createSnowflake()
+        task.wait(math.random(5, 15) / 100)
+    end
+end)
 
 -- =============================================
 -- SPLASH SCREEN
 -- =============================================
 local splashGui = Instance.new("ScreenGui")
-splashGui.Name = "DHL_Splash"
+splashGui.Name = "SOUHUB_Splash"
 splashGui.ResetOnSpawn = false
 splashGui.DisplayOrder = 10000
 splashGui.IgnoreGuiInset = true
@@ -177,7 +230,7 @@ local splashTitle = Instance.new("TextLabel")
 splashTitle.Size = UDim2.new(1, 0, 0, 40)
 splashTitle.Position = UDim2.new(0, 0, 0.5, -20)
 splashTitle.BackgroundTransparency = 1
-splashTitle.Text = "D H L"
+splashTitle.Text = "S O U"
 splashTitle.TextColor3 = Color3.fromRGB(255,255,255)
 splashTitle.TextSize = 36
 splashTitle.Font = Enum.Font.GothamBlack
@@ -189,7 +242,7 @@ local splashSub = Instance.new("TextLabel")
 splashSub.Size = UDim2.new(1, 0, 0, 16)
 splashSub.Position = UDim2.new(0, 0, 0.5, 22)
 splashSub.BackgroundTransparency = 1
-splashSub.Text = "P R O F E S S I O N A L   E D I T I O N"
+splashSub.Text = "W I N T E R   E D I T I O N"
 splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
@@ -388,7 +441,7 @@ mainStroke.Thickness = 1
 mainStroke.Transparency = InitialTransparency + 0.2
 
 -- =============================================
--- 🎨 ANIME KIZI ARKA PLANI (YENİ)
+-- ANIME KIZI ARKA PLANI
 -- =============================================
 local animeBg = Instance.new("ImageLabel")
 animeBg.Name = "AnimeBackground"
@@ -437,7 +490,7 @@ mainGradient.Rotation = 135
 local tl = Instance.new("TextLabel")
 tl.Size = UDim2.new(1, 0, 0, 18); tl.Position = UDim2.new(0, 24, 0, 16)
 tl.BackgroundTransparency = 1
-tl.Text = "DHL VIP"
+tl.Text = "SOU HUB"
 tl.TextColor3 = CurrentTheme.Text
 tl.TextSize = 15
 tl.Font = Enum.Font.GothamBold
@@ -448,7 +501,7 @@ tl.Parent = MainFrame
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
-cl.Text = "PROFESSIONAL EDITION"
+cl.Text = "WINTER EDITION"
 cl.TextColor3 = CurrentTheme.SubText
 cl.TextSize = 9
 cl.Font = Enum.Font.GothamSemibold
@@ -460,7 +513,7 @@ local versionLbl = Instance.new("TextLabel")
 versionLbl.Size = UDim2.new(0, 60, 0, 14)
 versionLbl.Position = UDim2.new(1, -120, 0, 20)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v6.0.4"
+versionLbl.Text = "v1.0"
 versionLbl.TextColor3 = CurrentTheme.SubText
 versionLbl.TextSize = 10
 versionLbl.Font = Enum.Font.Gotham
@@ -864,8 +917,8 @@ local function addToggle(page, name, default, callback, order, withKeybind)
             activeKeybindBtn = nil
         end
 
-        if not _G.DHL_KeybindAssigners then _G.DHL_KeybindAssigners = {} end
-        _G.DHL_KeybindAssigners[kbBtn] = assignKeybind
+        if not _G.SOUHUB_KeybindAssigners then _G.SOUHUB_KeybindAssigners = {} end
+        _G.SOUHUB_KeybindAssigners[kbBtn] = assignKeybind
     end
 
     return function() return state end, function(v)
@@ -1189,7 +1242,7 @@ local function applyTheme(themeName)
     wmInfo.TextColor3 = CurrentTheme.SubText
     wmAccent.BackgroundColor3 = CurrentTheme.Primary
     
-    for _, btn in pairs(_G.DHL_ThemeButtons or {}) do
+    for _, btn in pairs(_G.SOUHUB_ThemeButtons or {}) do
         if btn.Parent then
             local isActive = btn:GetAttribute("ThemeName") == themeName
             if isActive then
@@ -1591,7 +1644,7 @@ classicLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
 classicLayout.CellPadding = UDim2.new(0, 6, 0, 6)
 classicLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-_G.DHL_ThemeButtons = _G.DHL_ThemeButtons or {}
+_G.SOUHUB_ThemeButtons = _G.SOUHUB_ThemeButtons or {}
 
 for name, theme in pairs(Themes) do
     if theme.Category == "Classic" then
@@ -1644,7 +1697,7 @@ for name, theme in pairs(Themes) do
         nameLbl.Parent = btn
         
         btn:SetAttribute("ThemeName", name)
-        _G.DHL_ThemeButtons[name] = btn
+        _G.SOUHUB_ThemeButtons[name] = btn
         
         if name == CurrentTheme.Name then
             stroke.Transparency = 0
@@ -1747,7 +1800,7 @@ for name, theme in pairs(Themes) do
         nameLbl.Parent = btn
         
         btn:SetAttribute("ThemeName", name)
-        _G.DHL_ThemeButtons[name] = btn
+        _G.SOUHUB_ThemeButtons[name] = btn
         
         btn.MouseEnter:Connect(function()
             if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
@@ -1791,7 +1844,7 @@ addLabel(p8, "CONFIGURATION", 9)
 -- =============================================
 -- SAVE / LOAD SISTEMI
 -- =============================================
-local CONFIG_FILE = "DHLVIP_config.json"
+local CONFIG_FILE = "SOUHUB_config.json"
 
 local function hasFileSupport()
     return writefile ~= nil and readfile ~= nil and isfile ~= nil
@@ -1800,7 +1853,7 @@ end
 local function saveConfig()
     if not hasFileSupport() then
         showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
-        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        print("[SOU HUB] HATA: writefile/readfile desteklenmiyor!")
         return false
     end
     
@@ -1816,7 +1869,7 @@ local function saveConfig()
         HitboxSize = Settings.HitboxSize,
         AimShake = Settings.AimShake,
         EspFillTransparency = Settings.HighlightFillTransparency,
-        Version = "6.0.4",
+        Version = "1.0",
         SavedAt = os.time(),
     }
     
@@ -1826,7 +1879,7 @@ local function saveConfig()
     
     if not success then
         showToast("Config Error", "Encode hatasi olustu", "error")
-        print("[DHL VIP] HATA: JSON encode basarisiz!")
+        print("[SOU HUB] HATA: JSON encode basarisiz!")
         return false
     end
     
@@ -1836,11 +1889,11 @@ local function saveConfig()
     
     if writeSuccess then
         showToast("Config Saved", "Ayarlar kaydedildi: " .. CONFIG_FILE, "success")
-        print("[DHL VIP] Ayarlar kaydedildi: " .. CONFIG_FILE)
+        print("[SOU HUB] Ayarlar kaydedildi: " .. CONFIG_FILE)
         return true
     else
         showToast("Config Error", "Yazma hatasi: " .. tostring(writeErr), "error")
-        print("[DHL VIP] HATA: writefile basarisiz - " .. tostring(writeErr))
+        print("[SOU HUB] HATA: writefile basarisiz - " .. tostring(writeErr))
         return false
     end
 end
@@ -1848,7 +1901,7 @@ end
 local function loadConfig()
     if not hasFileSupport() then
         showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
-        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        print("[SOU HUB] HATA: writefile/readfile desteklenmiyor!")
         return false
     end
     
@@ -1857,7 +1910,7 @@ local function loadConfig()
     
     if not exists then
         showToast("Config Error", "Kayitli config bulunamadi", "warning")
-        print("[DHL VIP] Config dosyasi bulunamadi: " .. CONFIG_FILE)
+        print("[SOU HUB] Config dosyasi bulunamadi: " .. CONFIG_FILE)
         return false
     end
     
@@ -1867,7 +1920,7 @@ local function loadConfig()
     
     if not readSuccess or not content then
         showToast("Config Error", "Okuma hatasi", "error")
-        print("[DHL VIP] HATA: readfile basarisiz!")
+        print("[SOU HUB] HATA: readfile basarisiz!")
         return false
     end
     
@@ -1877,7 +1930,7 @@ local function loadConfig()
     
     if not decodeSuccess or not data then
         showToast("Config Error", "Bozuk config dosyasi", "error")
-        print("[DHL VIP] HATA: JSON decode basarisiz!")
+        print("[SOU HUB] HATA: JSON decode basarisiz!")
         return false
     end
     
@@ -1900,7 +1953,7 @@ local function loadConfig()
     if data.EspFillTransparency then getFillTransparency(data.EspFillTransparency) end
     
     showToast("Config Loaded", "Ayarlar yuklendi!", "success")
-    print("[DHL VIP] Ayarlar yuklendi!")
+    print("[SOU HUB] Ayarlar yuklendi!")
     return true
 end
 
@@ -1921,8 +1974,7 @@ statLabel.BorderSizePixel = 0
 statLabel.Text = "  Status     : ACTIVE\n  Kills      : 0\n  Session    : 0s\n  User       : " .. LocalPlayer.Name
 statLabel.TextColor3 = CurrentTheme.SubText
 statLabel.TextSize = 10
-statLabel.Font = Enum.Font.Code
-statLabel.TextXAlignment = Enum.TextXAlignment.Left
+statLabel.Font = Enum.Font.CodestatLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
 statLabel.LayoutOrder = 14
 statLabel.ZIndex = 3
@@ -1973,7 +2025,7 @@ local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18)
 wmTitle.Position = UDim2.new(0, 12, 0, 8)
 wmTitle.BackgroundTransparency = 1
-wmTitle.Text = "DHL VIP"
+wmTitle.Text = "SOU HUB"
 wmTitle.TextColor3 = CurrentTheme.Text
 wmTitle.TextSize = 11
 wmTitle.Font = Enum.Font.GothamBold
@@ -2134,7 +2186,7 @@ local function addHighlight(player)
         else return end
     end
     local hl = Instance.new("Highlight")
-    hl.Name = "DHL_Highlight"
+    hl.Name = "SOUHUB_Highlight"
     hl.FillColor = Settings.HighlightColor
     hl.OutlineColor = Settings.HighlightColor
     hl.FillTransparency = Settings.HighlightFillTransparency
@@ -2344,7 +2396,7 @@ end
 UserInputService.InputBegan:Connect(function(input, gpe)
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
-            local assignFunc = _G.DHL_KeybindAssigners and _G.DHL_KeybindAssigners[activeKeybindBtn]
+            local assignFunc = _G.SOUHUB_KeybindAssigners and _G.SOUHUB_KeybindAssigners[activeKeybindBtn]
             if assignFunc then assignFunc(input.KeyCode) end
             return
         else
@@ -2553,7 +2605,7 @@ RunService.RenderStepped:Connect(function()
                 flyBV.Velocity = Vector3.new(0,0,0)
                 flyBV.Parent = root
                 local bg = Instance.new("BodyGyro")
-                bg.Name = "DHL_AntiGrav"
+                bg.Name = "SOUHUB_AntiGrav"
                 bg.MaxTorque = Vector3.new(math.huge,math.huge,math.huge)
                 bg.Parent = root
             end
@@ -2567,12 +2619,12 @@ RunService.RenderStepped:Connect(function()
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0,1,0) end
             if dir.Magnitude > 0 then dir = dir.Unit end
             flyBV.Velocity = dir * speed
-            local bg = root:FindFirstChild("DHL_AntiGrav"); if bg then bg.CFrame = Camera.CFrame end
+            local bg = root:FindFirstChild("SOUHUB_AntiGrav"); if bg then bg.CFrame = Camera.CFrame end
         end
     else
         if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local bg = LocalPlayer.Character.HumanoidRootPart:FindFirstChild("DHL_AntiGrav"); if bg then bg:Destroy() end
+            local bg = LocalPlayer.Character.HumanoidRootPart:FindFirstChild("SOUHUB_AntiGrav"); if bg then bg:Destroy() end
         end
     end
 
@@ -2725,7 +2777,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[DHL VIP] v4 yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
+print("[SOU HUB] Winter Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2740,7 +2792,7 @@ task.spawn(function()
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     task.wait(0.7)
-    showToast("DHL VIP", "Connection established", "success")
+    showToast("SOU HUB", "Winter Edition hazir!", "success")
     task.wait(0.6)
     
     if hasFileSupport and hasFileSupport() then
@@ -2759,8 +2811,8 @@ end)
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "DHL VIP",
-        Text = "Config system ready!",
+        Title = "SOU HUB",
+        Text = "Winter Edition loaded!",
         Duration = 5
     })
 end)
