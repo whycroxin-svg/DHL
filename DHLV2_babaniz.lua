@@ -1,10 +1,10 @@
 --[[
-    DHL VIP - CLEAN PRO EDITION v4
-    Transparency varsayilan: 250 (yarim saydam)
-    Save/Load duzeltildi - gelismis hata yakalama
+    DHL VIP - AUTOKILL EDITION v5
+    Da Hood tarzi otomatik kill sistemi
+    Hedefe kilitlen - Otomatik ates et
 ]]
 
-print("[DHL VIP] Clean Pro Edition v4 yukleniyor...")
+print("[DHL VIP] AutoKill Edition v5 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -57,7 +57,7 @@ local Themes = {
     Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160), G1=Color3.fromRGB(230,60,60), G2=Color3.fromRGB(20,140,60)},
     Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150), G1=Color3.fromRGB(255,140,90), G2=Color3.fromRGB(180,60,120)},
 }
-local CurrentTheme = Themes.Obsidian
+local CurrentTheme = Themes.Crimson
 
 local OriginalLighting = {
     Ambient = Lighting.Ambient,
@@ -77,16 +77,26 @@ local Settings = {
     SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
     FOVRadius = 150, FOVUseTheme = true,
     
+    -- AUTOKILL
+    AutoKill = false,
+    AutoLock = false,
+    AutoFire = false,
+    InstantKill = false,
+    RapidKill = false,
+    RapidKillDelay = 0.05,
+    KillRange = 100,
+    AutoKillTarget = nil,
+    
     ESPEnabled = true, ESPNames = true, ESPHealth = true, ESPDistance = true,
     ESPTracers = true, ESPBoxes = false, ESPTracerOrigin = "Bottom",
-    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,150,170),
+    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(220,50,60),
     
     SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
     InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
     
     AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
     Watermark = true, FPSDisplay = true, PingDisplay = true,
-    GuiTransparency = 250, -- 250 = yarim saydam (varsayilan)
+    GuiTransparency = 250,
     
     FollowPlayer = false, FollowTarget = nil,
     DamageAura = false, DamageAuraRange = 10, DamageAuraAmount = 5,
@@ -136,7 +146,7 @@ if guiParent:IsA("ScreenGui") then
 else ScreenGui.Parent = guiParent end
 
 -- =============================================
--- SPLASH SCREEN
+-- SPLASH
 -- =============================================
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "DHL_Splash"
@@ -149,7 +159,6 @@ splashGui.Parent = guiParent
 local splashFrame = Instance.new("Frame")
 splashFrame.Size = UDim2.new(1, 0, 1, 0)
 splashFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
-splashFrame.BackgroundTransparency = 0
 splashFrame.BorderSizePixel = 0
 splashFrame.ZIndex = 1
 splashFrame.Parent = splashGui
@@ -188,7 +197,7 @@ local splashSub = Instance.new("TextLabel")
 splashSub.Size = UDim2.new(1, 0, 0, 16)
 splashSub.Position = UDim2.new(0, 0, 0.5, 22)
 splashSub.BackgroundTransparency = 1
-splashSub.Text = "P R O F E S S I O N A L   E D I T I O N"
+splashSub.Text = "A U T O K I L L   E D I T I O N"
 splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
@@ -256,7 +265,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- TOAST SISTEMI
+-- TOAST
 -- =============================================
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
@@ -278,6 +287,7 @@ local function showToast(title, message, toastType)
         success = Color3.fromRGB(80, 200, 130),
         warning = Color3.fromRGB(230, 180, 60),
         error = Color3.fromRGB(220, 70, 80),
+        kill = Color3.fromRGB(255, 60, 60),
     }
     
     local toast = Instance.new("Frame")
@@ -291,12 +301,12 @@ local function showToast(title, message, toastType)
     Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 6)
     
     local stroke = Instance.new("UIStroke", toast)
-    stroke.Color = CurrentTheme.Button
-    stroke.Thickness = 1
-    stroke.Transparency = 0
+    stroke.Color = colors[toastType]
+    stroke.Thickness = 1.5
+    stroke.Transparency = 0.3
     
     local bar = Instance.new("Frame")
-    bar.Size = UDim2.new(0, 2, 1, 0)
+    bar.Size = UDim2.new(0, 3, 1, 0)
     bar.Position = UDim2.new(0, 0, 0, 0)
     bar.BackgroundColor3 = colors[toastType]
     bar.BorderSizePixel = 0
@@ -305,7 +315,7 @@ local function showToast(title, message, toastType)
     
     local titleLbl = Instance.new("TextLabel")
     titleLbl.Size = UDim2.new(1, -24, 0, 18)
-    titleLbl.Position = UDim2.new(0, 14, 0, 10)
+    titleLbl.Position = UDim2.new(0, 16, 0, 10)
     titleLbl.BackgroundTransparency = 1
     titleLbl.Text = title
     titleLbl.TextColor3 = CurrentTheme.Text
@@ -317,7 +327,7 @@ local function showToast(title, message, toastType)
     
     local msgLbl = Instance.new("TextLabel")
     msgLbl.Size = UDim2.new(1, -24, 0, 16)
-    msgLbl.Position = UDim2.new(0, 14, 0, 28)
+    msgLbl.Position = UDim2.new(0, 16, 0, 28)
     msgLbl.BackgroundTransparency = 1
     msgLbl.Text = message
     msgLbl.TextColor3 = CurrentTheme.SubText
@@ -365,9 +375,8 @@ end
 
 -- =============================================
 -- MAIN FRAME
--- Transparency: 250 = 1 - 250/500 = 0.5 (yarim saydam)
 -- =============================================
-local InitialTransparency = 1 - (Settings.GuiTransparency / 500) -- = 0.5
+local InitialTransparency = 1 - (Settings.GuiTransparency / 500)
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -421,7 +430,7 @@ tl.Parent = MainFrame
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
-cl.Text = "PROFESSIONAL EDITION"
+cl.Text = "AUTOKILL EDITION"
 cl.TextColor3 = CurrentTheme.SubText
 cl.TextSize = 9
 cl.Font = Enum.Font.GothamSemibold
@@ -433,7 +442,7 @@ local versionLbl = Instance.new("TextLabel")
 versionLbl.Size = UDim2.new(0, 60, 0, 14)
 versionLbl.Position = UDim2.new(1, -120, 0, 20)
 versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v6.0.4"
+versionLbl.Text = "v6.0.5"
 versionLbl.TextColor3 = CurrentTheme.SubText
 versionLbl.TextSize = 10
 versionLbl.Font = Enum.Font.Gotham
@@ -468,6 +477,66 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Size = UDim2.new(0, 700, 0, 480)
     MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
     MainFrame.BackgroundTransparency = 1 - (Settings.GuiTransparency / 500)
+end)
+
+-- =============================================
+-- AUTOKILL STATUS BANNER (Sag ustte kucuk gosterge)
+-- =============================================
+local killBanner = Instance.new("Frame")
+killBanner.Size = UDim2.new(0, 200, 0, 44)
+killBanner.Position = UDim2.new(1, -215, 0, 15)
+killBanner.BackgroundColor3 = Color3.fromRGB(30, 8, 12)
+killBanner.BackgroundTransparency = 0.1
+killBanner.BorderSizePixel = 0
+killBanner.Visible = false
+killBanner.ZIndex = 600
+killBanner.Parent = ScreenGui
+Instance.new("UICorner", killBanner).CornerRadius = UDim.new(0, 6)
+local kbStroke = Instance.new("UIStroke", killBanner)
+kbStroke.Color = Color3.fromRGB(220, 50, 60)
+kbStroke.Thickness = 1.5
+
+local kbDot = Instance.new("Frame")
+kbDot.Size = UDim2.new(0, 8, 0, 8)
+kbDot.Position = UDim2.new(0, 12, 0.5, -4)
+kbDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+kbDot.BorderSizePixel = 0
+kbDot.ZIndex = 601
+kbDot.Parent = killBanner
+Instance.new("UICorner", kbDot).CornerRadius = UDim.new(1, 0)
+
+local kbTitle = Instance.new("TextLabel")
+kbTitle.Size = UDim2.new(1, -30, 0, 16)
+kbTitle.Position = UDim2.new(0, 28, 0, 8)
+kbTitle.BackgroundTransparency = 1
+kbTitle.Text = "AUTOKILL ACTIVE"
+kbTitle.TextColor3 = Color3.fromRGB(255, 100, 110)
+kbTitle.TextSize = 11
+kbTitle.Font = Enum.Font.GothamBold
+kbTitle.TextXAlignment = Enum.TextXAlignment.Left
+kbTitle.ZIndex = 601
+kbTitle.Parent = killBanner
+
+local kbTarget = Instance.new("TextLabel")
+kbTarget.Size = UDim2.new(1, -30, 0, 14)
+kbTarget.Position = UDim2.new(0, 28, 0, 24)
+kbTarget.BackgroundTransparency = 1
+kbTarget.Text = "Target: none"
+kbTarget.TextColor3 = Color3.fromRGB(200, 140, 140)
+kbTarget.TextSize = 9
+kbTarget.Font = Enum.Font.Gotham
+kbTarget.TextXAlignment = Enum.TextXAlignment.Left
+kbTarget.ZIndex = 601
+kbTarget.Parent = killBanner
+
+-- Dot pulse animasyonu
+task.spawn(function()
+    while killBanner.Parent do
+        tween(kbDot, 0.5, {BackgroundTransparency = 0.5}, Enum.EasingStyle.Sine)
+        task.wait(0.5)
+        tween(kbDot, 0.5, {BackgroundTransparency = 0}, Enum.EasingStyle.Sine)
+        task.wait(0.5)
+    end
 end)
 
 -- =============================================
@@ -577,10 +646,11 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM (8 sekme)
+-- TAB SYSTEM (AUTOKILL sekmesi eklendi)
 -- =============================================
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting system"},
+    {Name = "AUTOKILL",  Sub = "Auto eliminate"},   -- YENI
     {Name = "ESP",       Sub = "Visual overlay"},
     {Name = "MOVEMENT",  Sub = "Speed & flight"},
     {Name = "PLAYERS",   Sub = "Player actions"},
@@ -641,6 +711,11 @@ for i, config in ipairs(tabConfig) do
     indicator.ZIndex = 7
     indicator.Parent = btn
     
+    -- AUTOKILL sekmesi icin ozel renk (kirmizi)
+    if name == "AUTOKILL" then
+        indicator.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+    end
+    
     local nameLbl = Instance.new("TextLabel")
     nameLbl.Size = UDim2.new(1, -20, 0, 16)
     nameLbl.Position = UDim2.new(0, 14, 0, 6)
@@ -652,6 +727,11 @@ for i, config in ipairs(tabConfig) do
     nameLbl.TextXAlignment = Enum.TextXAlignment.Left
     nameLbl.ZIndex = 6
     nameLbl.Parent = btn
+    
+    -- AUTOKILL sekmesi icin kirmizi text
+    if name == "AUTOKILL" and i ~= 1 then
+        nameLbl.TextColor3 = Color3.fromRGB(200, 80, 90)
+    end
     
     local subLbl = Instance.new("TextLabel")
     subLbl.Size = UDim2.new(1, -20, 0, 12)
@@ -676,7 +756,11 @@ for i, config in ipairs(tabConfig) do
     btn.MouseLeave:Connect(function()
         if activeTab ~= name then
             tween(btn, 0.15, {BackgroundTransparency = 1, BackgroundColor3 = Color3.fromRGB(0,0,0)})
-            tween(nameLbl, 0.15, {TextColor3 = CurrentTheme.SubText})
+            if name == "AUTOKILL" then
+                tween(nameLbl, 0.15, {TextColor3 = Color3.fromRGB(200, 80, 90)})
+            else
+                tween(nameLbl, 0.15, {TextColor3 = CurrentTheme.SubText})
+            end
         end
     end)
     
@@ -850,6 +934,131 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     end
 end
 
+-- Otomatik toggle (AutoKill icin - kirmizi)
+local function addRedToggle(page, name, default, callback, order, withKeybind)
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -8, 0, 38)
+    row.BackgroundTransparency = 1
+    row.LayoutOrder = order or 0
+    row.ZIndex = 3
+    row.Parent = page
+
+    local toggleWidth = withKeybind and UDim2.new(1, -76, 1, 0) or UDim2.new(1, 0, 1, 0)
+
+    local btn = Instance.new("TextButton")
+    btn.Size = toggleWidth
+    btn.BackgroundColor3 = Color3.fromRGB(60, 15, 20)
+    btn.BackgroundTransparency = InitialTransparency + 0.2
+    btn.BorderSizePixel = 0
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 200, 200)
+    btn.TextSize = 11
+    btn.Font = Enum.Font.GothamBold
+    btn.AutoButtonColor = false
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.ZIndex = 3
+    btn.Parent = row
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    local redStroke = Instance.new("UIStroke", btn)
+    redStroke.Color = Color3.fromRGB(220, 50, 60)
+    redStroke.Thickness = 1
+    redStroke.Transparency = default and 0 or 0.6
+    table.insert(uiElements, {element=redStroke, type="stroke"})
+    
+    local textPad = Instance.new("UIPadding", btn)
+    textPad.PaddingLeft = UDim.new(0, 14)
+    
+    local stateLbl = Instance.new("TextLabel")
+    stateLbl.Size = UDim2.new(0, 40, 1, 0)
+    stateLbl.Position = UDim2.new(1, -48, 0, 0)
+    stateLbl.BackgroundTransparency = 1
+    stateLbl.Text = default and "ON" or "OFF"
+    stateLbl.TextColor3 = default and Color3.fromRGB(255, 80, 90) or CurrentTheme.SubText
+    stateLbl.TextSize = 11
+    stateLbl.Font = Enum.Font.GothamBold
+    stateLbl.TextXAlignment = Enum.TextXAlignment.Right
+    stateLbl.ZIndex = 4
+    stateLbl.Parent = btn
+
+    local state = default
+    local function doToggle()
+        state = not state
+        tween(btn, 0.2, {BackgroundTransparency = state and InitialTransparency or InitialTransparency + 0.2})
+        tween(stateLbl, 0.2, {TextColor3 = state and Color3.fromRGB(255, 80, 90) or CurrentTheme.SubText})
+        tween(redStroke, 0.2, {Transparency = state and 0 or 0.6})
+        stateLbl.Text = state and "ON" or "OFF"
+        if callback then callback(state) end
+    end
+    btn.MouseButton1Click:Connect(doToggle)
+    
+    btn.MouseEnter:Connect(function()
+        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency - 0.1 or InitialTransparency + 0.1})
+    end)
+    btn.MouseLeave:Connect(function()
+        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency or InitialTransparency + 0.2})
+    end)
+
+    if withKeybind then
+        local kbBtn = Instance.new("TextButton")
+        kbBtn.Size = UDim2.new(0, 68, 1, 0)
+        kbBtn.Position = UDim2.new(1, -68, 0, 0)
+        kbBtn.BackgroundColor3 = Color3.fromRGB(60, 15, 20)
+        kbBtn.BackgroundTransparency = InitialTransparency + 0.4
+        kbBtn.BorderSizePixel = 0
+        kbBtn.Text = "—"
+        kbBtn.TextColor3 = Color3.fromRGB(200, 150, 150)
+        kbBtn.TextSize = 10
+        kbBtn.Font = Enum.Font.GothamBold
+        kbBtn.AutoButtonColor = false
+        kbBtn.ZIndex = 4
+        kbBtn.Parent = row
+        Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
+        local kbStroke = Instance.new("UIStroke", kbBtn)
+        kbStroke.Color = Color3.fromRGB(220, 50, 60)
+        kbStroke.Thickness = 1
+        kbStroke.Transparency = 0.6
+
+        kbBtn.MouseButton1Click:Connect(function()
+            if activeKeybindBtn == kbBtn then
+                activeKeybindBtn = nil
+                kbBtn.Text = "—"
+                kbBtn.TextColor3 = Color3.fromRGB(200, 150, 150)
+                tween(kbBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.4})
+                return
+            end
+            if activeKeybindBtn then
+                activeKeybindBtn.Text = "—"
+                activeKeybindBtn.TextColor3 = CurrentTheme.SubText
+                tween(activeKeybindBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.5})
+            end
+            activeKeybindBtn = kbBtn
+            kbBtn.Text = "..."
+            kbBtn.TextColor3 = Color3.fromRGB(255, 200, 100)
+            tween(kbBtn, 0.2, {BackgroundTransparency = InitialTransparency + 0.2})
+        end)
+
+        local function assignKeybind(keyCode)
+            kbBtn.Text = keyCode.Name
+            kbBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+            tween(kbBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3})
+            keybindCallbacks[keyCode] = doToggle
+            activeKeybindBtn = nil
+        end
+
+        if not _G.DHL_KeybindAssigners then _G.DHL_KeybindAssigners = {} end
+        _G.DHL_KeybindAssigners[kbBtn] = assignKeybind
+    end
+
+    return function() return state end, function(v)
+        state = v
+        tween(btn, 0.2, {BackgroundTransparency = state and InitialTransparency or InitialTransparency + 0.2})
+        tween(stateLbl, 0.2, {TextColor3 = state and Color3.fromRGB(255, 80, 90) or CurrentTheme.SubText})
+        tween(redStroke, 0.2, {Transparency = state and 0 or 0.6})
+        stateLbl.Text = state and "ON" or "OFF"
+        if callback then callback(state) end
+    end
+end
+
 local function addSlider(page, name, min, max, default, callback, order)
     local container = Instance.new("Frame")
     container.Size = UDim2.new(1,-8,0,46)
@@ -992,8 +1201,7 @@ local function addCycleButton(page, name, options, default, callback, order)
         tween(valueLbl, 0.15, {TextColor3 = CurrentTheme.Accent})
         if callback then callback(options[idx]) end
     end)
-    return function() return options[idx] end
-end
+    return function() return options[idx] endend
 
 local function addSeparator(page, order)
     local container = Instance.new("Frame")
@@ -1015,12 +1223,12 @@ local function addSeparator(page, order)
     table.insert(uiElements, {element=line, type="separatorLine"})
 end
 
-local function addLabel(page, text, order)
+local function addLabel(page, text, order, color)
     local lbl = Instance.new("TextLabel")
     lbl.Size = UDim2.new(1,-8,0,20)
     lbl.BackgroundTransparency = 1
     lbl.Text = text
-    lbl.TextColor3 = CurrentTheme.SubText
+    lbl.TextColor3 = color or CurrentTheme.SubText
     lbl.TextSize = 9
     lbl.Font = Enum.Font.GothamBold
     lbl.TextXAlignment = Enum.TextXAlignment.Left
@@ -1132,13 +1340,23 @@ local function applyTheme(themeName)
         local isActive = (n == activeTab)
         b.BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0)
         local ind = b:FindFirstChild("Indicator")
-        if ind then ind.BackgroundColor3 = CurrentTheme.Primary end
+        if ind then 
+            if n == "AUTOKILL" then
+                ind.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+            else
+                ind.BackgroundColor3 = CurrentTheme.Primary
+            end
+        end
         local labels = b:GetChildren()
         for _, lbl in ipairs(labels) do
             if lbl:IsA("TextLabel") and lbl.Name ~= "Indicator" then
                 local isMain = lbl.TextSize == 11
                 if isMain then
-                    lbl.TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText
+                    if n == "AUTOKILL" and not isActive then
+                        lbl.TextColor3 = Color3.fromRGB(200, 80, 90)
+                    else
+                        lbl.TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText
+                    end
                 else
                     lbl.TextColor3 = CurrentTheme.SubText
                 end
@@ -1205,65 +1423,222 @@ addLabel(p1, "TRIGGER", 16)
 local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 17, true)
 
 addSeparator(p1, 18)
-addLabel(p1, "HITBOX", 19)
-local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, nil, 20, false)
-local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, nil, 21)
+addLabel(p1, "FOV", 19)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 20, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 21)
+local getFOVUseTheme = addToggle(p1, "FOV Follow Theme", true, function(v) Settings.FOVUseTheme = v end, 22, false)
 
-addSeparator(p1, 22)
-addLabel(p1, "FOV", 23)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 24, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 25)
-local getFOVUseTheme = addToggle(p1, "FOV Follow Theme", true, function(v) Settings.FOVUseTheme = v end, 26, false)
+-- =============================================
+-- PAGE 2: AUTOKILL (YENI!)
+-- =============================================
+local p2 = tabPages["AUTOKILL"]
 
--- PAGE 2: ESP
-local p2 = tabPages["ESP"]
-addLabel(p2, "HIGHLIGHT", 1)
-local getESP = addToggle(p2, "ESP Enabled", true, nil, 2, true)
-local getHighlightColor = addCycleButton(p2, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink","Gold"}, "Cyan", function(v)
+addLabel(p2, "AUTO ELIMINATION SYSTEM", 1, Color3.fromRGB(255, 100, 110))
+
+addSeparator(p2, 2)
+addLabel(p2, "MAIN CONTROLS", 3)
+
+-- AUTOKILL ana toggle
+local getAutoKill = addRedToggle(p2, "AUTOKILL (Otomatik Oldur)", false, function(state)
+    Settings.AutoKill = state
+    killBanner.Visible = state
+    if state then
+        showToast("AUTOKILL ACTIVE", "Hedefe kilitleniyor...", "kill")
+        -- Ilk secili oyuncuyu hedef al
+        for _, plr in pairs(Settings.SelectedPlayers) do
+            if plr and plr.Character then
+                Settings.AutoKillTarget = plr
+                break
+            end
+        end
+        if not Settings.AutoKillTarget then
+            showToast("AUTOKILL ERROR", "Once bir oyuncu sec!", "error")
+            Settings.AutoKill = false
+            killBanner.Visible = false
+            getAutoKill(false)
+        end
+    else
+        showToast("AUTOKILL OFF", "Deaktif edildi", "info")
+        Settings.AutoKillTarget = nil
+    end
+end, 4, true)
+
+-- Auto Lock (kamera kilidi)
+local getAutoLock = addRedToggle(p2, "AUTO LOCK (Kamera Kilit)", true, function(state)
+    Settings.AutoLock = state
+end, 5, true)
+
+-- Auto Fire (otomatik ates)
+local getAutoFire = addRedToggle(p2, "AUTO FIRE (Oto Ates)", true, function(state)
+    Settings.AutoFire = state
+end, 6, true)
+
+addSeparator(p2, 7)
+addLabel(p2, "KILL MODE", 8)
+
+-- Instant Kill
+local getInstantKill = addRedToggle(p2, "INSTANT KILL (Ani Oldur)", true, function(state)
+    Settings.InstantKill = state
+end, 9, true)
+
+-- Rapid Kill
+local getRapidKill = addRedToggle(p2, "RAPID KILL (Hizli Oldur)", false, function(state)
+    Settings.RapidKill = state
+end, 10, true)
+
+-- Rapid Kill Delay
+local getRapidDelay = addSlider(p2, "Rapid Kill Delay", 0.01, 0.5, 0.05, function(v)
+    Settings.RapidKillDelay = v
+end, 11)
+
+addSeparator(p2, 12)
+addLabel(p2, "RANGE & TARGET", 13)
+
+-- Kill Range
+local getKillRange = addSlider(p2, "Kill Range (Stud)", 5, 500, 100, function(v)
+    Settings.KillRange = v
+end, 14)
+
+-- Hedef secici
+local targetSelectorRow = Instance.new("Frame")
+targetSelectorRow.Size = UDim2.new(1, -8, 0, 34)
+targetSelectorRow.BackgroundTransparency = 1
+targetSelectorRow.LayoutOrder = 15
+targetSelectorRow.ZIndex = 3
+targetSelectorRow.Parent = p2
+
+local targetBtn = Instance.new("TextButton")
+targetBtn.Size = UDim2.new(1, 0, 1, 0)
+targetBtn.BackgroundColor3 = Color3.fromRGB(60, 15, 20)
+targetBtn.BackgroundTransparency = InitialTransparency + 0.2
+targetBtn.BorderSizePixel = 0
+targetBtn.Text = "  TARGET: none"
+targetBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+targetBtn.TextSize = 11
+targetBtn.Font = Enum.Font.GothamBold
+targetBtn.AutoButtonColor = false
+targetBtn.TextXAlignment = Enum.TextXAlignment.Left
+targetBtn.ZIndex = 3
+targetBtn.Parent = targetSelectorRow
+Instance.new("UICorner", targetBtn).CornerRadius = UDim.new(0, 4)
+local targetStroke = Instance.new("UIStroke", targetBtn)
+targetStroke.Color = Color3.fromRGB(220, 50, 60)
+targetStroke.Thickness = 1
+targetStroke.Transparency = 0.3
+
+-- Hedef degistir (cycle)
+local targetIndex = 0
+targetBtn.MouseButton1Click:Connect(function()
+    local list = {}
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            table.insert(list, plr)
+        end
+    end
+    if #list == 0 then
+        showToast("AUTOKILL", "Hicbir oyuncu secili degil!", "error")
+        return
+    end
+    targetIndex = (targetIndex % #list) + 1
+    Settings.AutoKillTarget = list[targetIndex]
+    targetBtn.Text = "  TARGET: " .. Settings.AutoKillTarget.DisplayName
+    killBanner.Visible = Settings.AutoKill
+    if Settings.AutoKill then
+        kbTarget.Text = "Target: " .. Settings.AutoKillTarget.DisplayName
+    end
+    showToast("Target Changed", Settings.AutoKillTarget.DisplayName, "info")
+end)
+
+addSeparator(p2, 16)
+addLabel(p2, "INFO", 17)
+
+-- Info label
+local autoInfo = Instance.new("TextLabel")
+autoInfo.Size = UDim2.new(1, -8, 0, 80)
+autoInfo.BackgroundColor3 = Color3.fromRGB(20, 8, 12)
+autoInfo.BackgroundTransparency = InitialTransparency + 0.3
+autoInfo.BorderSizePixel = 0
+autoInfo.Text = "  AutoKill: OFF\n  Target: none\n  Kills: 0\n  Range: 100 stud"
+autoInfo.TextColor3 = Color3.fromRGB(220, 180, 180)
+autoInfo.TextSize = 10
+autoInfo.Font = Enum.Font.Code
+autoInfo.TextXAlignment = Enum.TextXAlignment.Left
+autoInfo.TextYAlignment = Enum.TextYAlignment.Top
+autoInfo.LayoutOrder = 18
+autoInfo.ZIndex = 3
+autoInfo.Parent = p2
+Instance.new("UICorner", autoInfo).CornerRadius = UDim.new(0, 4)
+local autoInfoPad = Instance.new("UIPadding", autoInfo)
+autoInfoPad.PaddingLeft = UDim.new(0, 10)
+autoInfoPad.PaddingTop = UDim.new(0, 10)
+table.insert(uiElements, {element=autoInfo, type="bg"})
+
+-- Info guncelle
+task.spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            local targetName = Settings.AutoKillTarget and Settings.AutoKillTarget.DisplayName or "none"
+            autoInfo.Text = "  AutoKill: " .. (Settings.AutoKill and "ACTIVE" or "OFF") ..
+                "\n  Target: " .. targetName ..
+                "\n  Kills: " .. Settings.Kills ..
+                "\n  Range: " .. math.floor(Settings.KillRange) .. " stud"
+        end)
+    end
+end)
+
+-- =============================================
+-- PAGE 3: ESP
+-- =============================================
+local p3 = tabPages["ESP"]
+addLabel(p3, "HIGHLIGHT", 1)
+local getESP = addToggle(p3, "ESP Enabled", true, nil, 2, true)
+local getHighlightColor = addCycleButton(p3, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink","Gold"}, "Red", function(v)
     local colors = {Red=Color3.fromRGB(255,80,80), Cyan=Color3.fromRGB(100,180,220), Green=Color3.fromRGB(100,220,140),
         Yellow=Color3.fromRGB(240,220,100), Purple=Color3.fromRGB(180,120,240), White=Color3.fromRGB(255,255,255),
         Orange=Color3.fromRGB(240,160,80), Pink=Color3.fromRGB(240,140,180), Gold=Color3.fromRGB(230,200,100)}
-    Settings.HighlightColor = colors[v] or Color3.fromRGB(100,180,220)
+    Settings.HighlightColor = colors[v] or Color3.fromRGB(255,80,80)
 end, 3)
-local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
+local getFillTransparency = addSlider(p3, "Fill Transparency", 0, 1, 0.35, nil, 4)
 
-addSeparator(p2, 5)
-addLabel(p2, "INFO OVERLAY", 6)
-local getESPNames = addToggle(p2, "Name Tags", true, nil, 7, true)
-local getESPHealth = addToggle(p2, "Health Display", true, nil, 8, false)
-local getESPDistance = addToggle(p2, "Distance Display", true, nil, 9, false)
+addSeparator(p3, 5)
+addLabel(p3, "INFO OVERLAY", 6)
+local getESPNames = addToggle(p3, "Name Tags", true, nil, 7, true)
+local getESPHealth = addToggle(p3, "Health Display", true, nil, 8, false)
+local getESPDistance = addToggle(p3, "Distance Display", true, nil, 9, false)
 
-addSeparator(p2, 10)
-addLabel(p2, "TRACERS", 11)
-local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
-local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
-local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
+addSeparator(p3, 10)
+addLabel(p3, "TRACERS", 11)
+local getESPTracers = addToggle(p3, "Tracers", true, nil, 12, true)
+local getTracerOrigin = addCycleButton(p3, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
+local getESPBoxes = addToggle(p3, "Box ESP", false, nil, 14, true)
 
--- PAGE 3: MOVEMENT
-local p3 = tabPages["MOVEMENT"]
-addLabel(p3, "SPEED", 1)
-local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
-local getSpeedValue = addSlider(p3, "Walk Speed", 16, 500, 16, nil, 3)
+-- =============================================
+-- PAGE 4: MOVEMENT
+-- =============================================
+local p4 = tabPages["MOVEMENT"]
+addLabel(p4, "SPEED", 1)
+local getSpeed = addToggle(p4, "Speed Hack", false, nil, 2, true)
+local getSpeedValue = addSlider(p4, "Walk Speed", 16, 500, 16, nil, 3)
 
-addSeparator(p3, 4)
-addLabel(p3, "JUMP", 5)
-local getJumpPower = addToggle(p3, "Jump Power", false, nil, 6, true)
-local getJumpValue = addSlider(p3, "Jump Value", 50, 500, 50, nil, 7)
-local getInfJump = addToggle(p3, "Infinite Jump", false, nil, 8, true)
+addSeparator(p4, 4)
+addLabel(p4, "JUMP", 5)
+local getJumpPower = addToggle(p4, "Jump Power", false, nil, 6, true)
+local getJumpValue = addSlider(p4, "Jump Value", 50, 500, 50, nil, 7)
+local getInfJump = addToggle(p4, "Infinite Jump", false, nil, 8, true)
 
-addSeparator(p3, 9)
-addLabel(p3, "FLIGHT", 10)
-local getFly = addToggle(p3, "Fly", false, nil, 11, true)
-local getFlySpeed = addSlider(p3, "Fly Speed", 10, 500, 50, nil, 12)
-local getNoclipFly = addToggle(p3, "Noclip Fly", false, nil, 13, true)
+addSeparator(p4, 9)
+addLabel(p4, "FLIGHT", 10)
+local getFly = addToggle(p4, "Fly", false, nil, 11, true)
+local getFlySpeed = addSlider(p4, "Fly Speed", 10, 500, 50, nil, 12)
+local getNoclipFly = addToggle(p4, "Noclip Fly", false, nil, 13, true)
 
-addSeparator(p3, 14)
-addLabel(p3, "NOCLIP", 15)
-local getNoclip = addToggle(p3, "Noclip", false, nil, 16, true)
+addSeparator(p4, 14)
+addLabel(p4, "NOCLIP", 15)
+local getNoclip = addToggle(p4, "Noclip", false, nil, 16, true)
 
-addSeparator(p3, 17)
-addLabel(p3, "TELEPORT", 18)
-addButton(p3, "Teleport to Mouse", function()
+addSeparator(p4, 17)
+addLabel(p4, "TELEPORT", 18)
+addButton(p4, "Teleport to Mouse", function()
     local char = LocalPlayer.Character
     if char then
         local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -1274,8 +1649,8 @@ addButton(p3, "Teleport to Mouse", function()
     end
 end, 19, CurrentTheme.Button)
 
-addButton(p3, "Teleport to Target", function()
-    local target = Settings.CurrentTarget
+addButton(p4, "Teleport to Target", function()
+    local target = Settings.AutoKillTarget or Settings.CurrentTarget
     if target and target.Character then
         local thrp = target.Character:FindFirstChild("HumanoidRootPart")
         local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -1288,8 +1663,10 @@ addButton(p3, "Teleport to Target", function()
     end
 end, 20, CurrentTheme.Button)
 
--- PAGE 4: PLAYERS
-local p4 = tabPages["PLAYERS"]
+-- =============================================
+-- PAGE 5: PLAYERS
+-- =============================================
+local p5 = tabPages["PLAYERS"]
 
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1,-8,0,20)
@@ -1301,7 +1678,7 @@ SelectCountLabel.Font = Enum.Font.Gotham
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 SelectCountLabel.LayoutOrder = 1
 SelectCountLabel.ZIndex = 3
-SelectCountLabel.Parent = p4
+SelectCountLabel.Parent = p5
 table.insert(uiElements, {element=SelectCountLabel, type="subLabel"})
 
 local btnRow = Instance.new("Frame")
@@ -1309,7 +1686,7 @@ btnRow.Size = UDim2.new(1,-8,0,28)
 btnRow.BackgroundTransparency = 1
 btnRow.LayoutOrder = 2
 btnRow.ZIndex = 3
-btnRow.Parent = p4
+btnRow.Parent = p5
 
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48,0,1,0)
@@ -1358,7 +1735,7 @@ SearchBox.Font = Enum.Font.Gotham
 SearchBox.ClearTextOnFocus = false
 SearchBox.LayoutOrder = 3
 SearchBox.ZIndex = 3
-SearchBox.Parent = p4
+SearchBox.Parent = p5
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
 table.insert(uiElements, {element=SearchBox, type="bg"})
 
@@ -1373,16 +1750,16 @@ PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerScroll.LayoutOrder = 4
 PlayerScroll.ZIndex = 3
 PlayerScroll.Active = true
-PlayerScroll.Parent = p4
+PlayerScroll.Parent = p5
 
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PlayerListLayout.Padding = UDim.new(0,3)
 
-addSeparator(p4, 5)
-addLabel(p4, "ACTIONS", 6)
+addSeparator(p5, 5)
+addLabel(p5, "ACTIONS", 6)
 
-addButton(p4, "Goto First Selected", function()
+addButton(p5, "Goto First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -1396,60 +1773,49 @@ addButton(p4, "Goto First Selected", function()
     end
 end, 7, CurrentTheme.Button)
 
-addButton(p4, "Bring First Selected", function()
+addButton(p5, "Set as AutoKill Target", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
-            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
-            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if thrp and lhrp then
-                thrp.CFrame = lhrp.CFrame * CFrame.new(0, 0, 5)
-                showToast("Bring", "Brought " .. plr.DisplayName, "success")
+            Settings.AutoKillTarget = plr
+            targetBtn.Text = "  TARGET: " .. plr.DisplayName
+            killBanner.Visible = Settings.AutoKill
+            if Settings.AutoKill then
+                kbTarget.Text = "Target: " .. plr.DisplayName
             end
+            showToast("AutoKill Target", plr.DisplayName .. " secildi", "kill")
             break
         end
     end
-end, 8, CurrentTheme.Button)
+end, 8, Color3.fromRGB(120, 30, 40))
 
-local getFollowPlayer = addToggle(p4, "Follow First Selected", false, function(state)
-    Settings.FollowPlayer = state
-    if state then
-        for _, plr in pairs(Settings.SelectedPlayers) do
-            if plr and plr.Character then
-                Settings.FollowTarget = plr
-                break
-            end
-        end
-    else
-        Settings.FollowTarget = nil
-    end
-end, 9, true)
-
-addButton(p4, "Kill First Selected", function()
+addButton(p5, "Kill First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
             if hum then
                 pcall(function() hum.Health = 0 end)
                 Settings.Kills = Settings.Kills + 1
-                showToast("Target Eliminated", plr.DisplayName, "success")
+                showToast("Target Eliminated", plr.DisplayName, "kill")
             end
             break
         end
     end
-end, 10, Color3.fromRGB(100, 30, 35))
+end, 9, Color3.fromRGB(100, 30, 35))
 
--- PAGE 5: WORLD
-local p5 = tabPages["WORLD"]
-addLabel(p5, "LIGHTING", 1)
-local getFullbright = addToggle(p5, "Fullbright", false, nil, 2, true)
-local getNoFog = addToggle(p5, "No Fog", false, nil, 3, true)
-local getRemoveShadows = addToggle(p5, "Remove Shadows", false, nil, 4, true)
-local getTimeChanger = addToggle(p5, "Time Changer", false, nil, 5, false)
-local getTimeValue = addSlider(p5, "Time (0-24)", 0, 24, 12, nil, 6)
+-- =============================================
+-- PAGE 6: WORLD
+-- =============================================
+local p6 = tabPages["WORLD"]
+addLabel(p6, "LIGHTING", 1)
+local getFullbright = addToggle(p6, "Fullbright", false, nil, 2, true)
+local getNoFog = addToggle(p6, "No Fog", false, nil, 3, true)
+local getRemoveShadows = addToggle(p6, "Remove Shadows", false, nil, 4, true)
+local getTimeChanger = addToggle(p6, "Time Changer", false, nil, 5, false)
+local getTimeValue = addSlider(p6, "Time (0-24)", 0, 24, 12, nil, 6)
 
-addSeparator(p5, 7)
-addLabel(p5, "SERVER", 8)
-addButton(p5, "Server Rejoin", function()
+addSeparator(p6, 7)
+addLabel(p6, "SERVER", 8)
+addButton(p6, "Server Rejoin", function()
     showToast("Server", "Reconnecting...", "info")
     task.wait(0.5)
     pcall(function()
@@ -1457,8 +1823,8 @@ addButton(p5, "Server Rejoin", function()
     end)
 end, 9, CurrentTheme.Button)
 
-addButton(p5, "Server Hop", function()
-    showToast("Server", "Searching for new server...", "info")
+addButton(p6, "Server Hop", function()
+    showToast("Server", "Searching...", "info")
     task.wait(0.5)
     pcall(function()
         local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
@@ -1482,50 +1848,30 @@ addButton(p5, "Server Hop", function()
     end)
 end, 10, CurrentTheme.Button)
 
-addSeparator(p5, 11)
-addLabel(p5, "SERVER INFO", 12)
-local worldInfoLabel = Instance.new("TextLabel")
-worldInfoLabel.Size = UDim2.new(1,-8,0,80)
-worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
-worldInfoLabel.BackgroundTransparency = InitialTransparency + 0.4
-worldInfoLabel.BorderSizePixel = 0
-worldInfoLabel.Text = "  Game ID      : " .. game.PlaceId .. "\n  Player Count : " .. #Players:GetPlayers() .. "\n  Server ID    : " .. game.JobId:sub(1,8) .. "\n  Ping         : --"
-worldInfoLabel.TextColor3 = CurrentTheme.SubText
-worldInfoLabel.TextSize = 10
-worldInfoLabel.Font = Enum.Font.Code
-worldInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
-worldInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
-worldInfoLabel.LayoutOrder = 13
-worldInfoLabel.ZIndex = 3
-worldInfoLabel.Parent = p5
-Instance.new("UICorner", worldInfoLabel).CornerRadius = UDim.new(0, 4)
-table.insert(uiElements, {element=worldInfoLabel, type="bg"})
-local wInfoPad = Instance.new("UIPadding", worldInfoLabel)
-wInfoPad.PaddingLeft = UDim.new(0, 10)
-wInfoPad.PaddingTop = UDim.new(0, 10)
+-- =============================================
+-- PAGE 7: CHARACTER
+-- =============================================
+local p7 = tabPages["CHARACTER"]
+addLabel(p7, "STATE", 1)
+local getGodMode = addToggle(p7, "God Mode", false, nil, 2, true)
+local getAntiFling = addToggle(p7, "Anti Fling", false, nil, 3, true)
+local getCharacterSize = addToggle(p7, "Character Size", false, nil, 4, false)
+local getSizeValue = addSlider(p7, "Size Scale", 0.5, 5.0, 1.0, nil, 5)
 
--- PAGE 6: CHARACTER
-local p6 = tabPages["CHARACTER"]
-addLabel(p6, "STATE", 1)
-local getGodMode = addToggle(p6, "God Mode", false, nil, 2, true)
-local getAntiFling = addToggle(p6, "Anti Fling", false, nil, 3, true)
-local getCharacterSize = addToggle(p6, "Character Size", false, nil, 4, false)
-local getSizeValue = addSlider(p6, "Size Scale", 0.5, 5.0, 1.0, nil, 5)
+addSeparator(p7, 6)
+addLabel(p7, "DAMAGE AURA", 7)
+local getDamageAura = addToggle(p7, "Damage Aura", false, nil, 8, true)
+local getDamageRange = addSlider(p7, "Aura Range", 3, 30, 10, nil, 9)
+local getDamageAmount = addSlider(p7, "Damage Amount", 1, 50, 5, nil, 10)
 
-addSeparator(p6, 6)
-addLabel(p6, "DAMAGE AURA", 7)
-local getDamageAura = addToggle(p6, "Damage Aura", false, nil, 8, true)
-local getDamageRange = addSlider(p6, "Aura Range", 3, 30, 10, nil, 9)
-local getDamageAmount = addSlider(p6, "Damage Amount", 1, 50, 5, nil, 10)
-
-addSeparator(p6, 11)
-addLabel(p6, "ACTIONS", 12)
-addButton(p6, "Respawn", function()
+addSeparator(p7, 11)
+addLabel(p7, "ACTIONS", 12)
+addButton(p7, "Respawn", function()
     pcall(function() LocalPlayer.Character:BreakJoints() end)
     showToast("Character", "Respawning...", "info")
 end, 13, CurrentTheme.Button)
 
-addButton(p6, "Full Heal", function()
+addButton(p7, "Full Heal", function()
     pcall(function()
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.Health = hum.MaxHealth end
@@ -1534,10 +1880,10 @@ addButton(p6, "Full Heal", function()
 end, 14, CurrentTheme.Button)
 
 -- =============================================
--- PAGE 7: THEMES
+-- PAGE 8: THEMES
 -- =============================================
-local p7 = tabPages["THEMES"]
-addLabel(p7, "SELECT A THEME", 1)
+local p8 = tabPages["THEMES"]
+addLabel(p8, "SELECT A THEME", 1)
 
 local classicHeader = Instance.new("TextLabel")
 classicHeader.Size = UDim2.new(1,-8,0,24)
@@ -1549,7 +1895,7 @@ classicHeader.Font = Enum.Font.GothamBold
 classicHeader.TextXAlignment = Enum.TextXAlignment.Left
 classicHeader.LayoutOrder = 2
 classicHeader.ZIndex = 3
-classicHeader.Parent = p7
+classicHeader.Parent = p8
 table.insert(uiElements, {element=classicHeader, type="sectionLabel"})
 
 local classicGrid = Instance.new("Frame")
@@ -1557,19 +1903,17 @@ classicGrid.Size = UDim2.new(1, -8, 0, 200)
 classicGrid.BackgroundTransparency = 1
 classicGrid.LayoutOrder = 3
 classicGrid.ZIndex = 3
-classicGrid.Parent = p7
+classicGrid.Parent = p8
 
 local classicLayout = Instance.new("UIGridLayout", classicGrid)
 classicLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
 classicLayout.CellPadding = UDim2.new(0, 6, 0, 6)
-classicLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 _G.DHL_ThemeButtons = _G.DHL_ThemeButtons or {}
 
 for name, theme in pairs(Themes) do
     if theme.Category == "Classic" then
         local btn = Instance.new("TextButton")
-        btn.Name = "ThemeBtn_" .. name
         btn.BackgroundColor3 = CurrentTheme.Bg
         btn.BackgroundTransparency = InitialTransparency
         btn.BorderSizePixel = 0
@@ -1654,7 +1998,7 @@ specialHeader.Font = Enum.Font.GothamBold
 specialHeader.TextXAlignment = Enum.TextXAlignment.Left
 specialHeader.LayoutOrder = 4
 specialHeader.ZIndex = 3
-specialHeader.Parent = p7
+specialHeader.Parent = p8
 table.insert(uiElements, {element=specialHeader, type="sectionLabel"})
 
 local specialGrid = Instance.new("Frame")
@@ -1662,17 +2006,15 @@ specialGrid.Size = UDim2.new(1, -8, 0, 280)
 specialGrid.BackgroundTransparency = 1
 specialGrid.LayoutOrder = 5
 specialGrid.ZIndex = 3
-specialGrid.Parent = p7
+specialGrid.Parent = p8
 
 local specialLayout = Instance.new("UIGridLayout", specialGrid)
 specialLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
 specialLayout.CellPadding = UDim2.new(0, 6, 0, 6)
-specialLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 for name, theme in pairs(Themes) do
     if theme.Category == "Special" then
         local btn = Instance.new("TextButton")
-        btn.Name = "ThemeBtn_" .. name
         btn.BackgroundColor3 = CurrentTheme.Bg
         btn.BackgroundTransparency = InitialTransparency
         btn.BorderSizePixel = 0
@@ -1742,160 +2084,93 @@ for name, theme in pairs(Themes) do
 end
 
 -- =============================================
--- PAGE 8: SETTINGS
+-- PAGE 9: SETTINGS
 -- =============================================
-local p8 = tabPages["SETTINGS"]
-addLabel(p8, "INTERFACE", 1)
-local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
+local p9 = tabPages["SETTINGS"]
+addLabel(p9, "INTERFACE", 1)
+local getGuiTransparency = addSlider(p9, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
     Settings.GuiTransparency = v
-    local transparency = 1 - (v / 500)
-    MainFrame.BackgroundTransparency = transparency
+    MainFrame.BackgroundTransparency = 1 - (v / 500)
 end, 2)
 
-addSeparator(p8, 3)
-addLabel(p8, "OVERLAY", 4)
-local getWatermark = addToggle(p8, "Watermark", true, nil, 5, false)
-local getFPSDisplay = addToggle(p8, "FPS Display", true, nil, 6, false)
-local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 7, false)
+addSeparator(p9, 3)
+addLabel(p9, "OVERLAY", 4)
+local getWatermark = addToggle(p9, "Watermark", true, nil, 5, false)
+local getFPSDisplay = addToggle(p9, "FPS Display", true, nil, 6, false)
+local getPingDisplay = addToggle(p9, "Ping Display", true, nil, 7, false)
 
-addSeparator(p8, 8)
-addLabel(p8, "CONFIGURATION", 9)
+addSeparator(p9, 8)
+addLabel(p9, "CONFIGURATION", 9)
 
--- =============================================
--- SAVE / LOAD SISTEMI (DUZELTILDI)
--- =============================================
 local CONFIG_FILE = "DHLVIP_config.json"
 
--- Dosya islemlerini kontrol et
 local function hasFileSupport()
     return writefile ~= nil and readfile ~= nil and isfile ~= nil
 end
 
 local function saveConfig()
     if not hasFileSupport() then
-        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
-        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        showToast("Config Error", "Executor desteklemiyor", "error")
         return false
     end
-    
     local data = {
         Theme = CurrentTheme.Name,
-        SpeedValue = Settings.SpeedValue,
-        JumpPowerValue = Settings.JumpPowerValue,
-        FlySpeed = Settings.FlySpeed,
-        FOVRadius = Settings.FOVRadius,
-        GuiTransparency = Settings.GuiTransparency,
-        Smoothness = Settings.Smoothness,
-        Prediction = Settings.Prediction,
-        HitboxSize = Settings.HitboxSize,
-        AimShake = Settings.AimShake,
-        EspFillTransparency = Settings.HighlightFillTransparency,
-        Version = "6.0.4",
-        SavedAt = os.time(),
+        SpeedValue = Settings.SpeedValue, JumpPowerValue = Settings.JumpPowerValue,
+        FlySpeed = Settings.FlySpeed, FOVRadius = Settings.FOVRadius,
+        GuiTransparency = Settings.GuiTransparency, KillRange = Settings.KillRange,
+        Version = "6.0.5",
     }
-    
-    local success, encoded = pcall(function()
-        return HttpService:JSONEncode(data)
-    end)
-    
-    if not success then
-        showToast("Config Error", "Encode hatasi olustu", "error")
-        print("[DHL VIP] HATA: JSON encode basarisiz!")
-        return false
-    end
-    
-    local writeSuccess, writeErr = pcall(function()
-        writefile(CONFIG_FILE, encoded)
-    end)
-    
+    local success, encoded = pcall(function() return HttpService:JSONEncode(data) end)
+    if not success then showToast("Config Error", "Encode hatasi", "error"); return false end
+    local writeSuccess = pcall(function() writefile(CONFIG_FILE, encoded) end)
     if writeSuccess then
-        showToast("Config Saved", "Ayarlar kaydedildi: " .. CONFIG_FILE, "success")
-        print("[DHL VIP] Ayarlar kaydedildi: " .. CONFIG_FILE)
+        showToast("Config Saved", "Ayarlar kaydedildi", "success")
         return true
     else
-        showToast("Config Error", "Yazma hatasi: " .. tostring(writeErr), "error")
-        print("[DHL VIP] HATA: writefile basarisiz - " .. tostring(writeErr))
+        showToast("Config Error", "Yazma hatasi", "error")
         return false
     end
 end
 
 local function loadConfig()
     if not hasFileSupport() then
-        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
-        print("[DHL VIP] HATA: writefile/readfile desteklenmiyor!")
+        showToast("Config Error", "Executor desteklemiyor", "error")
         return false
     end
-    
     local exists = false
     pcall(function() exists = isfile(CONFIG_FILE) end)
+    if not exists then showToast("Config", "Kayit yok", "warning"); return false end
+    local readSuccess, content = pcall(function() return readfile(CONFIG_FILE) end)
+    if not readSuccess then showToast("Config Error", "Okuma hatasi", "error"); return false end
+    local decodeSuccess, data = pcall(function() return HttpService:JSONDecode(content) end)
+    if not decodeSuccess then showToast("Config Error", "Bozuk dosya", "error"); return false end
     
-    if not exists then
-        showToast("Config Error", "Kayitli config bulunamadi", "warning")
-        print("[DHL VIP] Config dosyasi bulunamadi: " .. CONFIG_FILE)
-        return false
-    end
-    
-    local readSuccess, content = pcall(function()
-        return readfile(CONFIG_FILE)
-    end)
-    
-    if not readSuccess or not content then
-        showToast("Config Error", "Okuma hatasi", "error")
-        print("[DHL VIP] HATA: readfile basarisiz!")
-        return false
-    end
-    
-    local decodeSuccess, data = pcall(function()
-        return HttpService:JSONDecode(content)
-    end)
-    
-    if not decodeSuccess or not data then
-        showToast("Config Error", "Bozuk config dosyasi", "error")
-        print("[DHL VIP] HATA: JSON decode basarisiz!")
-        return false
-    end
-    
-    -- Ayarlari uygula
-    if data.Theme and Themes[data.Theme] then
-        applyTheme(data.Theme)
-    end
+    if data.Theme and Themes[data.Theme] then applyTheme(data.Theme) end
     if data.SpeedValue then getSpeedValue(data.SpeedValue) end
     if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
     if data.FlySpeed then getFlySpeed(data.FlySpeed) end
     if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+    if data.KillRange then getKillRange(data.KillRange) end
     if data.GuiTransparency then
         getGuiTransparency(data.GuiTransparency)
         Settings.GuiTransparency = data.GuiTransparency
         MainFrame.BackgroundTransparency = 1 - (data.GuiTransparency / 500)
     end
-    if data.Smoothness then getSmoothness(data.Smoothness) end
-    if data.Prediction then getPrediction(data.Prediction) end
-    if data.HitboxSize then getHitboxSize(data.HitboxSize) end
-    if data.AimShake then getAimShake(data.AimShake) end
-    if data.EspFillTransparency then getFillTransparency(data.EspFillTransparency) end
-    
-    showToast("Config Loaded", "Ayarlar yuklendi!", "success")
-    print("[DHL VIP] Ayarlar yuklendi!")
+    showToast("Config Loaded", "Ayarlar yuklendi", "success")
     return true
 end
 
-addButton(p8, "Save Config", saveConfig, 10, CurrentTheme.Button)
-addButton(p8, "Load Config", loadConfig, 11, CurrentTheme.Button)
+addButton(p9, "Save Config", saveConfig, 10, CurrentTheme.Button)
+addButton(p9, "Load Config", loadConfig, 11, CurrentTheme.Button)
 
--- Auto save on close
-GuiService.MenuOpened:Connect(function()
-    -- Auto-save on menu open (her ihtimale karsi)
-    task.spawn(function() pcall(saveConfig) end)
-end)
-
-addSeparator(p8, 12)
-addLabel(p8, "SESSION", 13)
+addSeparator(p9, 12)
+addLabel(p9, "SESSION", 13)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,80)
 statLabel.BackgroundColor3 = CurrentTheme.Button
 statLabel.BackgroundTransparency = InitialTransparency + 0.4
 statLabel.BorderSizePixel = 0
-statLabel.Text = "  Status     : ACTIVE\n  Kills      : 0\n  Session    : 0s\n  User       : " .. LocalPlayer.Name
+statLabel.Text = "  Status  : ACTIVE\n  Kills   : 0\n  Session : 0s"
 statLabel.TextColor3 = CurrentTheme.SubText
 statLabel.TextSize = 10
 statLabel.Font = Enum.Font.Code
@@ -1903,7 +2178,7 @@ statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
 statLabel.LayoutOrder = 14
 statLabel.ZIndex = 3
-statLabel.Parent = p8
+statLabel.Parent = p9
 Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 4)
 table.insert(uiElements, {element=statLabel, type="bg"})
 local statPad = Instance.new("UIPadding", statLabel)
@@ -1914,7 +2189,7 @@ task.spawn(function()
     while task.wait(1) do
         pcall(function()
             local sessionTime = math.floor(tick() - Settings.SessionStart)
-            statLabel.Text = "  Status     : ACTIVE\n  Kills      : " .. Settings.Kills .. "\n  Session    : " .. sessionTime .. "s\n  User       : " .. LocalPlayer.Name
+            statLabel.Text = "  Status  : ACTIVE\n  Kills   : " .. Settings.Kills .. "\n  Session : " .. sessionTime .. "s"
         end)
     end
 end)
@@ -1923,7 +2198,6 @@ end)
 -- WATERMARK
 -- =============================================
 local Watermark = Instance.new("Frame")
-Watermark.Name = "Watermark"
 Watermark.Size = UDim2.new(0, 220, 0, 38)
 Watermark.Position = UDim2.new(0, 15, 0, 15)
 Watermark.BackgroundColor3 = CurrentTheme.Panel
@@ -2069,14 +2343,16 @@ SelectAllBtn.MouseButton1Click:Connect(function()
 end)
 ClearAllBtn.MouseButton1Click:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
-    Settings.SelectedPlayers = {}; Settings.CurrentTarget = nil; refreshPlayerList()
+    Settings.SelectedPlayers = {}; Settings.CurrentTarget = nil; Settings.AutoKillTarget = nil
+    killBanner.Visible = false
+    refreshPlayerList()
 end)
 refreshPlayerList()
 Players.PlayerAdded:Connect(function() task.wait(0.5); refreshPlayerList() end)
 Players.PlayerRemoving:Connect(function(player)
     Settings.SelectedPlayers[player.Name] = nil
     if Settings.CurrentTarget == player then Settings.CurrentTarget = nil end
-    if Settings.FollowTarget == player then Settings.FollowTarget = nil end
+    if Settings.AutoKillTarget == player then Settings.AutoKillTarget = nil end
     removeHighlight(player.Name); task.wait(0.1); refreshPlayerList()
 end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
@@ -2236,6 +2512,108 @@ for _,plr in ipairs(Players:GetPlayers()) do
 end
 Players.PlayerAdded:Connect(function(plr)
     plr.CharacterAdded:Connect(function() task.wait(0.5); if isSelected(plr) and getESP() then addHighlight(plr) end end)
+end)
+
+-- =============================================
+-- AUTOKILL LOGIC ⭐ YENI!
+-- =============================================
+local lastKillTick = 0
+
+local function getAutoKillTarget()
+    local target = Settings.AutoKillTarget
+    if not target then return nil end
+    if not target.Character then return nil end
+    local hum = target.Character:FindFirstChildOfClass("Humanoid")
+    if not hum or hum.Health <= 0 then return nil end
+    return target
+end
+
+-- AutoKill ana dongusu
+RunService.RenderStepped:Connect(function()
+    if not Settings.AutoKill then
+        killBanner.Visible = false
+        return
+    end
+    
+    killBanner.Visible = true
+    
+    local target = getAutoKillTarget()
+    if not target then
+        kbTarget.Text = "Target: none"
+        -- Yeni hedef bul
+        for _, plr in pairs(Settings.SelectedPlayers) do
+            if plr and plr.Character then
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    Settings.AutoKillTarget = plr
+                    target = plr
+                    targetBtn.Text = "  TARGET: " .. plr.DisplayName
+                    kbTarget.Text = "Target: " .. plr.DisplayName
+                    break
+                end
+            end
+        end
+        if not target then return end
+    end
+    
+    kbTarget.Text = "Target: " .. target.DisplayName
+    
+    local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    local thrp = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+    if not lhrp or not thrp then return end
+    
+    -- Range check
+    local dist = (thrp.Position - lhrp.Position).Magnitude
+    if dist > Settings.KillRange then return end
+    
+    -- AUTO LOCK: Kamerayi hedefe kilitle
+    if Settings.AutoLock then
+        local targetPart = target.Character:FindFirstChild(Settings.TargetPart) or thrp
+        pcall(function()
+            Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPart.Position)
+        end)
+    end
+    
+    -- AUTO FIRE: Otomatik ates et
+    if Settings.AutoFire then
+        pcall(function()
+            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+            if tool then
+                tool:Activate()
+            end
+        end)
+    end
+    
+    -- INSTANT KILL: Ani oldur (health = 0)
+    if Settings.InstantKill then
+        if tick() - lastKillTick >= 0.1 then
+            lastKillTick = tick()
+            pcall(function()
+                local hum = target.Character:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum.Health = 0
+                    Settings.Kills = Settings.Kills + 1
+                    showToast("KILL", target.DisplayName .. " eliminated", "kill")
+                end
+            end)
+        end
+    end
+    
+    -- RAPID KILL: Hizli kill (belirli araliklarla)
+    if Settings.RapidKill then
+        if tick() - lastKillTick >= Settings.RapidKillDelay then
+            lastKillTick = tick()
+            pcall(function()
+                local hum = target.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    hum.Health = hum.Health - 25
+                    if hum.Health <= 0 then
+                        Settings.Kills = Settings.Kills + 1
+                    end
+                end
+            end)
+        end
+    end
 end)
 
 -- =============================================
@@ -2424,14 +2802,10 @@ RunService.Stepped:Connect(function()
 end)
 
 RunService.Heartbeat:Connect(function()
-    if not Settings.FollowPlayer or not Settings.FollowTarget then return end
-    if not Settings.FollowTarget.Character then return end
-    local thrp = Settings.FollowTarget.Character:FindFirstChild("HumanoidRootPart")
-    local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if thrp and lhrp then
-        local dist = (thrp.Position - lhrp.Position).Magnitude
-        if dist > 8 then
-            lhrp.CFrame = lhrp.CFrame:Lerp(CFrame.new(thrp.Position) * (lhrp.CFrame - lhrp.Position), 0.1)
+    if getGodMode() and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum and hum.Health < hum.MaxHealth then
+            hum.Health = hum.MaxHealth
         end
     end
 end)
@@ -2455,15 +2829,6 @@ RunService.Heartbeat:Connect(function()
                     pcall(function() hum.Health = hum.Health - dmg end)
                 end
             end
-        end
-    end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if getGodMode() and LocalPlayer.Character then
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if hum and hum.Health < hum.MaxHealth then
-            hum.Health = hum.MaxHealth
         end
     end
 end)
@@ -2702,7 +3067,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[DHL VIP] v4 yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
+print("[DHL VIP] AutoKill Edition v5 yuklendi!")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2717,28 +3082,15 @@ task.spawn(function()
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     task.wait(0.7)
-    showToast("DHL VIP", "Connection established", "success")
+    showToast("DHL VIP", "AutoKill system ready", "success")
     task.wait(0.6)
-    
-    -- Auto-load config if exists
-    if hasFileSupport and hasFileSupport() then
-        local exists = false
-        pcall(function() exists = isfile(CONFIG_FILE) end)
-        if exists then
-            task.wait(0.3)
-            loadConfig()
-        else
-            showToast("Interface", "Press Right Shift to toggle", "info")
-        end
-    else
-        showToast("Interface", "Press Right Shift to toggle", "info")
-    end
+    showToast("AutoKill", "AUTOKILL sekmesini kullan", "kill")
 end)
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "DHL VIP",
-        Text = "Config system ready!",
+        Text = "AutoKill Edition loaded!",
         Duration = 5
     })
 end)
