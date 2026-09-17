@@ -1,9 +1,9 @@
 --[[
-    Sou Hub - Winter Edition v4
-    DUZELTILDI: Sayfa icerikleri + tab butonlari dogru sirada
+    Sou Hub - Winter Edition v5
+    KESIN CALISAN SURUM
 ]]
 
-print("[Sou Hub] Winter Edition v4 yukleniyor...")
+print("[Sou Hub] Winter Edition v5 yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -33,9 +33,6 @@ local function getGuiParent()
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- =============================================
--- RENKLER
--- =============================================
 local Theme = {
     Bg = Color3.fromRGB(15, 20, 32),
     Panel = Color3.fromRGB(22, 28, 42),
@@ -60,9 +57,6 @@ local OriginalLighting = {
     GlobalShadows = Lighting.GlobalShadows, ClockTime = Lighting.ClockTime,
 }
 
--- =============================================
--- SETTINGS
--- =============================================
 local Settings = {
     SpeedHack = false, SpeedHackValue = 16,
     Noclip = false, Flight = false, FlightSpeed = 50,
@@ -88,18 +82,17 @@ local Settings = {
     SelectedPlayers = {}, CurrentTarget = nil,
 }
 
--- CLEANUP
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
-    pcall(function() 
+    pcall(function()
         local o = loc:FindFirstChild("SouHub_Winter"); if o then o:Destroy() end
         local o2 = loc:FindFirstChild("SouHub_Snow"); if o2 then o2:Destroy() end
     end)
 end
-pcall(function() 
-    if gethui then 
+pcall(function()
+    if gethui then
         local o = gethui():FindFirstChild("SouHub_Winter"); if o then o:Destroy() end
         local o2 = gethui():FindFirstChild("SouHub_Snow"); if o2 then o2:Destroy() end
-    end 
+    end
 end)
 
 local function tween(obj, time, props, style, dir)
@@ -109,9 +102,6 @@ local function tween(obj, time, props, style, dir)
     return t
 end
 
--- =============================================
--- GUI
--- =============================================
 local guiParent = getGuiParent()
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SouHub_Winter"
@@ -123,7 +113,7 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SouHub_Winter"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
--- KAR YAGISI (arkada)
+-- KAR
 local snowGui = Instance.new("ScreenGui")
 snowGui.Name = "SouHub_Snow"
 snowGui.ResetOnSpawn = false
@@ -209,7 +199,7 @@ local function showToast(title, message, toastType)
     end)
 end
 
--- MAIN FRAME
+-- MAIN
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 780, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -390, 0.5, -240)
@@ -262,17 +252,15 @@ minBtn.ZIndex = 7
 minBtn.Parent = Header
 Instance.new("UICorner", minBtn).CornerRadius = UDim.new(0, 6)
 
-local isMinimized = false
 minBtn.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    if isMinimized then
+    if MainFrame.Size.Y.Offset == 480 then
         tween(MainFrame, 0.3, {Size = UDim2.new(0, 780, 0, 50)})
     else
         tween(MainFrame, 0.3, {Size = UDim2.new(0, 780, 0, 480)})
     end
 end)
 
--- DRAGGABLE
+-- DRAG
 local dragging, dragInput, dragStart, startPos
 Header.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -290,9 +278,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- =============================================
 -- TAB BAR
--- =============================================
 local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1, 0, 0, 45)
 TabBar.Position = UDim2.new(0, 0, 0, 50)
@@ -307,8 +293,7 @@ TabBarScroll.Size = UDim2.new(1, 0, 1, 0)
 TabBarScroll.BackgroundTransparency = 1
 TabBarScroll.BorderSizePixel = 0
 TabBarScroll.ScrollBarThickness = 0
-TabBarScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-TabBarScroll.AutomaticCanvasSize = Enum.AutomaticSize.X
+TabBarScroll.CanvasSize = UDim2.new(0, 2000, 0, 0)
 TabBarScroll.ScrollingDirection = Enum.ScrollingDirection.X
 TabBarScroll.ZIndex = 6
 TabBarScroll.Parent = TabBar
@@ -329,9 +314,7 @@ ContentArea.BackgroundTransparency = 1
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
--- =============================================
 -- UI BUILDERS
--- =============================================
 local function addToggle(parent, name, default, callback, order)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, 0, 0, 36)
@@ -524,6 +507,9 @@ local function addSection(parent, text, order, color)
     return lbl
 end
 
+-- ============================================
+-- SAYFALARI OLUSTUR
+-- ============================================
 local function createPage(visible)
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, 0, 1, 0)
@@ -542,113 +528,76 @@ local function createPage(visible)
     return page
 end
 
--- =============================================
--- SAYFALARI OLUSTUR (ÖNCE)
--- =============================================
-local visualPage = createPage(true)
-local aimbotPage = createPage()
-local autokillPage = createPage()
-local espPage = createPage()
-local movementPage = createPage()
-local playersPage = createPage()
-local worldPage = createPage()
-local characterPage = createPage()
-local spectatePage = createPage()
-local themesPage = createPage()
-local miscPage = createPage()
-
-local tabPages = {
-    Visual = visualPage, AimBot = aimbotPage, AutoKill = autokillPage,
-    ESP = espPage, Movement = movementPage, Players = playersPage,
-    World = worldPage, Character = characterPage, Spectate = spectatePage,
-    Themes = themesPage, Misc = miscPage,
-}
-
--- =============================================
--- SAYFA ICERIKLERI
--- =============================================
+local pages = {}
 
 -- VISUAL
-addSection(visualPage, "❄ Visual", 1)
-local getSpeedHack = addToggle(visualPage, "Speed Hack", false, function(v) Settings.SpeedHack = v end, 2)
-local getSpeedHackValue = addSlider(visualPage, "Speed Value", 0, 1000, 16, function(v) Settings.SpeedHackValue = v end, 3)
-local getNoclip = addToggle(visualPage, "Noclip", false, function(v) Settings.Noclip = v end, 4)
-local getFlight = addToggle(visualPage, "Flight", false, function(v) Settings.Flight = v end, 5)
-local getFlightSpeed = addSlider(visualPage, "Flight Speed", 0, 1000, 50, function(v) Settings.FlightSpeed = v end, 6)
-local getFullbright = addToggle(visualPage, "Fullbright", false, function(v) Settings.Fullbright = v end, 7)
-local getNoFog = addToggle(visualPage, "No Fog", false, function(v) Settings.NoFog = v end, 8)
-addSection(visualPage, "Mode", 9)
-local modeOptions = {"Camera", "Movement", "Velocity"}
-local modeIdx = 1
-local modeBtn = addButton(visualPage, "Mode: Camera", function()
-    modeIdx = modeIdx % #modeOptions + 1
-    modeBtn.Text = "Mode: " .. modeOptions[modeIdx]
-    Settings.Mode = modeOptions[modeIdx]
-end, 10)
+pages.Visual = createPage(true)
+addSection(pages.Visual, "❄ Visual", 1)
+addToggle(pages.Visual, "Speed Hack", false, function(v) Settings.SpeedHack = v end, 2)
+addSlider(pages.Visual, "Speed Value", 0, 1000, 16, function(v) Settings.SpeedHackValue = v end, 3)
+addToggle(pages.Visual, "Noclip", false, function(v) Settings.Noclip = v end, 4)
+addToggle(pages.Visual, "Flight", false, function(v) Settings.Flight = v end, 5)
+addSlider(pages.Visual, "Flight Speed", 0, 1000, 50, function(v) Settings.FlightSpeed = v end, 6)
+addToggle(pages.Visual, "Fullbright", false, function(v) Settings.Fullbright = v end, 7)
+addToggle(pages.Visual, "No Fog", false, function(v) Settings.NoFog = v end, 8)
 
 -- AIMBOT
-addSection(aimbotPage, "❄ Camlock", 1)
-local getCamlock = addToggle(aimbotPage, "Camlock System", true, function(v) Settings.Camlock = v end, 2)
-local getWallCheck = addToggle(aimbotPage, "Wall Check", false, function(v) Settings.WallCheck = v end, 3)
-local getStickyAim = addToggle(aimbotPage, "Sticky Aim", true, function(v) Settings.StickyAim = v end, 4)
-local getAutoSwitch = addToggle(aimbotPage, "Auto Switch", true, function(v) Settings.AutoSwitch = v end, 5)
-local getSkipDowned = addToggle(aimbotPage, "Skip Downed", true, function(v) Settings.SkipDowned = v end, 6)
-local getAlwaysOn = addToggle(aimbotPage, "Always On", false, function(v) Settings.AlwaysOn = v end, 7)
-local getTriggerBot = addToggle(aimbotPage, "Trigger Bot", false, function(v) Settings.TriggerBot = v end, 8)
-addSection(aimbotPage, "Parameters", 9)
-local getSmoothness = addSlider(aimbotPage, "Smoothness", 0.05, 1.0, 0.450, function(v) Settings.Smoothness = v end, 10)
-local getPrediction = addSlider(aimbotPage, "Prediction", 0.0, 0.5, 0.100, function(v) Settings.Prediction = v end, 11)
-addSection(aimbotPage, "FOV", 12)
-local getFOVVisible = addToggle(aimbotPage, "FOV Circle", true, function(v) Settings.FOVVisible = v end, 13)
-local getFOVRadius = addSlider(aimbotPage, "FOV Radius", 20, 500, 150, function(v) Settings.FOVRadius = v end, 14)
-addSection(aimbotPage, "Hitbox", 15)
-local getHitboxExpand = addToggle(aimbotPage, "Hitbox Expand", false, function(v) Settings.HitboxExpand = v end, 16)
-local getHitboxSize = addSlider(aimbotPage, "Hitbox Size", 1.0, 3.0, 1.3, function(v) Settings.HitboxSize = v end, 17)
+pages.AimBot = createPage()
+addSection(pages.AimBot, "❄ Camlock", 1)
+addToggle(pages.AimBot, "Camlock System", true, function(v) Settings.Camlock = v end, 2)
+addToggle(pages.AimBot, "Wall Check", false, function(v) Settings.WallCheck = v end, 3)
+addToggle(pages.AimBot, "Sticky Aim", true, function(v) Settings.StickyAim = v end, 4)
+addToggle(pages.AimBot, "Auto Switch", true, function(v) Settings.AutoSwitch = v end, 5)
+addToggle(pages.AimBot, "Skip Downed", true, function(v) Settings.SkipDowned = v end, 6)
+addToggle(pages.AimBot, "Always On", false, function(v) Settings.AlwaysOn = v end, 7)
+addSection(pages.AimBot, "Parameters", 8)
+addSlider(pages.AimBot, "Smoothness", 0.05, 1.0, 0.450, function(v) Settings.Smoothness = v end, 9)
+addSlider(pages.AimBot, "Prediction", 0.0, 0.5, 0.100, function(v) Settings.Prediction = v end, 10)
+addSection(pages.AimBot, "FOV", 11)
+addToggle(pages.AimBot, "FOV Circle", true, function(v) Settings.FOVVisible = v end, 12)
+addSlider(pages.AimBot, "FOV Radius", 20, 500, 150, function(v) Settings.FOVRadius = v end, 13)
 
 -- AUTOKILL
-addSection(autokillPage, "⚔ AUTO ELIMINATION", 1, Theme.Kill)
-local getAutoKill = addToggle(autokillPage, "AUTOKILL", false, function(state)
+pages.AutoKill = createPage()
+addSection(pages.AutoKill, "⚔ AUTO ELIMINATION", 1, Theme.Kill)
+addToggle(pages.AutoKill, "AUTOKILL", false, function(state)
     Settings.AutoKill = state
     if state then
         showToast("AUTOKILL", "Hedefe kilitleniyor...", "kill")
         for _, plr in pairs(Settings.SelectedPlayers) do
             if plr and plr.Character then Settings.AutoKillTarget = plr; break end
         end
-        if not Settings.AutoKillTarget then
-            showToast("AUTOKILL", "Once oyuncu sec!", "error")
-            Settings.AutoKill = false
-        end
     end
 end, 2)
-local getAutoLock = addToggle(autokillPage, "Auto Lock", true, function(v) Settings.AutoLock = v end, 3)
-local getAutoFire = addToggle(autokillPage, "Auto Fire", true, function(v) Settings.AutoFire = v end, 4)
-local getInstantKill = addToggle(autokillPage, "Instant Kill", true, function(v) Settings.InstantKill = v end, 5)
-local getRapidKill = addToggle(autokillPage, "Rapid Kill", false, function(v) Settings.RapidKill = v end, 6)
-local getRapidDelay = addSlider(autokillPage, "Rapid Delay", 0.01, 0.5, 0.05, function(v) Settings.RapidKillDelay = v end, 7)
-local getKillRange = addSlider(autokillPage, "Kill Range", 5, 500, 100, function(v) Settings.KillRange = v end, 8)
+addToggle(pages.AutoKill, "Auto Lock", true, function(v) Settings.AutoLock = v end, 3)
+addToggle(pages.AutoKill, "Auto Fire", true, function(v) Settings.AutoFire = v end, 4)
+addToggle(pages.AutoKill, "Instant Kill", true, function(v) Settings.InstantKill = v end, 5)
+addToggle(pages.AutoKill, "Rapid Kill", false, function(v) Settings.RapidKill = v end, 6)
+addSlider(pages.AutoKill, "Kill Range", 5, 500, 100, function(v) Settings.KillRange = v end, 7)
 
 -- ESP
-addSection(espPage, "❄ ESP", 1)
-local getESP = addToggle(espPage, "ESP Enabled", true, function(v) Settings.ESPEnabled = v end, 2)
-local getESPNames = addToggle(espPage, "Name Tags", true, function(v) Settings.ESPNames = v end, 3)
-local getESPHealth = addToggle(espPage, "Health Display", true, function(v) Settings.ESPHealth = v end, 4)
-local getESPDistance = addToggle(espPage, "Distance Display", true, function(v) Settings.ESPDistance = v end, 5)
-local getESPTracers = addToggle(espPage, "Tracers", true, function(v) Settings.ESPTracers = v end, 6)
-local getESPBoxes = addToggle(espPage, "Box ESP", false, function(v) Settings.ESPBoxes = v end, 7)
-local getFillTransparency = addSlider(espPage, "Fill Transparency", 0, 1, 0.35, function(v) Settings.HighlightFillTransparency = v end, 8)
+pages.ESP = createPage()
+addSection(pages.ESP, "❄ ESP", 1)
+addToggle(pages.ESP, "ESP Enabled", true, function(v) Settings.ESPEnabled = v end, 2)
+addToggle(pages.ESP, "Name Tags", true, function(v) Settings.ESPNames = v end, 3)
+addToggle(pages.ESP, "Health Display", true, function(v) Settings.ESPHealth = v end, 4)
+addToggle(pages.ESP, "Distance Display", true, function(v) Settings.ESPDistance = v end, 5)
+addToggle(pages.ESP, "Tracers", true, function(v) Settings.ESPTracers = v end, 6)
+addSlider(pages.ESP, "Fill Transparency", 0, 1, 0.35, function(v) Settings.HighlightFillTransparency = v end, 7)
 
 -- MOVEMENT
-addSection(movementPage, "❄ Movement", 1)
-local getInfJump = addToggle(movementPage, "Infinite Jump", false, function(v) Settings.InfJump = v end, 2)
-addSection(movementPage, "Teleport", 3)
-addButton(movementPage, "Teleport to Mouse", function()
+pages.Movement = createPage()
+addSection(pages.Movement, "❄ Movement", 1)
+addToggle(pages.Movement, "Infinite Jump", false, function(v) Settings.InfJump = v end, 2)
+addSection(pages.Movement, "Teleport", 3)
+addButton(pages.Movement, "Teleport to Mouse", function()
     local char = LocalPlayer.Character
     if char then
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if hrp then hrp.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0)) end
     end
 end, 4)
-addButton(movementPage, "Teleport to Target", function()
+addButton(pages.Movement, "Teleport to Target", function()
     local target = Settings.AutoKillTarget or Settings.CurrentTarget
     if target and target.Character then
         local thrp = target.Character:FindFirstChild("HumanoidRootPart")
@@ -658,7 +607,9 @@ addButton(movementPage, "Teleport to Target", function()
 end, 5)
 
 -- PLAYERS
-addSection(playersPage, "❄ Players", 1)
+pages.Players = createPage()
+addSection(pages.Players, "❄ Players", 1)
+
 local SelectCountLabel = Instance.new("TextLabel")
 SelectCountLabel.Size = UDim2.new(1, 0, 0, 20)
 SelectCountLabel.BackgroundTransparency = 1
@@ -669,14 +620,14 @@ SelectCountLabel.Font = Enum.Font.Gotham
 SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
 SelectCountLabel.LayoutOrder = 2
 SelectCountLabel.ZIndex = 5
-SelectCountLabel.Parent = playersPage
+SelectCountLabel.Parent = pages.Players
 
 local btnRow = Instance.new("Frame")
 btnRow.Size = UDim2.new(1, 0, 0, 28)
 btnRow.BackgroundTransparency = 1
 btnRow.LayoutOrder = 3
 btnRow.ZIndex = 4
-btnRow.Parent = playersPage
+btnRow.Parent = pages.Players
 
 local SelectAllBtn = Instance.new("TextButton")
 SelectAllBtn.Size = UDim2.new(0.48, 0, 1, 0)
@@ -721,11 +672,11 @@ SearchBox.Font = Enum.Font.Gotham
 SearchBox.ClearTextOnFocus = false
 SearchBox.LayoutOrder = 4
 SearchBox.ZIndex = 5
-SearchBox.Parent = playersPage
+SearchBox.Parent = pages.Players
 Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0, 4)
 
 local PlayerScroll = Instance.new("ScrollingFrame")
-PlayerScroll.Size = UDim2.new(1, 0, 0, 200)
+PlayerScroll.Size = UDim2.new(1, 0, 0, 180)
 PlayerScroll.BackgroundTransparency = 1
 PlayerScroll.BorderSizePixel = 0
 PlayerScroll.ScrollBarThickness = 3
@@ -735,14 +686,14 @@ PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerScroll.LayoutOrder = 5
 PlayerScroll.ZIndex = 4
 PlayerScroll.Active = true
-PlayerScroll.Parent = playersPage
+PlayerScroll.Parent = pages.Players
 
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PlayerListLayout.Padding = UDim.new(0, 3)
 
-addSection(playersPage, "Actions", 6)
-addButton(playersPage, "Goto First Selected", function()
+addSection(pages.Players, "Actions", 6)
+addButton(pages.Players, "Goto First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -752,7 +703,7 @@ addButton(playersPage, "Goto First Selected", function()
         end
     end
 end, 7)
-addButton(playersPage, "Bring First Selected", function()
+addButton(pages.Players, "Bring First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
@@ -762,7 +713,7 @@ addButton(playersPage, "Bring First Selected", function()
         end
     end
 end, 8)
-local getFollowPlayer = addToggle(playersPage, "Follow First Selected", false, function(state)
+addToggle(pages.Players, "Follow First Selected", false, function(state)
     Settings.FollowPlayer = state
     if state then
         for _, plr in pairs(Settings.SelectedPlayers) do
@@ -770,7 +721,7 @@ local getFollowPlayer = addToggle(playersPage, "Follow First Selected", false, f
         end
     else Settings.FollowTarget = nil end
 end, 9)
-addButton(playersPage, "Kill First Selected", function()
+addButton(pages.Players, "Kill First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -785,12 +736,13 @@ addButton(playersPage, "Kill First Selected", function()
 end, 10, Color3.fromRGB(120, 30, 40))
 
 -- WORLD
-addSection(worldPage, "❄ World", 1)
-addButton(worldPage, "Server Rejoin", function()
+pages.World = createPage()
+addSection(pages.World, "❄ World", 1)
+addButton(pages.World, "Server Rejoin", function()
     task.wait(0.5)
     pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end)
 end, 2)
-addButton(worldPage, "Server Hop", function()
+addButton(pages.World, "Server Hop", function()
     task.wait(0.5)
     pcall(function()
         local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
@@ -806,23 +758,24 @@ addButton(worldPage, "Server Hop", function()
         else TeleportService:Teleport(game.PlaceId, LocalPlayer) end
     end)
 end, 3)
-addSection(worldPage, "Time", 4)
-local getTimeChanger = addToggle(worldPage, "Time Changer", false, function(v) Settings.TimeChanger = v end, 5)
-local getTimeValue = addSlider(worldPage, "Time (0-24)", 0, 24, 12, function(v) Settings.TimeValue = v end, 6)
+addSection(pages.World, "Time", 4)
+addToggle(pages.World, "Time Changer", false, function(v) Settings.TimeChanger = v end, 5)
+addSlider(pages.World, "Time (0-24)", 0, 24, 12, function(v) Settings.TimeValue = v end, 6)
 
 -- CHARACTER
-addSection(characterPage, "❄ Character", 1)
-local getGodMode = addToggle(characterPage, "God Mode", false, function(v) Settings.GodMode = v end, 2)
-local getAntiFling = addToggle(characterPage, "Anti Fling", false, function(v) Settings.AntiFling = v end, 3)
-addSection(characterPage, "Damage Aura", 4)
-local getDamageAura = addToggle(characterPage, "Damage Aura", false, function(v) Settings.DamageAura = v end, 5)
-local getDamageRange = addSlider(characterPage, "Aura Range", 3, 30, 10, function(v) Settings.DamageAuraRange = v end, 6)
-local getDamageAmount = addSlider(characterPage, "Damage Amount", 1, 50, 5, function(v) Settings.DamageAuraAmount = v end, 7)
-addSection(characterPage, "Actions", 8)
-addButton(characterPage, "Respawn", function()
+pages.Character = createPage()
+addSection(pages.Character, "❄ Character", 1)
+addToggle(pages.Character, "God Mode", false, function(v) Settings.GodMode = v end, 2)
+addToggle(pages.Character, "Anti Fling", false, function(v) Settings.AntiFling = v end, 3)
+addSection(pages.Character, "Damage Aura", 4)
+addToggle(pages.Character, "Damage Aura", false, function(v) Settings.DamageAura = v end, 5)
+addSlider(pages.Character, "Aura Range", 3, 30, 10, function(v) Settings.DamageAuraRange = v end, 6)
+addSlider(pages.Character, "Damage Amount", 1, 50, 5, function(v) Settings.DamageAuraAmount = v end, 7)
+addSection(pages.Character, "Actions", 8)
+addButton(pages.Character, "Respawn", function()
     pcall(function() LocalPlayer.Character:BreakJoints() end)
 end, 9)
-addButton(characterPage, "Full Heal", function()
+addButton(pages.Character, "Full Heal", function()
     pcall(function()
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum.Health = hum.MaxHealth end
@@ -830,7 +783,9 @@ addButton(characterPage, "Full Heal", function()
 end, 10)
 
 -- SPECTATE
-addSection(spectatePage, "❄ Spectate Mode", 1)
+pages.Spectate = createPage()
+addSection(pages.Spectate, "❄ Spectate Mode", 1)
+
 local specStatusLabel = Instance.new("TextLabel")
 specStatusLabel.Size = UDim2.new(1, 0, 0, 24)
 specStatusLabel.BackgroundTransparency = 1
@@ -841,10 +796,10 @@ specStatusLabel.Font = Enum.Font.GothamBold
 specStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
 specStatusLabel.LayoutOrder = 2
 specStatusLabel.ZIndex = 5
-specStatusLabel.Parent = spectatePage
+specStatusLabel.Parent = pages.Spectate
 
 local specScroll = Instance.new("ScrollingFrame")
-specScroll.Size = UDim2.new(1, 0, 0, 200)
+specScroll.Size = UDim2.new(1, 0, 0, 180)
 specScroll.BackgroundTransparency = 1
 specScroll.BorderSizePixel = 0
 specScroll.ScrollBarThickness = 3
@@ -854,12 +809,12 @@ specScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 specScroll.LayoutOrder = 3
 specScroll.ZIndex = 4
 specScroll.Active = true
-specScroll.Parent = spectatePage
+specScroll.Parent = pages.Spectate
 local specLayout = Instance.new("UIListLayout", specScroll)
 specLayout.SortOrder = Enum.SortOrder.LayoutOrder
 specLayout.Padding = UDim.new(0, 3)
 
-addButton(spectatePage, "Stop Spectating", function()
+addButton(pages.Spectate, "Stop Spectating", function()
     Settings.Spectating = false
     Settings.SpectateTarget = nil
     pcall(function()
@@ -937,17 +892,17 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 -- THEMES
-addSection(themesPage, "❄ Themes", 1)
+pages.Themes = createPage()
+addSection(pages.Themes, "❄ Themes", 1)
 local themeGrid = Instance.new("Frame")
-themeGrid.Size = UDim2.new(1, 0, 0, 300)
+themeGrid.Size = UDim2.new(1, 0, 0, 240)
 themeGrid.BackgroundTransparency = 1
 themeGrid.LayoutOrder = 2
 themeGrid.ZIndex = 4
-themeGrid.Parent = themesPage
+themeGrid.Parent = pages.Themes
 local themeGridLayout = Instance.new("UIGridLayout", themeGrid)
 themeGridLayout.CellSize = UDim2.new(0.25, -6, 0, 60)
 themeGridLayout.CellPadding = UDim.new(0, 6)
-themeGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local themesList = {
     {Name="Winter",   Primary=Color3.fromRGB(140,168,200)},
@@ -977,36 +932,26 @@ for _, theme in ipairs(themesList) do
     btn.ZIndex = 5
     btn.Parent = themeGrid
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    local stroke = Instance.new("UIStroke", btn)
-    stroke.Color = theme.Primary
-    stroke.Thickness = 1.5
-    
-    btn.MouseEnter:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = 0.1})
-    end)
-    btn.MouseLeave:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = 0.3})
-    end)
     btn.MouseButton1Click:Connect(function()
         Settings.HighlightColor = theme.Primary
         Theme.Accent = theme.Primary
-        Theme.Accent2 = theme.Primary
         showToast("Theme", theme.Name .. " uygulandı", "success")
     end)
 end
 
 -- MISC
-addSection(miscPage, "❄ Miscellaneous", 1)
-local getAntiAFK = addToggle(miscPage, "Anti-AFK", true, function(v) Settings.AntiAFK = v end, 2)
-local getWatermark = addToggle(miscPage, "Watermark", true, function(v) Settings.Watermark = v end, 3)
-local getFPSDisplay = addToggle(miscPage, "FPS Display", true, function(v) Settings.FPSDisplay = v end, 4)
-local getPingDisplay = addToggle(miscPage, "Ping Display", true, function(v) Settings.PingDisplay = v end, 5)
-local getGuiTransparency = addSlider(miscPage, "GUI Transparency", 0, 500, 250, function(v)
+pages.Misc = createPage()
+addSection(pages.Misc, "❄ Miscellaneous", 1)
+addToggle(pages.Misc, "Anti-AFK", true, function(v) Settings.AntiAFK = v end, 2)
+addToggle(pages.Misc, "Watermark", true, function(v) Settings.Watermark = v end, 3)
+addToggle(pages.Misc, "FPS Display", true, function(v) Settings.FPSDisplay = v end, 4)
+addToggle(pages.Misc, "Ping Display", true, function(v) Settings.PingDisplay = v end, 5)
+addSlider(pages.Misc, "GUI Transparency", 0, 500, 250, function(v)
     Settings.GuiTransparency = v
     MainFrame.BackgroundTransparency = 1 - (v / 500)
 end, 6)
-addSection(miscPage, "Config", 7)
-addButton(miscPage, "Save Config", function()
+addSection(pages.Misc, "Config", 7)
+addButton(pages.Misc, "Save Config", function()
     if writefile then
         pcall(function()
             local data = {SpeedValue = Settings.SpeedHackValue, KillRange = Settings.KillRange}
@@ -1015,22 +960,20 @@ addButton(miscPage, "Save Config", function()
         showToast("Config", "Kaydedildi", "success")
     end
 end, 8)
-addButton(miscPage, "Load Config", function()
+addButton(pages.Misc, "Load Config", function()
     if readfile and isfile then
         pcall(function()
             if isfile("SouHub_config.json") then
                 local data = HttpService:JSONDecode(readfile("SouHub_config.json"))
-                if data.SpeedValue then getSpeedHackValue(data.SpeedValue) end
-                if data.KillRange then getKillRange(data.KillRange) end
                 showToast("Config", "Yuklendi", "success")
             end
         end)
     end
 end, 9)
 
--- =============================================
--- TAB BUTONLARI (EN SON - SAYFALAR HAZIR OLDUKTAN SONRA)
--- =============================================
+-- ============================================
+-- TAB BUTONLARI (EN SON!)
+-- ============================================
 local tabNames = {"Visual", "AimBot", "AutoKill", "ESP", "Movement", "Players", "World", "Character", "Spectate", "Themes", "Misc"}
 local tabButtons = {}
 local activeTab = "Visual"
@@ -1063,38 +1006,30 @@ for i, name in ipairs(tabNames) do
     indicator.Parent = tabBtn
     Instance.new("UICorner", indicator).CornerRadius = UDim.new(0, 1)
     
-    tabBtn.MouseEnter:Connect(function()
-        if activeTab ~= name then tween(tabBtn, 0.15, {TextColor3 = Theme.Accent2}) end
-    end)
-    tabBtn.MouseLeave:Connect(function()
-        if activeTab ~= name then tween(tabBtn, 0.15, {TextColor3 = Theme.SubText}) end
-    end)
-    
     tabBtn.MouseButton1Click:Connect(function()
         if activeTab == name then return end
-        for n, page in pairs(tabPages) do page.Visible = false end
+        for n, page in pairs(pages) do page.Visible = false end
         for n, btn in pairs(tabButtons) do
             local isActive = (n == name)
             tween(btn, 0.2, {TextColor3 = isActive and Theme.Text or Theme.SubText})
             local ind = btn:FindFirstChild("Indicator")
             if ind then
-                tween(ind, 0.25, {Size = isActive and UDim2.new(0.6, 0, 0, 2) or UDim2.new(0, 0, 0, 2)}, Enum.EasingStyle.Quart)
+                tween(ind, 0.25, {Size = isActive and UDim2.new(0.6, 0, 0, 2) or UDim2.new(0, 0, 0, 2)})
             end
         end
-        local targetPage = tabPages[name]
+        local targetPage = pages[name]
         if targetPage then
             targetPage.Visible = true
-            targetPage.Position = UDim2.new(0, 15, 0, 0)
-            tween(targetPage, 0.25, {Position = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Quint)
         end
         activeTab = name
     end)
 end
 
--- =============================================
--- FEATURE LOOPS
--- =============================================
+-- ============================================
+-- LOOPS
+-- ============================================
 local flyBV = nil
+local originalSizes = {}
 
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
@@ -1271,7 +1206,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Anti-AFK
 pcall(function()
     local vu = game:GetService("VirtualUser")
     LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
@@ -1408,8 +1342,7 @@ pcall(function()
 end)
 
 -- AIMBOT
-local locked = false
-local function isVisible(targetPart)
+local locked = falselocal function isVisible(targetPart)
     if not Settings.WallCheck then return true end
     local origin = Camera.CFrame.Position
     local rp = RaycastParams.new()
@@ -1434,9 +1367,7 @@ local function getPredictedPosition(part)
     if Settings.Prediction <= 0 then return part.Position end
     local vel = Vector3.new(0, 0, 0)
     pcall(function() vel = part.AssemblyLinearVelocity end)
-    local ping = 0
-    pcall(function() ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000 end)
-    return part.Position + (vel * ((Settings.Prediction * 0.3) + (ping * 0.5)))
+    return part.Position + (vel * Settings.Prediction)
 end
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
@@ -1499,13 +1430,20 @@ RunService.RenderStepped:Connect(function()
         if part then
             local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
             if hum and hum.Health > 0 then
-                local canSee = isVisible(part)
-                if canSee or Settings.StickyAim then
-                    local predictedPos = getPredictedPosition(part)
-                    local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
-                    Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, Settings.Smoothness)
-                end
+                local predictedPos = getPredictedPosition(part)
+                local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
+                Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, Settings.Smoothness)
             end
+        end
+    end
+end)
+
+-- SPECTATE LOOP
+RunService.Heartbeat:Connect(function()
+    if Settings.Spectating and Settings.SpectateTarget then
+        if Settings.SpectateTarget.Character and Settings.SpectateTarget.Character:FindFirstChildOfClass("Humanoid") then
+            local hum = Settings.SpectateTarget.Character:FindFirstChildOfClass("Humanoid")
+            if Camera.CameraSubject ~= hum then Camera.CameraSubject = hum end
         end
     end
 end)
@@ -1568,18 +1506,15 @@ RunService.RenderStepped:Connect(function()
 end)
 RunService.RenderStepped:Connect(function() Watermark.Visible = Settings.Watermark end)
 
--- BILDIRIM
-print("[Sou Hub] Winter Edition v4 yuklendi!")
+print("[Sou Hub] Winter Edition v5 yuklendi!")
 
 task.wait(0.5)
 showToast("❄ Sou Hub", "Winter Edition hazir!", "success")
-task.wait(0.5)
-showToast("Sekmeler", "11 sekme aktif", "info")
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "❄ Sou Hub",
-        Text = "Winter Edition v4 loaded!",
+        Text = "Winter Edition loaded!",
         Duration = 5
     })
 end)
