@@ -1974,7 +1974,7 @@ statLabel.BorderSizePixel = 0
 statLabel.Text = "  Status     : ACTIVE\n  Kills      : 0\n  Session    : 0s\n  User       : " .. LocalPlayer.Name
 statLabel.TextColor3 = CurrentTheme.SubText
 statLabel.TextSize = 10
-statLabel.Font = statLabel.Font = Enum.Font.Code
+statLabel.Font = Enum.Font.Code
 statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
 statLabel.LayoutOrder = 14
