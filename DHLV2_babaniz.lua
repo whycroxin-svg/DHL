@@ -1,10 +1,10 @@
 --[[
-    SOU HUB - TOUCHLINE WINTER EDITION
-    Winter GUI + Touchline ozellikleri
-    Kar yagisi + Splash + 8 sekmeli GUI
+    SOU HUB - CLEAN PRO EDITION
+    Winter Theme + Kar Yagisi
+    Tum ozellikler aynen korundu
 ]]
 
-print("[SOU HUB] Touchline Winter Edition yukleniyor...")
+print("[SOU HUB] Winter Edition yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -19,6 +19,9 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
+-- =============================================
+-- GUI PARENT
+-- =============================================
 local function getGuiParent()
     if gethui then return gethui() end
     if syn and syn.protect_gui then
@@ -38,21 +41,21 @@ end
 -- THEMES
 -- =============================================
 local Themes = {
-    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195)},
-    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140)},
-    Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160)},
-    Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120)},
-    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120)},
-    Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130)},
-    Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170)},
-    Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150)},
-    Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90)},
-    Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90)},
-    Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200)},
-    Sakura   = {Name="Sakura",   Category="Special", Primary=Color3.fromRGB(245,165,184), Accent=Color3.fromRGB(255,209,220), Bg=Color3.fromRGB(26,13,18),  Panel=Color3.fromRGB(42,21,32),  Button=Color3.fromRGB(58,31,46),  Text=Color3.fromRGB(255,225,235), SubText=Color3.fromRGB(210,160,180)},
-    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220)},
-    Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160)},
-    Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150)},
+    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
+    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
+    Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
+    Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
+    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120), G1=Color3.fromRGB(200,60,90), G2=Color3.fromRGB(100,20,40)},
+    Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
+    Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
+    Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
+    Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90),  G1=Color3.fromRGB(255,140,60), G2=Color3.fromRGB(160,60,20)},
+    Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90),  G1=Color3.fromRGB(220,180,110),G2=Color3.fromRGB(140,90,50)},
+    Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200), G1=Color3.fromRGB(60,160,240), G2=Color3.fromRGB(20,80,160)},
+    Sakura   = {Name="Sakura",   Category="Special", Primary=Color3.fromRGB(245,165,184), Accent=Color3.fromRGB(255,209,220), Bg=Color3.fromRGB(26,13,18),  Panel=Color3.fromRGB(42,21,32),  Button=Color3.fromRGB(58,31,46),  Text=Color3.fromRGB(255,225,235), SubText=Color3.fromRGB(210,160,180), G1=Color3.fromRGB(255,180,210), G2=Color3.fromRGB(200,120,160)},
+    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220), G1=Color3.fromRGB(255,0,170), G2=Color3.fromRGB(0,255,255)},
+    Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160), G1=Color3.fromRGB(230,60,60), G2=Color3.fromRGB(20,140,60)},
+    Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150), G1=Color3.fromRGB(255,140,90), G2=Color3.fromRGB(180,60,120)},
 }
 local CurrentTheme = Themes.Winter
 
@@ -69,54 +72,33 @@ local OriginalLighting = {
 -- SETTINGS
 -- =============================================
 local Settings = {
-    Reach = false, ReachValue = 30,
-    BallHitbox = false, BallSize = 2.0,
-    GoalAimbot = false, GoalAimStrength = 0.5,
-    AutoDive = false,
-    Fullbright = false,
+    CamlockEnabled = true, WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
+    TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
+    SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
+    FOVRadius = 150, FOVUseTheme = true,
     
-    BallESP = false,
-    BallESPColor = Color3.fromRGB(255, 220, 60),
+    ESPEnabled = true, ESPNames = true, ESPHealth = true, ESPDistance = true,
+    ESPTracers = true, ESPBoxes = false, ESPTracerOrigin = "Bottom",
+    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,168,200),
     
-    BallHitboxESP = false,
-    BallHitboxESPColor = Color3.fromRGB(120, 255, 140),
+    SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
+    InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
     
-    HitboxESP = false,
-    HitboxESPColor = Color3.fromRGB(120, 220, 160),
-    
-    Watermark = true,
-    FPSDisplay = true,
-    PingDisplay = true,
+    AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
+    Watermark = true, FPSDisplay = true, PingDisplay = true,
     GuiTransparency = 250,
+    
+    FollowPlayer = false, FollowTarget = nil,
+    DamageAura = false, DamageAuraRange = 10, DamageAuraAmount = 5,
+    AntiFling = false, GodMode = false, CharacterSize = false, CharacterSizeValue = 1.0,
+    
+    Fullbright = false, NoFog = false, RemoveShadows = false,
+    TimeChanger = false, TimeValue = 12,
+    
+    Kills = 0, SessionStart = tick(),
+    SelectedPlayers = {}, CurrentTarget = nil,
     ParticlesEnabled = true,
 }
-
--- =============================================
--- TOP & KALE BULMA
--- =============================================
-local function findBall()
-    local footballs = workspace:FindFirstChild("Footballs")
-    if footballs then
-        local ball = footballs:FindFirstChild("Ball")
-        if ball and ball:IsA("BasePart") then return ball end
-    end
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") and obj.Shape == Enum.PartType.Ball then
-            if obj.Size.X > 0.5 and obj.Size.X < 30 then return obj end
-        end
-    end
-    return nil
-end
-
-local function findGoal()
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("BasePart") then
-            local n = obj.Name:lower()
-            if n:find("goal") or n:find("kale") then return obj end
-        end
-    end
-    return nil
-end
 
 -- =============================================
 -- CLEANUP
@@ -133,6 +115,9 @@ pcall(function()
         local o2 = gethui():FindFirstChild("SOUHUB_Snow"); if o2 then o2:Destroy() end
     end 
 end)
+for _, plr in ipairs(Players:GetPlayers()) do
+    pcall(function() if plr.Character then local h = plr.Character:FindFirstChild("SOUHUB_Highlight"); if h then h:Destroy() end end end)
+end
 
 -- =============================================
 -- TWEEN HELPER
@@ -159,7 +144,7 @@ if guiParent:IsA("ScreenGui") then
 else ScreenGui.Parent = guiParent end
 
 -- =============================================
--- KAR YAGISI
+-- ❄️ KAR YAGISI EFEKTI
 -- =============================================
 local snowGui = Instance.new("ScreenGui")
 snowGui.Name = "SOUHUB_Snow"
@@ -189,9 +174,10 @@ local function createSnowflake()
     sf.Parent = snowContainer
     local dur = math.random(6, 14)
     local drift = math.random(-20, 20) / 100
+    local rotate = math.random(-180, 180)
     tween(sf, dur, {
         Position = UDim2.new(sf.Position.X.Scale + drift, 0, 1.1, 0),
-        Rotation = sf.Rotation + math.random(-180, 180)
+        Rotation = sf.Rotation + rotate
     }, Enum.EasingStyle.Linear)
     task.delay(dur, function() if sf and sf.Parent then sf:Destroy() end end)
 end
@@ -211,11 +197,13 @@ splashGui.Name = "SOUHUB_Splash"
 splashGui.ResetOnSpawn = false
 splashGui.DisplayOrder = 10000
 splashGui.IgnoreGuiInset = true
+splashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 splashGui.Parent = guiParent
 
 local splashFrame = Instance.new("Frame")
 splashFrame.Size = UDim2.new(1, 0, 1, 0)
 splashFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+splashFrame.BackgroundTransparency = 0
 splashFrame.BorderSizePixel = 0
 splashFrame.ZIndex = 1
 splashFrame.Parent = splashGui
@@ -254,7 +242,7 @@ local splashSub = Instance.new("TextLabel")
 splashSub.Size = UDim2.new(1, 0, 0, 16)
 splashSub.Position = UDim2.new(0, 0, 0.5, 22)
 splashSub.BackgroundTransparency = 1
-splashSub.Text = "T O U C H L I N E   E D I T I O N"
+splashSub.Text = "W I N T E R   E D I T I O N"
 splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
@@ -322,7 +310,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- TOAST
+-- TOAST SISTEMI
 -- =============================================
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
@@ -359,9 +347,11 @@ local function showToast(title, message, toastType)
     local stroke = Instance.new("UIStroke", toast)
     stroke.Color = CurrentTheme.Button
     stroke.Thickness = 1
+    stroke.Transparency = 0
     
     local bar = Instance.new("Frame")
     bar.Size = UDim2.new(0, 2, 1, 0)
+    bar.Position = UDim2.new(0, 0, 0, 0)
     bar.BackgroundColor3 = colors[toastType]
     bar.BorderSizePixel = 0
     bar.ZIndex = 1002
@@ -439,7 +429,7 @@ MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
 MainFrame.BackgroundTransparency = InitialTransparency
 MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
+MainFrame.Active = false
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
@@ -450,10 +440,13 @@ mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
 mainStroke.Transparency = InitialTransparency + 0.2
 
--- Anime kız arka planı
+-- =============================================
+-- ANIME KIZI ARKA PLANI
+-- =============================================
 local animeBg = Instance.new("ImageLabel")
 animeBg.Name = "AnimeBackground"
 animeBg.Size = UDim2.new(1, 0, 1, 0)
+animeBg.Position = UDim2.new(0, 0, 0, 0)
 animeBg.BackgroundTransparency = 1
 animeBg.ImageTransparency = 0.55
 animeBg.ScaleType = Enum.ScaleType.Crop
@@ -465,7 +458,9 @@ pcall(function()
     local fn = "anime_bg.jpg"
     local url = "https://raw.githubusercontent.com/whycroxin-svg/ahh/main/hile%20gui%20arka%20plan.jpg"
     if writefile and isfile and getcustomasset then
-        if not isfile(fn) then writefile(fn, game:HttpGet(url)) end
+        if not isfile(fn) then
+            writefile(fn, game:HttpGet(url))
+        end
         animeBg.Image = getcustomasset(fn)
     else
         animeBg.Image = url
@@ -506,7 +501,7 @@ tl.Parent = MainFrame
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
-cl.Text = "TOUCHLINE EDITION"
+cl.Text = "WINTER EDITION"
 cl.TextColor3 = CurrentTheme.SubText
 cl.TextSize = 9
 cl.Font = Enum.Font.GothamSemibold
@@ -662,21 +657,22 @@ ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
 -- =============================================
--- TAB SYSTEM
+-- TAB SYSTEM (8 sekme)
 -- =============================================
 local tabConfig = {
-    {Name = "BALL",      Sub = "Ball control"},
+    {Name = "AIMLOCK",   Sub = "Targeting system"},
     {Name = "ESP",       Sub = "Visual overlay"},
-    {Name = "AIMBOT",    Sub = "Goal targeting"},
+    {Name = "MOVEMENT",  Sub = "Speed & flight"},
     {Name = "PLAYERS",   Sub = "Player actions"},
     {Name = "WORLD",     Sub = "Environment"},
+    {Name = "CHARACTER", Sub = "Player state"},
     {Name = "THEMES",    Sub = "Appearance"},
     {Name = "SETTINGS",  Sub = "Configuration"},
 }
 
 local tabPages = {}
 local tabButtons = {}
-local activeTab = "BALL"
+local activeTab = "AIMLOCK"
 local uiElements = {}
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
@@ -689,6 +685,7 @@ local function animatePageSwitch(oldPage, newPage)
             oldPage.Position = UDim2.new(0, 0, 0, 0)
         end)
     end
+    
     task.delay(0.05, function()
         newPage.Visible = true
         newPage.Position = UDim2.new(0, 20, 0, 0)
@@ -886,7 +883,13 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.ZIndex = 4
         kbBtn.Parent = row
         Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
-        
+        local kbStroke = Instance.new("UIStroke", kbBtn)
+        kbStroke.Color = CurrentTheme.Button
+        kbStroke.Thickness = 1
+        kbStroke.Transparency = InitialTransparency
+        table.insert(uiElements, {element=kbBtn, type="keybindBg"})
+        table.insert(uiElements, {element=kbStroke, type="stroke"})
+
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
@@ -937,6 +940,7 @@ local function addSlider(page, name, min, max, default, callback, order)
 
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.6, 0, 0, 16)
+    label.Position = UDim2.new(0, 0, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = CurrentTheme.Text
@@ -978,6 +982,7 @@ local function addSlider(page, name, min, max, default, callback, order)
     fill.Parent = bg
     Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
     table.insert(uiElements, {element=fill, type="fill"})
+    table.insert(uiElements, {element=bg, type="bg"})
 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,10,0,10)
@@ -1010,6 +1015,64 @@ local function addSlider(page, name, min, max, default, callback, order)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then sliding = false end
     end)
     return function() return value end
+end
+
+local function addCycleButton(page, name, options, default, callback, order)
+    local idx = 1
+    for i,v in ipairs(options) do if v == default then idx = i; break end end
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1,-8,0,34)
+    btn.BackgroundColor3 = CurrentTheme.Button
+    btn.BackgroundTransparency = InitialTransparency + 0.3
+    btn.BorderSizePixel = 0
+    btn.Text = ""
+    btn.AutoButtonColor = false
+    btn.LayoutOrder = order or 0
+    btn.ZIndex = 3
+    btn.Parent = page
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
+    local s = Instance.new("UIStroke", btn)
+    s.Color = CurrentTheme.Button
+    s.Thickness = 1
+    s.Transparency = InitialTransparency
+    table.insert(uiElements, {element=s, type="stroke"})
+    
+    local nameLbl = Instance.new("TextLabel")
+    nameLbl.Size = UDim2.new(0.5, 0, 1, 0)
+    nameLbl.Position = UDim2.new(0, 14, 0, 0)
+    nameLbl.BackgroundTransparency = 1
+    nameLbl.Text = name
+    nameLbl.TextColor3 = CurrentTheme.Text
+    nameLbl.TextSize = 11
+    nameLbl.Font = Enum.Font.GothamSemibold
+    nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+    nameLbl.ZIndex = 4
+    nameLbl.Parent = btn
+    
+    local valueLbl = Instance.new("TextLabel")
+    valueLbl.Size = UDim2.new(0.5, -14, 1, 0)
+    valueLbl.Position = UDim2.new(0.5, 0, 0, 0)
+    valueLbl.BackgroundTransparency = 1
+    valueLbl.Text = options[idx]
+    valueLbl.TextColor3 = CurrentTheme.Accent
+    valueLbl.TextSize = 11
+    valueLbl.Font = Enum.Font.GothamBold
+    valueLbl.TextXAlignment = Enum.TextXAlignment.Right
+    valueLbl.ZIndex = 4
+    valueLbl.Parent = btn
+    
+    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
+    
+    btn.MouseButton1Click:Connect(function()
+        idx = idx % #options + 1
+        valueLbl.Text = options[idx]
+        tween(valueLbl, 0.1, {TextColor3 = Color3.fromRGB(255,255,255)})
+        task.wait(0.1)
+        tween(valueLbl, 0.15, {TextColor3 = CurrentTheme.Accent})
+        if callback then callback(options[idx]) end
+    end)
+    return function() return options[idx] end
 end
 
 local function addSeparator(page, order)
@@ -1047,54 +1110,42 @@ local function addLabel(page, text, order)
     table.insert(uiElements, {element=lbl, type="sectionLabel"})
 end
 
-local function addCycleButton(page, name, options, default, callback, order)
-    local idx = 1
-    for i,v in ipairs(options) do if v == default then idx = i; break end end
+local function addButton(page, name, callback, order, color)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,-8,0,34)
-    btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = InitialTransparency + 0.3
+    btn.Size = UDim2.new(1,-8,0,36)
+    btn.BackgroundColor3 = color or CurrentTheme.Button
+    btn.BackgroundTransparency = InitialTransparency + 0.2
     btn.BorderSizePixel = 0
-    btn.Text = ""
+    btn.Text = name
+    btn.TextColor3 = CurrentTheme.Text
+    btn.TextSize = 11
+    btn.Font = Enum.Font.GothamSemibold
     btn.AutoButtonColor = false
     btn.LayoutOrder = order or 0
     btn.ZIndex = 3
     btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
     
-    local nameLbl = Instance.new("TextLabel")
-    nameLbl.Size = UDim2.new(0.5, 0, 1, 0)
-    nameLbl.Position = UDim2.new(0, 14, 0, 0)
-    nameLbl.BackgroundTransparency = 1
-    nameLbl.Text = name
-    nameLbl.TextColor3 = CurrentTheme.Text
-    nameLbl.TextSize = 11
-    nameLbl.Font = Enum.Font.GothamSemibold
-    nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-    nameLbl.ZIndex = 4
-    nameLbl.Parent = btn
+    local stroke = Instance.new("UIStroke", btn)
+    stroke.Color = CurrentTheme.Button
+    stroke.Thickness = 1
+    stroke.Transparency = InitialTransparency
     
-    local valueLbl = Instance.new("TextLabel")
-    valueLbl.Size = UDim2.new(0.5, -14, 1, 0)
-    valueLbl.Position = UDim2.new(0.5, 0, 0, 0)
-    valueLbl.BackgroundTransparency = 1
-    valueLbl.Text = options[idx]
-    valueLbl.TextColor3 = CurrentTheme.Accent
-    valueLbl.TextSize = 11
-    valueLbl.Font = Enum.Font.GothamBold
-    valueLbl.TextXAlignment = Enum.TextXAlignment.Right
-    valueLbl.ZIndex = 4
-    valueLbl.Parent = btn
-    
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
+    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.05}) end)
+    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.2}) end)
     
     btn.MouseButton1Click:Connect(function()
-        idx = idx % #options + 1
-        valueLbl.Text = options[idx]
-        if callback then callback(options[idx]) end
+        tween(btn, 0.1, {BackgroundTransparency = InitialTransparency})
+        task.wait(0.1)
+        tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.2})
+        if callback then callback() end
     end)
-    return function() return options[idx] end
+    return btn
+end
+
+local function getFOVThemeColor()
+    if Settings.FOVUseTheme then return CurrentTheme.Accent end
+    return Color3.fromRGB(200,80,80)
 end
 
 -- =============================================
@@ -1139,10 +1190,20 @@ local function applyTheme(themeName)
                 end
             elseif data.type == "fill" then
                 data.element.BackgroundColor3 = CurrentTheme.Accent
+            elseif data.type == "knob" then
+                data.element.BackgroundColor3 = Color3.fromRGB(255,255,255)
+            elseif data.type == "bg" then
+                data.element.BackgroundColor3 = CurrentTheme.Button
+            elseif data.type == "keybindBg" then
+                data.element.BackgroundColor3 = CurrentTheme.Button
             elseif data.type == "separatorLine" then
                 data.element.BackgroundColor3 = CurrentTheme.Button
             elseif data.type == "sectionLabel" then
                 data.element.TextColor3 = CurrentTheme.SubText
+            elseif data.type == "subLabel" then
+                data.element.TextColor3 = CurrentTheme.SubText
+            elseif data.type == "stroke" then
+                data.element.Color = CurrentTheme.Button
             end
         end
     end
@@ -1152,8 +1213,9 @@ local function applyTheme(themeName)
         b.BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0)
         local ind = b:FindFirstChild("Indicator")
         if ind then ind.BackgroundColor3 = CurrentTheme.Primary end
-        for _, lbl in ipairs(b:GetChildren()) do
-            if lbl:IsA("TextLabel") then
+        local labels = b:GetChildren()
+        for _, lbl in ipairs(labels) do
+            if lbl:IsA("TextLabel") and lbl.Name ~= "Indicator" then
                 local isMain = lbl.TextSize == 11
                 if isMain then
                     lbl.TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText
@@ -1167,7 +1229,12 @@ local function applyTheme(themeName)
     for _, page in pairs(tabPages) do
         page.ScrollBarImageColor3 = CurrentTheme.Button
     end
+    PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Button
     SideScroll.ScrollBarImageColor3 = CurrentTheme.Button
+    
+    if fovCircle and Settings.FOVUseTheme then
+        fovCircle.Color = CurrentTheme.Accent
+    end
     
     Watermark.BackgroundColor3 = CurrentTheme.Panel
     wmStroke.Color = CurrentTheme.Button
@@ -1194,214 +1261,739 @@ local function applyTheme(themeName)
 end
 
 -- =============================================
--- PAGE 1: BALL (Ball Control)
+-- PAGE 1: AIMLOCK
 -- =============================================
-local p1 = tabPages["BALL"]
-addLabel(p1, "BALL CONTROL", 1)
-local getReach = addToggle(p1, "Reach", false, function(v) Settings.Reach = v end, 2, true)
-local getReachValue = addSlider(p1, "Reach Distance", 5, 100, 30, function(v) Settings.ReachValue = v end, 3)
-
-addSeparator(p1, 4)
-addLabel(p1, "BALL HITBOX", 5)
-local getBallHitbox = addToggle(p1, "Ball Hitbox (Buyut)", false, function(v) Settings.BallHitbox = v end, 6, true)
-local getBallSize = addSlider(p1, "Ball Size", 1, 20, 2, function(v) Settings.BallSize = v end, 7)
+local p1 = tabPages["AIMLOCK"]
+addLabel(p1, "CAMLOCK", 1)
+local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
+local getWallCheck = addToggle(p1, "Wall Check", false, nil, 3, true)
+local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
+local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
+local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 6, true)
+local getAlwaysOn = addToggle(p1, "Always On", false, nil, 7, true)
 
 addSeparator(p1, 8)
-addLabel(p1, "BALL ESP", 9)
-local getBallESP = addToggle(p1, "Ball ESP", false, function(v) Settings.BallESP = v end, 10, true)
-local getBallESPColor = addCycleButton(p1, "ESP Color", {"Yellow","Red","Cyan","Green","Purple","White","Pink","Orange"}, "Yellow", function(v)
-    local colors = {Yellow=Color3.fromRGB(255,220,60), Red=Color3.fromRGB(255,80,80), Cyan=Color3.fromRGB(100,220,255), Green=Color3.fromRGB(100,255,140), Purple=Color3.fromRGB(200,120,255), White=Color3.fromRGB(255,255,255), Pink=Color3.fromRGB(255,150,200), Orange=Color3.fromRGB(255,160,60)}
-    Settings.BallESPColor = colors[v] or Color3.fromRGB(255,220,60)
-end, 11)
+addLabel(p1, "PARAMETERS", 9)
+local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v) Settings.Mode = v:gsub(" ", "") end, 10)
+local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 11)
+local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 12)
+local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 13)
+local getAimShake = addSlider(p1, "Aim Shake", 0, 5, 0, nil, 14)
 
-addSeparator(p1, 12)
-addLabel(p1, "BALL HITBOX ESP", 13)
-local getBallHitboxESP = addToggle(p1, "Ball Hitbox ESP (Cember)", false, function(v) Settings.BallHitboxESP = v end, 14, true)
+addSeparator(p1, 15)
+addLabel(p1, "TRIGGER", 16)
+local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 17, true)
 
--- =============================================
+addSeparator(p1, 18)
+addLabel(p1, "HITBOX", 19)
+local getHitboxExpand = addToggle(p1, "Hitbox Expand", false, nil, 20, false)
+local getHitboxSize = addSlider(p1, "Hitbox Size", 1.0, 3.0, 1.3, nil, 21)
+
+addSeparator(p1, 22)
+addLabel(p1, "FOV", 23)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 24, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 25)
+local getFOVUseTheme = addToggle(p1, "FOV Follow Theme", true, function(v) Settings.FOVUseTheme = v end, 26, false)
+
 -- PAGE 2: ESP
--- =============================================
 local p2 = tabPages["ESP"]
-addLabel(p2, "PLAYER HITBOX", 1)
-local getHitboxESP = addToggle(p2, "Hitbox ESP (Karakter)", false, function(v) Settings.HitboxESP = v end, 2, true)
+addLabel(p2, "HIGHLIGHT", 1)
+local getESP = addToggle(p2, "ESP Enabled", true, nil, 2, true)
+local getHighlightColor = addCycleButton(p2, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink","Gold"}, "Cyan", function(v)
+    local colors = {Red=Color3.fromRGB(255,80,80), Cyan=Color3.fromRGB(100,180,220), Green=Color3.fromRGB(100,220,140),
+        Yellow=Color3.fromRGB(240,220,100), Purple=Color3.fromRGB(180,120,240), White=Color3.fromRGB(255,255,255),
+        Orange=Color3.fromRGB(240,160,80), Pink=Color3.fromRGB(240,140,180), Gold=Color3.fromRGB(230,200,100)}
+    Settings.HighlightColor = colors[v] or Color3.fromRGB(100,180,220)
+end, 3)
+local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
 
-addSeparator(p2, 3)
-addLabel(p2, "BALL ESP AYARLARI", 4)
-local getBallESPBox = addToggle(p2, "Box", true, function(v) Settings.BallESPBox = v end, 5, false)
-local getBallESPName = addToggle(p2, "Name", true, function(v) Settings.BallESPName = v end, 6, false)
-local getBallESPDistance = addToggle(p2, "Distance", true, function(v) Settings.BallESPDistance = v end, 7, false)
+addSeparator(p2, 5)
+addLabel(p2, "INFO OVERLAY", 6)
+local getESPNames = addToggle(p2, "Name Tags", true, nil, 7, true)
+local getESPHealth = addToggle(p2, "Health Display", true, nil, 8, false)
+local getESPDistance = addToggle(p2, "Distance Display", true, nil, 9, false)
 
--- =============================================
--- PAGE 3: AIMBOT
--- =============================================
-local p3 = tabPages["AIMBOT"]
-addLabel(p3, "GOAL AIMBOT", 1)
-local getGoalAimbot = addToggle(p3, "Goal Aimbot", false, function(v) Settings.GoalAimbot = v end, 2, true)
-local getGoalStrength = addSlider(p3, "Aim Strength", 0.1, 1.0, 0.5, function(v) Settings.GoalAimStrength = v end, 3)
+addSeparator(p2, 10)
+addLabel(p2, "TRACERS", 11)
+local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
+local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
+local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
+
+-- PAGE 3: MOVEMENT
+local p3 = tabPages["MOVEMENT"]
+addLabel(p3, "SPEED", 1)
+local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
+local getSpeedValue = addSlider(p3, "Walk Speed", 16, 500, 16, nil, 3)
 
 addSeparator(p3, 4)
-addLabel(p3, "GOALKEEPER", 5)
-local getAutoDive = addToggle(p3, "Auto Dive", false, function(v) Settings.AutoDive = v end, 6, true)
+addLabel(p3, "JUMP", 5)
+local getJumpPower = addToggle(p3, "Jump Power", false, nil, 6, true)
+local getJumpValue = addSlider(p3, "Jump Value", 50, 500, 50, nil, 7)
+local getInfJump = addToggle(p3, "Infinite Jump", false, nil, 8, true)
 
--- =============================================
--- PAGE 4: PLAYERS
--- =============================================
-local p4 = tabPages["PLAYERS"]
-addLabel(p4, "PLAYER LIST", 1)
-local playerListLabel = Instance.new("TextLabel")
-playerListLabel.Size = UDim2.new(1,-8,0,20)
-playerListLabel.BackgroundTransparency = 1
-playerListLabel.Text = "Oyuncular yukleniyor..."
-playerListLabel.TextColor3 = CurrentTheme.SubText
-playerListLabel.TextSize = 10
-playerListLabel.Font = Enum.Font.Gotham
-playerListLabel.TextXAlignment = Enum.TextXAlignment.Left
-playerListLabel.LayoutOrder = 2
-playerListLabel.ZIndex = 3
-playerListLabel.Parent = p4
-table.insert(uiElements, {element=playerListLabel, type="sectionLabel"})
+addSeparator(p3, 9)
+addLabel(p3, "FLIGHT", 10)
+local getFly = addToggle(p3, "Fly", false, nil, 11, true)
+local getFlySpeed = addSlider(p3, "Fly Speed", 10, 500, 50, nil, 12)
+local getNoclipFly = addToggle(p3, "Noclip Fly", false, nil, 13, true)
 
-task.spawn(function()
-    while playerListLabel.Parent do
-        local count = #Players:GetPlayers()
-        playerListLabel.Text = "Toplam " .. count .. " oyuncu • " .. LocalPlayer.Name .. " (sen)"
-        task.wait(2)
+addSeparator(p3, 14)
+addLabel(p3, "NOCLIP", 15)
+local getNoclip = addToggle(p3, "Noclip", false, nil, 16, true)
+
+addSeparator(p3, 17)
+addLabel(p3, "TELEPORT", 18)
+addButton(p3, "Teleport to Mouse", function()
+    local char = LocalPlayer.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = CFrame.new(Mouse.Hit.Position + Vector3.new(0, 3, 0))
+            showToast("Teleport", "Moved to mouse position", "success")
+        end
     end
-end)
+end, 19, CurrentTheme.Button)
 
--- =============================================
+addButton(p3, "Teleport to Target", function()
+    local target = Settings.CurrentTarget
+    if target and target.Character then
+        local thrp = target.Character:FindFirstChild("HumanoidRootPart")
+        local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if thrp and lhrp then
+            lhrp.CFrame = thrp.CFrame * CFrame.new(0, 0, 3)
+            showToast("Teleport", "Moved to " .. target.DisplayName, "success")
+        end
+    else
+        showToast("Teleport", "No target selected", "error")
+    end
+end, 20, CurrentTheme.Button)
+
+-- PAGE 4: PLAYERS
+local p4 = tabPages["PLAYERS"]
+
+local SelectCountLabel = Instance.new("TextLabel")
+SelectCountLabel.Size = UDim2.new(1,-8,0,20)
+SelectCountLabel.BackgroundTransparency = 1
+SelectCountLabel.Text = "0 players selected"
+SelectCountLabel.TextColor3 = CurrentTheme.SubText
+SelectCountLabel.TextSize = 10
+SelectCountLabel.Font = Enum.Font.Gotham
+SelectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
+SelectCountLabel.LayoutOrder = 1
+SelectCountLabel.ZIndex = 3
+SelectCountLabel.Parent = p4
+table.insert(uiElements, {element=SelectCountLabel, type="subLabel"})
+
+local btnRow = Instance.new("Frame")
+btnRow.Size = UDim2.new(1,-8,0,28)
+btnRow.BackgroundTransparency = 1
+btnRow.LayoutOrder = 2
+btnRow.ZIndex = 3
+btnRow.Parent = p4
+
+local SelectAllBtn = Instance.new("TextButton")
+SelectAllBtn.Size = UDim2.new(0.48,0,1,0)
+SelectAllBtn.BackgroundColor3 = CurrentTheme.Button
+SelectAllBtn.BackgroundTransparency = InitialTransparency + 0.3
+SelectAllBtn.BorderSizePixel = 0
+SelectAllBtn.Text = "Select All"
+SelectAllBtn.TextColor3 = CurrentTheme.Text
+SelectAllBtn.TextSize = 10
+SelectAllBtn.Font = Enum.Font.GothamSemibold
+SelectAllBtn.AutoButtonColor = false
+SelectAllBtn.ZIndex = 3
+SelectAllBtn.Parent = btnRow
+Instance.new("UICorner", SelectAllBtn).CornerRadius = UDim.new(0,4)
+SelectAllBtn.MouseEnter:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+SelectAllBtn.MouseLeave:Connect(function() tween(SelectAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
+
+local ClearAllBtn = Instance.new("TextButton")
+ClearAllBtn.Size = UDim2.new(0.48,0,1,0)
+ClearAllBtn.Position = UDim2.new(0.52,0,0,0)
+ClearAllBtn.BackgroundColor3 = CurrentTheme.Button
+ClearAllBtn.BackgroundTransparency = InitialTransparency + 0.3
+ClearAllBtn.BorderSizePixel = 0
+ClearAllBtn.Text = "Clear"
+ClearAllBtn.TextColor3 = CurrentTheme.Text
+ClearAllBtn.TextSize = 10
+ClearAllBtn.Font = Enum.Font.GothamSemibold
+ClearAllBtn.AutoButtonColor = false
+ClearAllBtn.ZIndex = 3
+ClearAllBtn.Parent = btnRow
+Instance.new("UICorner", ClearAllBtn).CornerRadius = UDim.new(0,4)
+ClearAllBtn.MouseEnter:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
+ClearAllBtn.MouseLeave:Connect(function() tween(ClearAllBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
+
+local SearchBox = Instance.new("TextBox")
+SearchBox.Size = UDim2.new(1,-8,0,32)
+SearchBox.BackgroundColor3 = CurrentTheme.Button
+SearchBox.BackgroundTransparency = InitialTransparency + 0.3
+SearchBox.BorderSizePixel = 0
+SearchBox.PlaceholderText = "Search players..."
+SearchBox.PlaceholderColor3 = CurrentTheme.SubText
+SearchBox.Text = ""
+SearchBox.TextColor3 = CurrentTheme.Text
+SearchBox.TextSize = 11
+SearchBox.Font = Enum.Font.Gotham
+SearchBox.ClearTextOnFocus = false
+SearchBox.LayoutOrder = 3
+SearchBox.ZIndex = 3
+SearchBox.Parent = p4
+Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,4)
+table.insert(uiElements, {element=SearchBox, type="bg"})
+
+local PlayerScroll = Instance.new("ScrollingFrame")
+PlayerScroll.Size = UDim2.new(1,-8,0,180)
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.BorderSizePixel = 0
+PlayerScroll.ScrollBarThickness = 3
+PlayerScroll.ScrollBarImageColor3 = CurrentTheme.Button
+PlayerScroll.CanvasSize = UDim2.new(0,0,0,0)
+PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+PlayerScroll.LayoutOrder = 4
+PlayerScroll.ZIndex = 3
+PlayerScroll.Active = true
+PlayerScroll.Parent = p4
+
+local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
+PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+PlayerListLayout.Padding = UDim.new(0,3)
+
+addSeparator(p4, 5)
+addLabel(p4, "ACTIONS", 6)
+
+addButton(p4, "Goto First Selected", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if thrp and lhrp then
+                lhrp.CFrame = thrp.CFrame * CFrame.new(0, 0, 3)
+                showToast("Goto", "Moved to " .. plr.DisplayName, "success")
+            end
+            break
+        end
+    end
+end, 7, CurrentTheme.Button)
+
+addButton(p4, "Bring First Selected", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if thrp and lhrp then
+                thrp.CFrame = lhrp.CFrame * CFrame.new(0, 0, 5)
+                showToast("Bring", "Brought " .. plr.DisplayName, "success")
+            end
+            break
+        end
+    end
+end, 8, CurrentTheme.Button)
+
+local getFollowPlayer = addToggle(p4, "Follow First Selected", false, function(state)
+    Settings.FollowPlayer = state
+    if state then
+        for _, plr in pairs(Settings.SelectedPlayers) do
+            if plr and plr.Character then
+                Settings.FollowTarget = plr
+                break
+            end
+        end
+    else
+        Settings.FollowTarget = nil
+    end
+end, 9, true)
+
+addButton(p4, "Kill First Selected", function()
+    for _, plr in pairs(Settings.SelectedPlayers) do
+        if plr and plr.Character then
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+                pcall(function() hum.Health = 0 end)
+                Settings.Kills = Settings.Kills + 1
+                showToast("Target Eliminated", plr.DisplayName, "success")
+            end
+            break
+        end
+    end
+end, 10, Color3.fromRGB(100, 30, 35))
+
 -- PAGE 5: WORLD
--- =============================================
 local p5 = tabPages["WORLD"]
 addLabel(p5, "LIGHTING", 1)
-local getFullbright = addToggle(p5, "Fullbright", false, function(v) Settings.Fullbright = v end, 2, true)
+local getFullbright = addToggle(p5, "Fullbright", false, nil, 2, true)
+local getNoFog = addToggle(p5, "No Fog", false, nil, 3, true)
+local getRemoveShadows = addToggle(p5, "Remove Shadows", false, nil, 4, true)
+local getTimeChanger = addToggle(p5, "Time Changer", false, nil, 5, false)
+local getTimeValue = addSlider(p5, "Time (0-24)", 0, 24, 12, nil, 6)
 
-addSeparator(p5, 3)
-addLabel(p5, "SERVER", 4)
-local rejoinBtn = Instance.new("TextButton")
-rejoinBtn.Size = UDim2.new(1,-8,0,36)
-rejoinBtn.BackgroundColor3 = CurrentTheme.Button
-rejoinBtn.BackgroundTransparency = InitialTransparency + 0.2
-rejoinBtn.BorderSizePixel = 0
-rejoinBtn.Text = "Server Rejoin"
-rejoinBtn.TextColor3 = CurrentTheme.Text
-rejoinBtn.TextSize = 11
-rejoinBtn.Font = Enum.Font.GothamSemibold
-rejoinBtn.AutoButtonColor = false
-rejoinBtn.LayoutOrder = 5
-rejoinBtn.ZIndex = 3
-rejoinBtn.Parent = p5
-Instance.new("UICorner", rejoinBtn).CornerRadius = UDim.new(0,4)
-rejoinBtn.MouseButton1Click:Connect(function()
+addSeparator(p5, 7)
+addLabel(p5, "SERVER", 8)
+addButton(p5, "Server Rejoin", function()
     showToast("Server", "Reconnecting...", "info")
     task.wait(0.5)
-    pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end)
-end)
+    pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
+end, 9, CurrentTheme.Button)
+
+addButton(p5, "Server Hop", function()
+    showToast("Server", "Searching for new server...", "info")
+    task.wait(0.5)
+    pcall(function()
+        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+        local success, result = pcall(function() return HttpService:JSONDecode(game:HttpGet(url)) end)
+        if success and result and result.data then
+            local servers = {}
+            for _, server in ipairs(result.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
+            end
+            if #servers > 0 then
+                local randomServer = servers[math.random(1, #servers)]
+                TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServer, LocalPlayer)
+            else
+                TeleportService:Teleport(game.PlaceId, LocalPlayer)
+            end
+        else
+            TeleportService:Teleport(game.PlaceId, LocalPlayer)
+        end
+    end)
+end, 10, CurrentTheme.Button)
+
+addSeparator(p5, 11)
+addLabel(p5, "SERVER INFO", 12)
+local worldInfoLabel = Instance.new("TextLabel")
+worldInfoLabel.Size = UDim2.new(1,-8,0,80)
+worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
+worldInfoLabel.BackgroundTransparency = InitialTransparency + 0.4
+worldInfoLabel.BorderSizePixel = 0
+worldInfoLabel.Text = "  Game ID      : " .. game.PlaceId .. "\n  Player Count : " .. #Players:GetPlayers() .. "\n  Server ID    : " .. game.JobId:sub(1,8) .. "\n  Ping         : --"
+worldInfoLabel.TextColor3 = CurrentTheme.SubText
+worldInfoLabel.TextSize = 10
+worldInfoLabel.Font = Enum.Font.Code
+worldInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+worldInfoLabel.TextYAlignment = Enum.TextYAlignment.Top
+worldInfoLabel.LayoutOrder = 13
+worldInfoLabel.ZIndex = 3
+worldInfoLabel.Parent = p5
+Instance.new("UICorner", worldInfoLabel).CornerRadius = UDim.new(0, 4)
+table.insert(uiElements, {element=worldInfoLabel, type="bg"})
+local wInfoPad = Instance.new("UIPadding", worldInfoLabel)
+wInfoPad.PaddingLeft = UDim.new(0, 10)
+wInfoPad.PaddingTop = UDim.new(0, 10)
+
+-- PAGE 6: CHARACTER
+local p6 = tabPages["CHARACTER"]
+addLabel(p6, "STATE", 1)
+local getGodMode = addToggle(p6, "God Mode", false, nil, 2, true)
+local getAntiFling = addToggle(p6, "Anti Fling", false, nil, 3, true)
+local getCharacterSize = addToggle(p6, "Character Size", false, nil, 4, false)
+local getSizeValue = addSlider(p6, "Size Scale", 0.5, 5.0, 1.0, nil, 5)
+
+addSeparator(p6, 6)
+addLabel(p6, "DAMAGE AURA", 7)
+local getDamageAura = addToggle(p6, "Damage Aura", false, nil, 8, true)
+local getDamageRange = addSlider(p6, "Aura Range", 3, 30, 10, nil, 9)
+local getDamageAmount = addSlider(p6, "Damage Amount", 1, 50, 5, nil, 10)
+
+addSeparator(p6, 11)
+addLabel(p6, "ACTIONS", 12)
+addButton(p6, "Respawn", function()
+    pcall(function() LocalPlayer.Character:BreakJoints() end)
+    showToast("Character", "Respawning...", "info")
+end, 13, CurrentTheme.Button)
+
+addButton(p6, "Full Heal", function()
+    pcall(function()
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then hum.Health = hum.MaxHealth end
+    end)
+    showToast("Character", "Health restored", "success")
+end, 14, CurrentTheme.Button)
 
 -- =============================================
--- PAGE 6: THEMES
+-- PAGE 7: THEMES
 -- =============================================
-local p6 = tabPages["THEMES"]
-addLabel(p6, "SELECT A THEME", 1)
+local p7 = tabPages["THEMES"]
+addLabel(p7, "SELECT A THEME", 1)
+
+local classicHeader = Instance.new("TextLabel")
+classicHeader.Size = UDim2.new(1,-8,0,24)
+classicHeader.BackgroundTransparency = 1
+classicHeader.Text = "  CLASSIC"
+classicHeader.TextColor3 = CurrentTheme.SubText
+classicHeader.TextSize = 10
+classicHeader.Font = Enum.Font.GothamBold
+classicHeader.TextXAlignment = Enum.TextXAlignment.Left
+classicHeader.LayoutOrder = 2
+classicHeader.ZIndex = 3
+classicHeader.Parent = p7
+table.insert(uiElements, {element=classicHeader, type="sectionLabel"})
+
+local classicGrid = Instance.new("Frame")
+classicGrid.Size = UDim2.new(1, -8, 0, 200)
+classicGrid.BackgroundTransparency = 1
+classicGrid.LayoutOrder = 3
+classicGrid.ZIndex = 3
+classicGrid.Parent = p7
+
+local classicLayout = Instance.new("UIGridLayout", classicGrid)
+classicLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
+classicLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+classicLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 _G.SOUHUB_ThemeButtons = _G.SOUHUB_ThemeButtons or {}
 
-local function createThemeGrid(parent, category, order)
-    local grid = Instance.new("Frame")
-    grid.Size = UDim2.new(1, -8, 0, 200)
-    grid.BackgroundTransparency = 1
-    grid.LayoutOrder = order
-    grid.ZIndex = 3
-    grid.Parent = parent
-    
-    local gridLayout = Instance.new("UIGridLayout", grid)
-    gridLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
-    gridLayout.CellPadding = UDim2.new(0, 6, 0, 6)
-    gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    
-    for name, theme in pairs(Themes) do
-        if theme.Category == category then
-            local btn = Instance.new("TextButton")
-            btn.Name = "ThemeBtn_" .. name
-            btn.BackgroundColor3 = CurrentTheme.Bg
-            btn.BackgroundTransparency = InitialTransparency
-            btn.BorderSizePixel = 0
-            btn.Text = ""
-            btn.AutoButtonColor = false
-            btn.ZIndex = 3
-            btn.Parent = grid
-            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-            
-            local stroke = Instance.new("UIStroke", btn)
-            stroke.Color = CurrentTheme.Button
-            stroke.Thickness = 1.5
-            stroke.Transparency = 0.7
-            
-            local colorRow = Instance.new("Frame")
-            colorRow.Size = UDim2.new(1, -16, 0, 20)
-            colorRow.Position = UDim2.new(0, 8, 0, 8)
-            colorRow.BackgroundTransparency = 1
-            colorRow.ZIndex = 4
-            colorRow.Parent = btn
-            
-            local colorLayout = Instance.new("UIListLayout", colorRow)
-            colorLayout.FillDirection = Enum.FillDirection.Horizontal
-            colorLayout.Padding = UDim.new(0, 3)
-            
-            for i, c in ipairs({theme.Primary, theme.Accent, theme.Panel}) do
-                local dot = Instance.new("Frame")
-                dot.Size = UDim2.new(0, 14, 0, 14)
-                dot.BackgroundColor3 = c
-                dot.BorderSizePixel = 0
-                dot.ZIndex = 5
-                dot.Parent = colorRow
-                Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-            end
-            
-            local nameLbl = Instance.new("TextLabel")
-            nameLbl.Size = UDim2.new(1, -8, 0, 16)
-            nameLbl.Position = UDim2.new(0, 4, 1, -22)
-            nameLbl.BackgroundTransparency = 1
-            nameLbl.Text = theme.Name
-            nameLbl.TextColor3 = CurrentTheme.Text
-            nameLbl.TextSize = 10
-            nameLbl.Font = Enum.Font.GothamBold
-            nameLbl.ZIndex = 4
-            nameLbl.Parent = btn
-            
-            btn:SetAttribute("ThemeName", name)
-            _G.SOUHUB_ThemeButtons[name] = btn
-            
-            if name == CurrentTheme.Name then
-                stroke.Transparency = 0
-                stroke.Color = CurrentTheme.Primary
-                btn.BackgroundColor3 = CurrentTheme.Button
-            end
-            
-            btn.MouseButton1Click:Connect(function() applyTheme(name) end)
+for name, theme in pairs(Themes) do
+    if theme.Category == "Classic" then
+        local btn = Instance.new("TextButton")
+        btn.Name = "ThemeBtn_" .. name
+        btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BackgroundTransparency = InitialTransparency
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.AutoButtonColor = false
+        btn.ZIndex = 3
+        btn.Parent = classicGrid
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+        
+        local stroke = Instance.new("UIStroke", btn)
+        stroke.Color = CurrentTheme.Button
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.7
+        
+        local colorRow = Instance.new("Frame")
+        colorRow.Size = UDim2.new(1, -16, 0, 20)
+        colorRow.Position = UDim2.new(0, 8, 0, 8)
+        colorRow.BackgroundTransparency = 1
+        colorRow.ZIndex = 4
+        colorRow.Parent = btn
+        
+        local colorLayout = Instance.new("UIListLayout", colorRow)
+        colorLayout.FillDirection = Enum.FillDirection.Horizontal
+        colorLayout.Padding = UDim.new(0, 3)
+        
+        for i, c in ipairs({theme.Primary, theme.Accent, theme.Panel}) do
+            local dot = Instance.new("Frame")
+            dot.Size = UDim2.new(0, 14, 0, 14)
+            dot.BackgroundColor3 = c
+            dot.BorderSizePixel = 0
+            dot.ZIndex = 5
+            dot.Parent = colorRow
+            Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
         end
+        
+        local nameLbl = Instance.new("TextLabel")
+        nameLbl.Size = UDim2.new(1, -8, 0, 16)
+        nameLbl.Position = UDim2.new(0, 4, 1, -22)
+        nameLbl.BackgroundTransparency = 1
+        nameLbl.Text = theme.Name
+        nameLbl.TextColor3 = CurrentTheme.Text
+        nameLbl.TextSize = 10
+        nameLbl.Font = Enum.Font.GothamBold
+        nameLbl.ZIndex = 4
+        nameLbl.Parent = btn
+        
+        btn:SetAttribute("ThemeName", name)
+        _G.SOUHUB_ThemeButtons[name] = btn
+        
+        if name == CurrentTheme.Name then
+            stroke.Transparency = 0
+            stroke.Color = CurrentTheme.Primary
+            btn.BackgroundColor3 = CurrentTheme.Button
+        end
+        
+        btn.MouseEnter:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Button})
+                tween(stroke, 0.15, {Transparency = 0.3})
+            end
+        end)
+        btn.MouseLeave:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Bg})
+                tween(stroke, 0.15, {Transparency = 0.7})
+            end
+        end)
+        
+        btn.MouseButton1Click:Connect(function()
+            applyTheme(name)
+        end)
     end
 end
 
-createThemeGrid(p6, "Classic", 2)
-createThemeGrid(p6, "Special", 3)
+local specialHeader = Instance.new("TextLabel")
+specialHeader.Size = UDim2.new(1,-8,0,24)
+specialHeader.BackgroundTransparency = 1
+specialHeader.Text = "  SPECIAL"
+specialHeader.TextColor3 = CurrentTheme.SubText
+specialHeader.TextSize = 10
+specialHeader.Font = Enum.Font.GothamBold
+specialHeader.TextXAlignment = Enum.TextXAlignment.Left
+specialHeader.LayoutOrder = 4
+specialHeader.ZIndex = 3
+specialHeader.Parent = p7
+table.insert(uiElements, {element=specialHeader, type="sectionLabel"})
+
+local specialGrid = Instance.new("Frame")
+specialGrid.Size = UDim2.new(1, -8, 0, 280)
+specialGrid.BackgroundTransparency = 1
+specialGrid.LayoutOrder = 5
+specialGrid.ZIndex = 3
+specialGrid.Parent = p7
+
+local specialLayout = Instance.new("UIGridLayout", specialGrid)
+specialLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
+specialLayout.CellPadding = UDim2.new(0, 6, 0, 6)
+specialLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+for name, theme in pairs(Themes) do
+    if theme.Category == "Special" then
+        local btn = Instance.new("TextButton")
+        btn.Name = "ThemeBtn_" .. name
+        btn.BackgroundColor3 = CurrentTheme.Bg
+        btn.BackgroundTransparency = InitialTransparency
+        btn.BorderSizePixel = 0
+        btn.Text = ""
+        btn.AutoButtonColor = false
+        btn.ZIndex = 3
+        btn.Parent = specialGrid
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+        
+        local stroke = Instance.new("UIStroke", btn)
+        stroke.Color = CurrentTheme.Button
+        stroke.Thickness = 1.5
+        stroke.Transparency = 0.7
+        
+        local colorRow = Instance.new("Frame")
+        colorRow.Size = UDim2.new(1, -16, 0, 20)
+        colorRow.Position = UDim2.new(0, 8, 0, 8)
+        colorRow.BackgroundTransparency = 1
+        colorRow.ZIndex = 4
+        colorRow.Parent = btn
+        
+        local colorLayout = Instance.new("UIListLayout", colorRow)
+        colorLayout.FillDirection = Enum.FillDirection.Horizontal
+        colorLayout.Padding = UDim.new(0, 3)
+        
+        for i, c in ipairs({theme.Primary, theme.Accent, theme.Panel}) do
+            local dot = Instance.new("Frame")
+            dot.Size = UDim2.new(0, 14, 0, 14)
+            dot.BackgroundColor3 = c
+            dot.BorderSizePixel = 0
+            dot.ZIndex = 5
+            dot.Parent = colorRow
+            Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+        end
+        
+        local nameLbl = Instance.new("TextLabel")
+        nameLbl.Size = UDim2.new(1, -8, 0, 16)
+        nameLbl.Position = UDim2.new(0, 4, 1, -22)
+        nameLbl.BackgroundTransparency = 1
+        nameLbl.Text = theme.Name
+        nameLbl.TextColor3 = CurrentTheme.Text
+        nameLbl.TextSize = 10
+        nameLbl.Font = Enum.Font.GothamBold
+        nameLbl.ZIndex = 4
+        nameLbl.Parent = btn
+        
+        btn:SetAttribute("ThemeName", name)
+        _G.SOUHUB_ThemeButtons[name] = btn
+        
+        btn.MouseEnter:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Button})
+                tween(stroke, 0.15, {Transparency = 0.3})
+            end
+        end)
+        btn.MouseLeave:Connect(function()
+            if btn:GetAttribute("ThemeName") ~= CurrentTheme.Name then
+                tween(btn, 0.15, {BackgroundColor3 = CurrentTheme.Bg})
+                tween(stroke, 0.15, {Transparency = 0.7})
+            end
+        end)
+        
+        btn.MouseButton1Click:Connect(function()
+            applyTheme(name)
+        end)
+    end
+end
 
 -- =============================================
--- PAGE 7: SETTINGS
+-- PAGE 8: SETTINGS
 -- =============================================
-local p7 = tabPages["SETTINGS"]
-addLabel(p7, "INTERFACE", 1)
-local getGuiTransparency = addSlider(p7, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
+local p8 = tabPages["SETTINGS"]
+addLabel(p8, "INTERFACE", 1)
+local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
     Settings.GuiTransparency = v
     local transparency = 1 - (v / 500)
     MainFrame.BackgroundTransparency = transparency
 end, 2)
 
-addSeparator(p7, 3)
-addLabel(p7, "OVERLAY", 4)
-local getWatermark = addToggle(p7, "Watermark", true, nil, 5, false)
-local getFPSDisplay = addToggle(p7, "FPS Display", true, nil, 6, false)
-local getPingDisplay = addToggle(p7, "Ping Display", true, nil, 7, false)
+addSeparator(p8, 3)
+addLabel(p8, "OVERLAY", 4)
+local getWatermark = addToggle(p8, "Watermark", true, nil, 5, false)
+local getFPSDisplay = addToggle(p8, "FPS Display", true, nil, 6, false)
+local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 7, false)
+
+addSeparator(p8, 8)
+addLabel(p8, "CONFIGURATION", 9)
+
+-- =============================================
+-- SAVE / LOAD SISTEMI
+-- =============================================
+local CONFIG_FILE = "SOUHUB_config.json"
+
+local function hasFileSupport()
+    return writefile ~= nil and readfile ~= nil and isfile ~= nil
+end
+
+local function saveConfig()
+    if not hasFileSupport() then
+        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
+        print("[SOU HUB] HATA: writefile/readfile desteklenmiyor!")
+        return false
+    end
+    
+    local data = {
+        Theme = CurrentTheme.Name,
+        SpeedValue = Settings.SpeedValue,
+        JumpPowerValue = Settings.JumpPowerValue,
+        FlySpeed = Settings.FlySpeed,
+        FOVRadius = Settings.FOVRadius,
+        GuiTransparency = Settings.GuiTransparency,
+        Smoothness = Settings.Smoothness,
+        Prediction = Settings.Prediction,
+        HitboxSize = Settings.HitboxSize,
+        AimShake = Settings.AimShake,
+        EspFillTransparency = Settings.HighlightFillTransparency,
+        Version = "1.0",
+        SavedAt = os.time(),
+    }
+    
+    local success, encoded = pcall(function()
+        return HttpService:JSONEncode(data)
+    end)
+    
+    if not success then
+        showToast("Config Error", "Encode hatasi olustu", "error")
+        print("[SOU HUB] HATA: JSON encode basarisiz!")
+        return false
+    end
+    
+    local writeSuccess, writeErr = pcall(function()
+        writefile(CONFIG_FILE, encoded)
+    end)
+    
+    if writeSuccess then
+        showToast("Config Saved", "Ayarlar kaydedildi: " .. CONFIG_FILE, "success")
+        print("[SOU HUB] Ayarlar kaydedildi: " .. CONFIG_FILE)
+        return true
+    else
+        showToast("Config Error", "Yazma hatasi: " .. tostring(writeErr), "error")
+        print("[SOU HUB] HATA: writefile basarisiz - " .. tostring(writeErr))
+        return false
+    end
+end
+
+local function loadConfig()
+    if not hasFileSupport() then
+        showToast("Config Error", "Executor writefile/readfile desteklemiyor", "error")
+        print("[SOU HUB] HATA: writefile/readfile desteklenmiyor!")
+        return false
+    end
+    
+    local exists = false
+    pcall(function() exists = isfile(CONFIG_FILE) end)
+    
+    if not exists then
+        showToast("Config Error", "Kayitli config bulunamadi", "warning")
+        print("[SOU HUB] Config dosyasi bulunamadi: " .. CONFIG_FILE)
+        return false
+    end
+    
+    local readSuccess, content = pcall(function()
+        return readfile(CONFIG_FILE)
+    end)
+    
+    if not readSuccess or not content then
+        showToast("Config Error", "Okuma hatasi", "error")
+        print("[SOU HUB] HATA: readfile basarisiz!")
+        return false
+    end
+    
+    local decodeSuccess, data = pcall(function()
+        return HttpService:JSONDecode(content)
+    end)
+    
+    if not decodeSuccess or not data then
+        showToast("Config Error", "Bozuk config dosyasi", "error")
+        print("[SOU HUB] HATA: JSON decode basarisiz!")
+        return false
+    end
+    
+    if data.Theme and Themes[data.Theme] then
+        applyTheme(data.Theme)
+    end
+    if data.SpeedValue then getSpeedValue(data.SpeedValue) end
+    if data.JumpPowerValue then getJumpValue(data.JumpPowerValue) end
+    if data.FlySpeed then getFlySpeed(data.FlySpeed) end
+    if data.FOVRadius then getFOVRadius(data.FOVRadius) end
+    if data.GuiTransparency then
+        getGuiTransparency(data.GuiTransparency)
+        Settings.GuiTransparency = data.GuiTransparency
+        MainFrame.BackgroundTransparency = 1 - (data.GuiTransparency / 500)
+    end
+    if data.Smoothness then getSmoothness(data.Smoothness) end
+    if data.Prediction then getPrediction(data.Prediction) end
+    if data.HitboxSize then getHitboxSize(data.HitboxSize) end
+    if data.AimShake then getAimShake(data.AimShake) end
+    if data.EspFillTransparency then getFillTransparency(data.EspFillTransparency) end
+    
+    showToast("Config Loaded", "Ayarlar yuklendi!", "success")
+    print("[SOU HUB] Ayarlar yuklendi!")
+    return true
+end
+
+addButton(p8, "Save Config", saveConfig, 10, CurrentTheme.Button)
+addButton(p8, "Load Config", loadConfig, 11, CurrentTheme.Button)
+
+GuiService.MenuOpened:Connect(function()
+    task.spawn(function() pcall(saveConfig) end)
+end)
+
+addSeparator(p8, 12)
+addLabel(p8, "SESSION", 13)
+local statLabel = Instance.new("TextLabel")
+statLabel.Size = UDim2.new(1,-8,0,80)
+statLabel.BackgroundColor3 = CurrentTheme.Button
+statLabel.BackgroundTransparency = InitialTransparency + 0.4
+statLabel.BorderSizePixel = 0
+statLabel.Text = "  Status     : ACTIVE\n  Kills      : 0\n  Session    : 0s\n  User       : " .. LocalPlayer.Name
+statLabel.TextColor3 = CurrentTheme.SubText
+statLabel.TextSize = 10
+statLabel.Font = Enum.Font.Code
+statLabel.TextXAlignment = Enum.TextXAlignment.Left
+statLabel.TextYAlignment = Enum.TextYAlignment.Top
+statLabel.LayoutOrder = 14
+statLabel.ZIndex = 3
+statLabel.Parent = p8
+Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 4)
+table.insert(uiElements, {element=statLabel, type="bg"})
+local statPad = Instance.new("UIPadding", statLabel)
+statPad.PaddingLeft = UDim.new(0, 10)
+statPad.PaddingTop = UDim.new(0, 10)
+
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            local sessionTime = math.floor(tick() - Settings.SessionStart)
+            statLabel.Text = "  Status     : ACTIVE\n  Kills      : " .. Settings.Kills .. "\n  Session    : " .. sessionTime .. "s\n  User       : " .. LocalPlayer.Name
+        end)
+    end
+end)
 
 -- =============================================
 -- WATERMARK
@@ -1461,9 +2053,11 @@ RunService.RenderStepped:Connect(function()
         local fps = fpsCount
         local ping = 0
         pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-        local fpsStr = getFPSDisplay() and (fps .. " FPS") or ""
-        local pingStr = getPingDisplay() and (ping .. " MS") or ""
-        wmInfo.Text = fpsStr .. "  |  " .. pingStr
+        if getFPSDisplay() or getPingDisplay() then
+            local fpsStr = getFPSDisplay() and (fps .. " FPS") or ""
+            local pingStr = getPingDisplay() and (ping .. " MS") or ""
+            wmInfo.Text = fpsStr .. "  |  " .. pingStr
+        end
         fpsCount = 0
         fpsTime = tick()
     end
@@ -1473,208 +2067,333 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- =============================================
--- ESP SYSTEM
+-- PLAYER LIST LOGIC
 -- =============================================
-local ballHighlight = nil
-local ballBillboard = nil
-local ballSphere = nil
-local charSphereData = {}
-local ballHitboxBox = nil
-local originalBallSize = nil
-local originalBallPart = nil
-local originalCanCollide = nil
+local playerButtons = {}
+local originalSizes = {}
 
-local function updateESP()
-    local ball = findBall()
+local function updateSelectCount()
+    local c = 0
+    for _ in pairs(Settings.SelectedPlayers) do c = c+1 end
+    SelectCountLabel.Text = c .. " players selected"
+end
+
+local function isSelected(player) return Settings.SelectedPlayers[player.Name] ~= nil end
+
+local function toggleSelect(player, btn)
+    if isSelected(player) then
+        Settings.SelectedPlayers[player.Name] = nil
+        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.3})
+        btn.TextColor3 = CurrentTheme.SubText
+    else
+        Settings.SelectedPlayers[player.Name] = player
+        tween(btn, 0.2, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.15})
+        btn.TextColor3 = CurrentTheme.Text
+    end
+    updateSelectCount()
+end
+
+local function createPlayerButton(player)
+    if player == LocalPlayer then return end
+    local sel = isSelected(player)
+    local btn = Instance.new("TextButton")
+    btn.Name = "PLR_"..player.Name
+    btn.Size = UDim2.new(1,-4,0,32)
+    btn.BackgroundColor3 = CurrentTheme.Button
+    btn.BackgroundTransparency = sel and (InitialTransparency + 0.15) or (InitialTransparency + 0.3)
+    btn.BorderSizePixel = 0
+    btn.Text = player.DisplayName
+    btn.TextColor3 = sel and CurrentTheme.Text or CurrentTheme.SubText
+    btn.TextSize = 11
+    btn.Font = Enum.Font.Gotham
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.ZIndex = 3
+    btn.Parent = PlayerScroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
     
-    -- BALL ESP (Highlight + Billboard)
-    if Settings.BallESP and ball then
-        if not ballHighlight or ballHighlight.Parent ~= ball then
-            if ballHighlight then ballHighlight:Destroy() end
-            ballHighlight = Instance.new("Highlight")
-            ballHighlight.FillColor = Settings.BallESPColor
-            ballHighlight.OutlineColor = Settings.BallESPColor
-            ballHighlight.FillTransparency = 0.5
-            ballHighlight.OutlineTransparency = 0
-            ballHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            ballHighlight.Adornee = ball
-            ballHighlight.Parent = ball
-        end
-        
-        if not ballBillboard or ballBillboard.Parent ~= ball then
-            if ballBillboard then ballBillboard:Destroy() end
-            ballBillboard = Instance.new("BillboardGui")
-            ballBillboard.Name = "SOUHUB_BallInfo"
-            ballBillboard.Size = UDim2.new(0, 100, 0, 32)
-            ballBillboard.StudsOffset = Vector3.new(0, 2.5, 0)
-            ballBillboard.AlwaysOnTop = true
-            ballBillboard.Adornee = ball
-            ballBillboard.Parent = ball
-            
-            local nameLbl = Instance.new("TextLabel")
-            nameLbl.Name = "NameLbl"
-            nameLbl.Size = UDim2.new(1, 0, 0, 16)
-            nameLbl.BackgroundTransparency = 1
-            nameLbl.Text = "BALL"
-            nameLbl.TextColor3 = Settings.BallESPColor
-            nameLbl.TextSize = 13
-            nameLbl.Font = Enum.Font.GothamBold
-            nameLbl.TextStrokeTransparency = 0.3
-            nameLbl.Parent = ballBillboard
-            
-            local distLbl = Instance.new("TextLabel")
-            distLbl.Name = "DistLbl"
-            distLbl.Size = UDim2.new(1, 0, 0, 13)
-            distLbl.Position = UDim2.new(0, 0, 0, 17)
-            distLbl.BackgroundTransparency = 1
-            distLbl.Text = "0m"
-            distLbl.TextColor3 = Settings.BallESPColor
-            distLbl.TextSize = 11
-            distLbl.Font = Enum.Font.GothamBold
-            distLbl.TextStrokeTransparency = 0.3
-            distLbl.Parent = ballBillboard
-        end
-        
-        if ballBillboard then
-            local nameLbl = ballBillboard:FindFirstChild("NameLbl")
-            local distLbl = ballBillboard:FindFirstChild("DistLbl")
-            if nameLbl then nameLbl.TextColor3 = Settings.BallESPColor end
-            if distLbl then
-                distLbl.TextColor3 = Settings.BallESPColor
-                local char = LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    local d = (char.HumanoidRootPart.Position - ball.Position).Magnitude
-                    distLbl.Text = string.format("%.0fm", d)
-                end
+    local textPad = Instance.new("UIPadding", btn)
+    textPad.PaddingLeft = UDim.new(0, 14)
+    
+    btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
+    btn.MouseEnter:Connect(function()
+        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end
+    end)
+    btn.MouseLeave:Connect(function()
+        if not isSelected(player) then tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end
+    end)
+    playerButtons[player.Name] = btn
+end
+
+function refreshPlayerList()
+    for _,b in pairs(playerButtons) do if b and b.Parent then b:Destroy() end end
+    playerButtons = {}
+    local search = SearchBox.Text:lower()
+    for _,p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            if search == "" or p.DisplayName:lower():find(search,1,true) or p.Name:lower():find(search,1,true) then
+                createPlayerButton(p)
             end
         end
-    else
-        if ballHighlight then ballHighlight:Destroy() ballHighlight = nil end
-        if ballBillboard then ballBillboard:Destroy() ballBillboard = nil end
     end
-    
-    -- BALL HITBOX ESP (ÇEMBER)
-    if Settings.BallHitboxESP and ball then
-        if not ballSphere or ballSphere.Parent ~= ball then
-            if ballSphere then ballSphere:Destroy() end
-            ballSphere = Instance.new("SphereHandleAdornment")
-            ballSphere.Name = "SOUHUB_BallSphere"
-            ballSphere.Adornee = ball
-            ballSphere.Radius = (ball.Size.X / 2) + 0.5
-            ballSphere.Color3 = Settings.BallESPColor
-            ballSphere.Transparency = 0.4
-            ballSphere.AlwaysOnTop = true
-            ballSphere.ZIndex = 5
-            ballSphere.Parent = ball
-        else
-            ballSphere.Radius = (ball.Size.X / 2) + 0.5
-            ballSphere.Color3 = Settings.BallESPColor
+    updateSelectCount()
+end
+
+SelectAllBtn.MouseButton1Click:Connect(function()
+    for _,p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then Settings.SelectedPlayers[p.Name] = p end end
+    refreshPlayerList()
+end)
+ClearAllBtn.MouseButton1Click:Connect(function()
+    for name in pairs(highlightObjects) do removeHighlight(name) end
+    Settings.SelectedPlayers = {}; Settings.CurrentTarget = nil; refreshPlayerList()
+end)
+refreshPlayerList()
+Players.PlayerAdded:Connect(function() task.wait(0.5); refreshPlayerList() end)
+Players.PlayerRemoving:Connect(function(player)
+    Settings.SelectedPlayers[player.Name] = nil
+    if Settings.CurrentTarget == player then Settings.CurrentTarget = nil end
+    if Settings.FollowTarget == player then Settings.FollowTarget = nil end
+    removeHighlight(player.Name); task.wait(0.1); refreshPlayerList()
+end)
+SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
+
+-- =============================================
+-- FOV CIRCLE
+-- =============================================
+local fovCircle, usingDrawing = nil, false
+pcall(function()
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Color = CurrentTheme.Accent
+    fovCircle.Thickness = 1
+    fovCircle.NumSides = 64
+    fovCircle.Radius = 150
+    fovCircle.Filled = false
+    fovCircle.Visible = true
+    fovCircle.Transparency = 0.7
+    usingDrawing = true
+end)
+
+-- =============================================
+-- ESP
+-- =============================================
+highlightObjects = {}
+local espDrawings = {}
+
+local function addHighlight(player)
+    if not player or not player.Character then return end
+    if highlightObjects[player.Name] then
+        if highlightObjects[player.Name].Parent ~= player.Character then
+            highlightObjects[player.Name]:Destroy(); highlightObjects[player.Name] = nil
+        else return end
+    end
+    local hl = Instance.new("Highlight")
+    hl.Name = "SOUHUB_Highlight"
+    hl.FillColor = Settings.HighlightColor
+    hl.OutlineColor = Settings.HighlightColor
+    hl.FillTransparency = Settings.HighlightFillTransparency
+    hl.OutlineTransparency = 0.3
+    hl.Adornee = player.Character
+    hl.Parent = player.Character
+    highlightObjects[player.Name] = hl
+
+    if usingDrawing and not espDrawings[player.Name] then
+        local esp = {}
+        esp.name = Drawing.new("Text"); esp.name.Color = Settings.HighlightColor; esp.name.Size = 13
+        esp.name.Center = true; esp.name.Outline = true; esp.name.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.name.Visible = false; esp.name.Font = 2
+        esp.distance = Drawing.new("Text"); esp.distance.Color = Color3.fromRGB(200,200,200); esp.distance.Size = 11
+        esp.distance.Center = true; esp.distance.Outline = true; esp.distance.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.distance.Visible = false; esp.distance.Font = 2
+        esp.healthText = Drawing.new("Text"); esp.healthText.Color = Color3.fromRGB(0,255,0); esp.healthText.Size = 11
+        esp.healthText.Center = true; esp.healthText.Outline = true; esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.healthText.Visible = false; esp.healthText.Font = 2
+        esp.tracer = Drawing.new("Line"); esp.tracer.Color = Settings.HighlightColor
+        esp.tracer.Thickness = 1; esp.tracer.Visible = false; esp.tracer.Transparency = 0.6
+        esp.boxTop = Drawing.new("Line"); esp.boxTop.Thickness = 1; esp.boxTop.Visible = false
+        esp.boxBottom = Drawing.new("Line"); esp.boxBottom.Thickness = 1; esp.boxBottom.Visible = false
+        esp.boxLeft = Drawing.new("Line"); esp.boxLeft.Thickness = 1; esp.boxLeft.Visible = false
+        esp.boxRight = Drawing.new("Line"); esp.boxRight.Thickness = 1; esp.boxRight.Visible = false
+        espDrawings[player.Name] = esp
+    end
+end
+
+function removeHighlight(playerName)
+    if highlightObjects[playerName] then pcall(function() highlightObjects[playerName]:Destroy() end); highlightObjects[playerName] = nil end
+    if espDrawings[playerName] then
+        for _,obj in pairs(espDrawings[playerName]) do pcall(function() obj:Remove() end) end
+        espDrawings[playerName] = nil
+    end
+end
+
+local function hideDrawings(playerName)
+    if espDrawings[playerName] then for _,obj in pairs(espDrawings[playerName]) do pcall(function() obj.Visible = false end) end end
+end
+
+local function updateESP()
+    local espEnabled = getESP()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local selected = Settings.SelectedPlayers[player.Name] ~= nil
+            local shouldShow = espEnabled and selected
+            if shouldShow and player.Character then
+                local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+                local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                local head = player.Character:FindFirstChild("Head")
+                if humanoid and humanoid.Health > 0 and rootPart then
+                    addHighlight(player)
+                    if highlightObjects[player.Name] then
+                        highlightObjects[player.Name].FillColor = Settings.HighlightColor
+                        highlightObjects[player.Name].OutlineColor = Settings.HighlightColor
+                        highlightObjects[player.Name].FillTransparency = getFillTransparency()
+                    end
+                    if usingDrawing and espDrawings[player.Name] then
+                        local esp = espDrawings[player.Name]
+                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+                        if onScreen then
+                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                            local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
+                            local yOff = -16
+                            if getESPNames() then
+                                esp.name.Text = player.DisplayName; esp.name.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.name.Color = Settings.HighlightColor; esp.name.Visible = true; yOff = yOff - 15
+                            else esp.name.Visible = false end
+                            if getESPHealth() then
+                                esp.healthText.Text = hp .. "%"; esp.healthText.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.healthText.Color = Color3.fromRGB(255*(1-hp/100), 255*(hp/100), 0)
+                                esp.healthText.Visible = true; yOff = yOff - 13
+                            else esp.healthText.Visible = false end
+                            if getESPDistance() then
+                                esp.distance.Text = dist .. "m"; esp.distance.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.distance.Visible = true
+                            else esp.distance.Visible = false end
+                            if getESPTracers() then
+                                local origin = getTracerOrigin()
+                                local fromPos
+                                if origin == "Bottom" then fromPos = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                                elseif origin == "Center" then fromPos = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                                else fromPos = Vector2.new(Mouse.X, Mouse.Y) end
+                                esp.tracer.From = fromPos; esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
+                                esp.tracer.Color = Settings.HighlightColor; esp.tracer.Visible = true
+                            else esp.tracer.Visible = false end
+                            if getESPBoxes() and rootPart then
+                                local topLeft = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
+                                local bottomRight = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
+                                if topLeft and bottomRight then
+                                    local tl2, br2 = Vector2.new(topLeft.X, topLeft.Y), Vector2.new(bottomRight.X, bottomRight.Y)
+                                    local w = 30
+                                    esp.boxTop.From = Vector2.new(tl2.X - w, tl2.Y); esp.boxTop.To = Vector2.new(tl2.X + w, tl2.Y)
+                                    esp.boxBottom.From = Vector2.new(br2.X - w, br2.Y); esp.boxBottom.To = Vector2.new(br2.X + w, br2.Y)
+                                    esp.boxLeft.From = Vector2.new(tl2.X - w, tl2.Y); esp.boxLeft.To = Vector2.new(br2.X - w, br2.Y)
+                                    esp.boxRight.From = Vector2.new(tl2.X + w, tl2.Y); esp.boxRight.To = Vector2.new(br2.X + w, br2.Y)
+                                    esp.boxTop.Color = Settings.HighlightColor
+                                    esp.boxBottom.Color = Settings.HighlightColor
+                                    esp.boxLeft.Color = Settings.HighlightColor
+                                    esp.boxRight.Color = Settings.HighlightColor
+                                    esp.boxTop.Visible = true; esp.boxBottom.Visible = true
+                                    esp.boxLeft.Visible = true; esp.boxRight.Visible = true
+                                end
+                            else
+                                esp.boxTop.Visible = false; esp.boxBottom.Visible = false
+                                esp.boxLeft.Visible = false; esp.boxRight.Visible = false
+                            end
+                        else hideDrawings(player.Name) end
+                    end
+                else removeHighlight(player.Name) end
+            else removeHighlight(player.Name) end
         end
-    else
-        if ballSphere then ballSphere:Destroy() ballSphere = nil end
     end
-    
-    -- PLAYER HITBOX ESP
-    if Settings.HitboxESP then
-        for _, plr in ipairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer and plr.Character then
-                local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    if not charSphereData[hrp] or not charSphereData[hrp].sphere.Parent then
-                        local sphere = Instance.new("SphereHandleAdornment")
-                        sphere.Adornee = hrp
-                        sphere.Radius = math.max(hrp.Size.X, hrp.Size.Y, hrp.Size.Z) / 2 + 0.8
-                        sphere.Color3 = Settings.BallESPColor
-                        sphere.Transparency = 0.6
-                        sphere.AlwaysOnTop = true
-                        sphere.ZIndex = 5
-                        sphere.Parent = hrp
-                        charSphereData[hrp] = {sphere = sphere}
+end
+
+for _,plr in ipairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then
+        plr.CharacterAdded:Connect(function() task.wait(0.5); if isSelected(plr) and getESP() then addHighlight(plr) end end)
+    end
+end
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function() task.wait(0.5); if isSelected(plr) and getESP() then addHighlight(plr) end end)
+end)
+
+-- =============================================
+-- WALL CHECK + DOWNED + PREDICTION
+-- =============================================
+local function isVisible(targetPart)
+    if not getWallCheck() then return true end
+    local origin = Camera.CFrame.Position
+    local rp = RaycastParams.new(); rp.FilterType = Enum.RaycastFilterType.Exclude
+    rp.FilterDescendantsInstances = {LocalPlayer.Character}
+    local result = workspace:Raycast(origin, targetPart.Position - origin, rp)
+    if result then
+        local tc = targetPart:FindFirstAncestorWhichIsA("Model")
+        if tc and result.Instance:IsDescendantOf(tc) then return true end
+        return false
+    end
+    return true
+end
+
+local function isDowned(character)
+    if not character then return false end
+    local hum = character:FindFirstChildOfClass("Humanoid")
+    if not hum then return false end
+    return (hum.Health / hum.MaxHealth) < 0.20
+end
+
+local function getPredictedPosition(part)
+    if not part or not part.Parent then return part and part.Position or Vector3.new() end
+    local predAmount = getPrediction()
+    if predAmount <= 0 then return part.Position end
+    local vel = Vector3.new(0,0,0)
+    pcall(function() vel = part.AssemblyLinearVelocity end)
+    local ping = 0
+    pcall(function() ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000 end)
+    local totalTime = (predAmount * 0.3) + (ping * 0.5)
+    return part.Position + (vel * totalTime)
+end
+
+local function getClosestFromSelected()
+    local closest, shortest = nil, math.huge
+    local fov = getFOVRadius()
+    local hasSelected = false
+    for _ in pairs(Settings.SelectedPlayers) do hasSelected = true; break end
+    if not hasSelected then return nil end
+    for _, player in pairs(Settings.SelectedPlayers) do
+        if player and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
+            local part = player.Character[Settings.TargetPart]
+            local hum = player.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                if getSkipDowned() and isDowned(player.Character) then continue end
+                local sp, onScreen = Camera:WorldToScreenPoint(part.Position)
+                if onScreen then
+                    local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                    if d < fov and d < shortest then
+                        if getStickyAim() or isVisible(part) then shortest = d; closest = player end
                     end
                 end
             end
         end
-    else
-        for hrp, data in pairs(charSphereData) do
-            if data.sphere and data.sphere.Parent then data.sphere:Destroy() end
-        end
-        charSphereData = {}
     end
+    return closest
 end
-
--- =============================================
--- FEATURE LOOPS
--- =============================================
-RunService.RenderStepped:Connect(function()
-    updateESP()
-    
-    local ball = findBall()
-    
-    if ball then
-        if Settings.BallHitbox then
-            if originalBallPart ~= ball then
-                originalBallPart = ball
-                originalBallSize = ball.Size
-                originalCanCollide = ball.CanCollide
-            end
-            local s = Settings.BallSize
-            ball.Size = Vector3.new(s, s, s)
-            ball.CanCollide = false
-        else
-            if originalBallPart and originalBallSize then
-                pcall(function()
-                    originalBallPart.Size = originalBallSize
-                    originalBallPart.CanCollide = originalCanCollide
-                end)
-                originalBallPart = nil
-                originalBallSize = nil
-                originalCanCollide = nil
-            end
-        end
-    end
-    
-    if Settings.Fullbright then
-        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-        Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
-        Lighting.Brightness = 2
-    else
-        Lighting.Ambient = OriginalLighting.Ambient
-        Lighting.OutdoorAmbient = OriginalLighting.OutdoorAmbient
-        Lighting.Brightness = OriginalLighting.Brightness
-    end
-    
-    if Settings.GoalAimbot and ball then
-        local char = LocalPlayer.Character
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp and (hrp.Position - ball.Position).Magnitude < 30 then
-                local goal = findGoal()
-                if goal then
-                    local targetCF = CFrame.new(ball.Position, goal.Position)
-                    ball.CFrame = ball.CFrame:Lerp(targetCF, Settings.GoalAimStrength * 0.1)
-                end
-            end
-        end
-    end
-    
-    if Settings.AutoDive and ball then
-        local char = LocalPlayer.Character
-        if char then
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if hrp and (hrp.Position - ball.Position).Magnitude < 25 then
-                local goal = findGoal()
-                if goal then
-                    local dir = (goal.Position - hrp.Position).Unit
-                    hrp.CFrame = CFrame.new(hrp.Position, hrp.Position + dir)
-                end
-            end
-        end
-    end
-end)
 
 -- =============================================
 -- INPUT
 -- =============================================
+local locked = false
+local menuOpen = false
+
+local function resetInput()
+    pcall(function()
+        if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        end
+        if not UserInputService.MouseIconEnabled then
+            UserInputService.MouseIconEnabled = true
+        end
+        locked = false
+        Settings.CurrentTarget = nil
+    end)
+end
+
 UserInputService.InputBegan:Connect(function(input, gpe)
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
@@ -1693,6 +2412,20 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         keybindCallbacks[input.KeyCode]()
     end
 
+    if gpe and not UserInputService:GetFocusedTextBox() then return end
+
+    if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
+        if getCamlock() then
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
+        end
+    end
+    if Settings.Mode == "ToggleQ" and input.KeyCode == Enum.KeyCode.Q then
+        if getCamlock() then
+            if locked then locked = false; Settings.CurrentTarget = nil
+            else Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
+        end
+    end
     if input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
         if MainFrame.Visible then
@@ -1701,26 +2434,353 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             tween(MainFrame, 0.4, {Size = UDim2.new(0, 700, 0, 480), Position = UDim2.new(0.5, -350, 0.5, -240)}, Enum.EasingStyle.Back)
         end
     end
+
+    if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
+        pcall(function()
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+                LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    end
+
+    if input.KeyCode == Enum.KeyCode.Escape then
+        if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
+        locked = false; Settings.CurrentTarget = nil
+    end
+end)
+
+-- =============================================
+-- FEATURE LOOPS
+-- =============================================
+RunService.Heartbeat:Connect(function()
+    if not LocalPlayer.Character then return end
+    local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    if getSpeed() then
+        local spd = getSpeedValue()
+        hum.WalkSpeed = spd
+        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp and spd > 16 then
+            local moveDir = hum.MoveDirection
+            if moveDir.Magnitude > 0 then
+                hrp.Velocity = Vector3.new(moveDir.X * spd, hrp.Velocity.Y, moveDir.Z * spd)
+            end
+        end
+    end
+
+    if getJumpPower() then
+        local jp = getJumpValue()
+        hum.JumpPower = jp
+        hum.JumpHeight = jp * 0.12
+        hum.UseJumpPower = true
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if getNoclip() and LocalPlayer.Character then
+        for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide = false end
+        end
+    end
+    if getAntiFling() and LocalPlayer.Character then
+        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local vel = hrp.Velocity
+            if vel.Magnitude > 200 then
+                hrp.Velocity = Vector3.new(0, vel.Y, 0)
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not Settings.FollowPlayer or not Settings.FollowTarget then return end
+    if not Settings.FollowTarget.Character then return end
+    local thrp = Settings.FollowTarget.Character:FindFirstChild("HumanoidRootPart")
+    local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if thrp and lhrp then
+        local dist = (thrp.Position - lhrp.Position).Magnitude
+        if dist > 8 then
+            lhrp.CFrame = lhrp.CFrame:Lerp(CFrame.new(thrp.Position) * (lhrp.CFrame - lhrp.Position), 0.1)
+        end
+    end
+end)
+
+local lastDamageTick = 0
+RunService.Heartbeat:Connect(function()
+    if not getDamageAura() then return end
+    if tick() - lastDamageTick < 0.5 then return end
+    lastDamageTick = tick()
+    if not LocalPlayer.Character then return end
+    local lhrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not lhrp then return end
+    local range = getDamageRange()
+    local dmg = getDamageAmount()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if thrp and (thrp.Position - lhrp.Position).Magnitude < range then
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    pcall(function() hum.Health = hum.Health - dmg end)
+                end
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if getGodMode() and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum and hum.Health < hum.MaxHealth then
+            hum.Health = hum.MaxHealth
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not LocalPlayer.Character then return end
+    if getCharacterSize() then
+        local scale = getSizeValue()
+        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                if not originalSizes[part] then originalSizes[part] = part.Size end
+                part.Size = originalSizes[part] * scale
+            end
+        end
+    else
+        for _, part in ipairs(LocalPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") and originalSizes[part] then
+                part.Size = originalSizes[part]
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then return end
+    if not getHitboxExpand() then return end
+    local sizeMult = getHitboxSize()
+    for _, part in ipairs(Settings.CurrentTarget.Character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            if not originalSizes[part] then originalSizes[part] = part.Size end
+            pcall(function() part.Size = originalSizes[part] * sizeMult end)
+        end
+    end
+end)
+
+-- =============================================
+-- FLY + AIMLOCK + WORLD
+-- =============================================
+local flyBV = nil
+RunService.RenderStepped:Connect(function()
+    if menuOpen then return end
+
+    if usingDrawing and fovCircle then
+        fovCircle.Position = Vector2.new(Mouse.X, Mouse.Y)
+        fovCircle.Radius = getFOVRadius()
+        fovCircle.Visible = getFOVVisible()
+        fovCircle.Color = getFOVThemeColor()
+    end
+
+    updateESP()
+
+    if getFly() then
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local root = LocalPlayer.Character.HumanoidRootPart
+            if getNoclipFly() then
+                for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+            if not flyBV or flyBV.Parent ~= root then
+                if flyBV then pcall(function() flyBV:Destroy() end) end
+                flyBV = Instance.new("BodyVelocity")
+                flyBV.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
+                flyBV.Velocity = Vector3.new(0,0,0)
+                flyBV.Parent = root
+                local bg = Instance.new("BodyGyro")
+                bg.Name = "SOUHUB_AntiGrav"
+                bg.MaxTorque = Vector3.new(math.huge,math.huge,math.huge)
+                bg.Parent = root
+            end
+            local speed = getFlySpeed()
+            local dir = Vector3.new(0,0,0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0,1,0) end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0,1,0) end
+            if dir.Magnitude > 0 then dir = dir.Unit end
+            flyBV.Velocity = dir * speed
+            local bg = root:FindFirstChild("SOUHUB_AntiGrav"); if bg then bg.CFrame = Camera.CFrame end
+        end
+    else
+        if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local bg = LocalPlayer.Character.HumanoidRootPart:FindFirstChild("SOUHUB_AntiGrav"); if bg then bg:Destroy() end
+        end
+    end
+
+    if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
+
+    if getAlwaysOn() then
+        if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
+        end
+    end
+
+    if Settings.Mode == "NearestCursor" then
+        if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+            Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
+        else locked = false; Settings.CurrentTarget = nil end
+    end
+
+    if getTriggerBot() and locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
+        if part then
+            local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+            if onScreen then
+                local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                if dist < 15 then
+                    pcall(function()
+                        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        if tool then tool:Activate() end
+                    end)
+                end
+            end
+        end
+    end
+
+    if locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
+        if not part then part = Settings.CurrentTarget.Character:FindFirstChild("HumanoidRootPart") end
+        if part then
+            local hum = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.Health > 0 then
+                if getSkipDowned() and isDowned(Settings.CurrentTarget.Character) then
+                    if getAutoSwitch() then
+                        Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
+                    else locked = false; Settings.CurrentTarget = nil end
+                    return
+                end
+                local canSee = isVisible(part)
+                if canSee or getStickyAim() then
+                    local smoothness = getSmoothness()
+                    local shake = getAimShake()
+                    local predictedPos = getPredictedPosition(part)
+                    if shake > 0 then
+                        predictedPos = predictedPos + Vector3.new(
+                            math.random(-shake*10, shake*10)/10,
+                            math.random(-shake*10, shake*10)/10,
+                            math.random(-shake*10, shake*10)/10)
+                    end
+                    local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
+                    Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, smoothness)
+                else
+                    if getWallCheck() and not getStickyAim() then
+                        if getAutoSwitch() then
+                            Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
+                        else locked = false; Settings.CurrentTarget = nil end
+                    end
+                end
+            else
+                if getAutoSwitch() then
+                    Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
+                else locked = false; Settings.CurrentTarget = nil end
+            end
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if getFullbright() then
+        Lighting.Ambient = Color3.fromRGB(255,255,255)
+        Lighting.OutdoorAmbient = Color3.fromRGB(255,255,255)
+        Lighting.Brightness = 2
+    else
+        Lighting.Ambient = OriginalLighting.Ambient
+        Lighting.OutdoorAmbient = OriginalLighting.OutdoorAmbient
+        Lighting.Brightness = OriginalLighting.Brightness
+    end
+    if getNoFog() then
+        Lighting.FogEnd = 100000
+    else
+        Lighting.FogEnd = OriginalLighting.FogEnd
+    end
+    if getRemoveShadows() then
+        Lighting.GlobalShadows = false
+    else
+        Lighting.GlobalShadows = OriginalLighting.GlobalShadows
+    end
+    if getTimeChanger() then
+        Lighting.ClockTime = getTimeValue()
+    else
+        Lighting.ClockTime = OriginalLighting.ClockTime
+    end
+end)
+
+pcall(function()
+    local vu = game:GetService("VirtualUser")
+    LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
 end)
 
 -- =============================================
 -- ESC MENU
 -- =============================================
-local menuOpen = false
+local guiWasVisible = true
+local savedHighlightData = {}
+
 pcall(function()
     GuiService.MenuOpened:Connect(function()
         menuOpen = true
+        guiWasVisible = MainFrame.Visible
         MainFrame.Visible = false
         Watermark.Visible = false
+        savedHighlightData = {}
+        for name, hl in pairs(highlightObjects) do
+            pcall(function() savedHighlightData[name] = hl.Parent; hl.Parent = nil end)
+        end
+        for _, esp in pairs(espDrawings) do 
+            for _, obj in pairs(esp) do pcall(function() obj.Visible = false end) end 
+        end
+        if fovCircle then pcall(function() fovCircle.Visible = false end) end
+        locked = false
+        Settings.CurrentTarget = nil
     end)
+
     GuiService.MenuClosed:Connect(function()
         menuOpen = false
+        MainFrame.Visible = guiWasVisible
+        Watermark.Visible = getWatermark()
+        for name, parent in pairs(savedHighlightData) do
+            if highlightObjects[name] and parent then pcall(function() highlightObjects[name].Parent = parent end) end
+        end
+        savedHighlightData = {}
+        if fovCircle and getFOVVisible() then pcall(function() fovCircle.Visible = true end) end
+        resetInput(); task.wait(0.1); resetInput(); task.wait(0.15); resetInput()
     end)
 end)
 
--- =============================================
--- SPLASH SONRASI GUI AÇ
--- =============================================
+LocalPlayer.CharacterRemoving:Connect(function()
+    for name in pairs(highlightObjects) do removeHighlight(name) end
+    if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
+end)
+
+UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
+UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
+
+print("[SOU HUB] Winter Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
+
+-- Splash sonrasi GUI ac
 task.spawn(function()
     task.wait(2.8)
     MainFrame.Visible = true
@@ -1733,17 +2793,27 @@ task.spawn(function()
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     task.wait(0.7)
-    showToast("SOU HUB", "Touchline Edition hazir!", "success")
+    showToast("SOU HUB", "Winter Edition hazir!", "success")
     task.wait(0.6)
-    showToast("Interface", "Press Right Shift to toggle", "info")
+    
+    if hasFileSupport and hasFileSupport() then
+        local exists = false
+        pcall(function() exists = isfile(CONFIG_FILE) end)
+        if exists then
+            task.wait(0.3)
+            loadConfig()
+        else
+            showToast("Interface", "Press Right Shift to toggle", "info")
+        end
+    else
+        showToast("Interface", "Press Right Shift to toggle", "info")
+    end
 end)
 
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "SOU HUB",
-        Text = "Touchline Edition loaded!",
+        Text = "Winter Edition loaded!",
         Duration = 5
     })
 end)
-
-print("[SOU HUB] Touchline Winter Edition yuklendi!")
