@@ -1,6 +1,5 @@
 --[[
     SOU HUB - CLEAN PRO EDITION
-    Touchline Edition
 ]]
 
 print("[SOU HUB] Winter Edition yukleniyor...")
