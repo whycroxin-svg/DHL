@@ -1,7 +1,6 @@
 --[[
     SOU HUB - CLEAN PRO EDITION
-    Winter Theme + Kar Yagisi
-    Tum ozellikler aynen korundu
+    Touchline Edition
 ]]
 
 print("[SOU HUB] Winter Edition yukleniyor...")
@@ -144,52 +143,6 @@ if guiParent:IsA("ScreenGui") then
 else ScreenGui.Parent = guiParent end
 
 -- =============================================
--- ❄️ KAR YAGISI EFEKTI
--- =============================================
-local snowGui = Instance.new("ScreenGui")
-snowGui.Name = "SOUHUB_Snow"
-snowGui.ResetOnSpawn = false
-snowGui.DisplayOrder = 1
-snowGui.IgnoreGuiInset = true
-snowGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-snowGui.Parent = guiParent
-
-local snowContainer = Instance.new("Frame")
-snowContainer.Name = "SnowContainer"
-snowContainer.Size = UDim2.new(1, 0, 1, 0)
-snowContainer.BackgroundTransparency = 1
-snowContainer.Parent = snowGui
-
-local function createSnowflake()
-    local sf = Instance.new("TextLabel")
-    sf.Size = UDim2.new(0, math.random(8, 18), 0, math.random(8, 18))
-    sf.Position = UDim2.new(math.random(), 0, -0.05, 0)
-    sf.BackgroundTransparency = 1
-    sf.Text = "❄"
-    sf.TextColor3 = Color3.fromRGB(255, 255, 255)
-    sf.TextSize = math.random(8, 18)
-    sf.TextTransparency = math.random(3, 7) / 10
-    sf.Font = Enum.Font.GothamBold
-    sf.Rotation = math.random(0, 360)
-    sf.Parent = snowContainer
-    local dur = math.random(6, 14)
-    local drift = math.random(-20, 20) / 100
-    local rotate = math.random(-180, 180)
-    tween(sf, dur, {
-        Position = UDim2.new(sf.Position.X.Scale + drift, 0, 1.1, 0),
-        Rotation = sf.Rotation + rotate
-    }, Enum.EasingStyle.Linear)
-    task.delay(dur, function() if sf and sf.Parent then sf:Destroy() end end)
-end
-
-task.spawn(function()
-    while snowContainer.Parent do
-        createSnowflake()
-        task.wait(math.random(5, 15) / 100)
-    end
-end)
-
--- =============================================
 -- SPLASH SCREEN
 -- =============================================
 local splashGui = Instance.new("ScreenGui")
@@ -242,7 +195,7 @@ local splashSub = Instance.new("TextLabel")
 splashSub.Size = UDim2.new(1, 0, 0, 16)
 splashSub.Position = UDim2.new(0, 0, 0.5, 22)
 splashSub.BackgroundTransparency = 1
-splashSub.Text = "W I N T E R   E D I T I O N"
+splashSub.Text = "T O U C H L I N E   E D I T I O N"
 splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
@@ -501,7 +454,7 @@ tl.Parent = MainFrame
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
-cl.Text = "WINTER EDITION"
+cl.Text = "TOUCHLINE EDITION"
 cl.TextColor3 = CurrentTheme.SubText
 cl.TextSize = 9
 cl.Font = Enum.Font.GothamSemibold
@@ -1295,7 +1248,9 @@ local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 24, true)
 local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 25)
 local getFOVUseTheme = addToggle(p1, "FOV Follow Theme", true, function(v) Settings.FOVUseTheme = v end, 26, false)
 
+-- =============================================
 -- PAGE 2: ESP
+-- =============================================
 local p2 = tabPages["ESP"]
 addLabel(p2, "HIGHLIGHT", 1)
 local getESP = addToggle(p2, "ESP Enabled", true, nil, 2, true)
@@ -1319,7 +1274,9 @@ local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
 local getTracerOrigin = addCycleButton(p2, "Tracer Origin", {"Bottom","Center","Mouse"}, "Bottom", nil, 13)
 local getESPBoxes = addToggle(p2, "Box ESP", false, nil, 14, true)
 
+-- =============================================
 -- PAGE 3: MOVEMENT
+-- =============================================
 local p3 = tabPages["MOVEMENT"]
 addLabel(p3, "SPEED", 1)
 local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
@@ -1368,7 +1325,9 @@ addButton(p3, "Teleport to Target", function()
     end
 end, 20, CurrentTheme.Button)
 
+-- =============================================
 -- PAGE 4: PLAYERS
+-- =============================================
 local p4 = tabPages["PLAYERS"]
 
 local SelectCountLabel = Instance.new("TextLabel")
@@ -1518,7 +1477,9 @@ addButton(p4, "Kill First Selected", function()
     end
 end, 10, Color3.fromRGB(100, 30, 35))
 
+-- =============================================
 -- PAGE 5: WORLD
+-- =============================================
 local p5 = tabPages["WORLD"]
 addLabel(p5, "LIGHTING", 1)
 local getFullbright = addToggle(p5, "Fullbright", false, nil, 2, true)
@@ -1584,7 +1545,9 @@ local wInfoPad = Instance.new("UIPadding", worldInfoLabel)
 wInfoPad.PaddingLeft = UDim.new(0, 10)
 wInfoPad.PaddingTop = UDim.new(0, 10)
 
+-- =============================================
 -- PAGE 6: CHARACTER
+-- =============================================
 local p6 = tabPages["CHARACTER"]
 addLabel(p6, "STATE", 1)
 local getGodMode = addToggle(p6, "God Mode", false, nil, 2, true)
@@ -2778,7 +2741,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[SOU HUB] Winter Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
+print("[SOU HUB] Touchline Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2793,7 +2756,7 @@ task.spawn(function()
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     task.wait(0.7)
-    showToast("SOU HUB", "Winter Edition hazir!", "success")
+    showToast("SOU HUB", "Touchline Edition hazir!", "success")
     task.wait(0.6)
     
     if hasFileSupport and hasFileSupport() then
@@ -2813,7 +2776,7 @@ end)
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "SOU HUB",
-        Text = "Winter Edition loaded!",
+        Text = "Touchline Edition loaded!",
         Duration = 5
     })
 end)
