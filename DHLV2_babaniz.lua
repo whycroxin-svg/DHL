@@ -870,7 +870,18 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     
     local textPad = Instance.new("UIPadding", btn)
     textPad.PaddingLeft = UDim.new(0, 14)
+
+    local hoverBar = Instance.new("Frame")
+    hoverBar.Size = UDim2.new(0, 3, 0, 0)
+    hoverBar.Position = UDim2.new(0, 0, 0.5, 0)
+    hoverBar.AnchorPoint = Vector2.new(0, 0.5)
+    hoverBar.BackgroundColor3 = CurrentTheme.Accent
+    hoverBar.BorderSizePixel = 0
+    hoverBar.ZIndex = 5
+    hoverBar.Parent = btn
+    Instance.new("UICorner", hoverBar).CornerRadius = UDim.new(1, 0)
     
+    local stateLbl = Instance.new("TextLabel")
     local stateLbl = Instance.new("TextLabel")
     stateLbl.Size = UDim2.new(0, 40, 1, 0)
     stateLbl.Position = UDim2.new(1, -48, 0, 0)
@@ -2090,7 +2101,7 @@ wmInfo.ZIndex = 501
 wmInfo.Parent = Watermark
 
 local fpsCount, fpsTime = 0, tick()
-RunService.RenderStepped:Connect(function()
+    RunService.RenderStepped:Connect(function()
     fpsCount = fpsCount + 1
     if tick() - fpsTime >= 1 then
         local fps = fpsCount
@@ -2099,7 +2110,8 @@ RunService.RenderStepped:Connect(function()
         if getFPSDisplay() or getPingDisplay() then
             local fpsStr = getFPSDisplay() and (fps .. " FPS") or ""
             local pingStr = getPingDisplay() and (ping .. " MS") or ""
-            wmInfo.Text = fpsStr .. "  |  " .. pingStr
+            local targetName = Settings.CurrentTarget and Settings.CurrentTarget.DisplayName or "None"
+            wmInfo.Text = fpsStr .. "  |  " .. pingStr .. "  |  " .. targetName
         end
         fpsCount = 0
         fpsTime = tick()
@@ -2108,7 +2120,58 @@ end)
 RunService.RenderStepped:Connect(function()
     Watermark.Visible = getWatermark()
 end)
+-- =============================================
+-- KILL FEED
+-- =============================================
+local killFeed = Instance.new("Frame")
+killFeed.Name = "KillFeed"
+killFeed.Size = UDim2.new(0, 280, 0, 200)
+killFeed.Position = UDim2.new(1, -300, 1, -220)
+killFeed.BackgroundTransparency = 1
+killFeed.ZIndex = 600
+killFeed.Parent = ScreenGui
 
+local killFeedLayout = Instance.new("UIListLayout", killFeed)
+killFeedLayout.SortOrder = Enum.SortOrder.LayoutOrder
+killFeedLayout.Padding = UDim.new(0, 4)
+killFeedLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+
+local function showKillFeed(killer, victim, weapon)
+    local entry = Instance.new("Frame")
+    entry.Size = UDim2.new(1, 0, 0, 28)
+    entry.BackgroundColor3 = CurrentTheme.Panel
+    entry.BackgroundTransparency = 0.1
+    entry.BorderSizePixel = 0
+    entry.ZIndex = 601
+    entry.Parent = killFeed
+    Instance.new("UICorner", entry).CornerRadius = UDim.new(0, 4)
+    
+    local stroke = Instance.new("UIStroke", entry)
+    stroke.Color = CurrentTheme.Button
+    stroke.Thickness = 1
+    
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, -12, 1, 0)
+    lbl.Position = UDim2.new(0, 6, 0, 0)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = killer .. "  ⟶  " .. victim
+    lbl.TextColor3 = CurrentTheme.Text
+    lbl.TextSize = 11
+    lbl.Font = Enum.Font.GothamSemibold
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.ZIndex = 602
+    lbl.Parent = entry
+    
+    tween(entry, 0.3, {BackgroundTransparency = 0}, Enum.EasingStyle.Quint)
+    
+    task.delay(4, function()
+        tween(entry, 0.3, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        tween(lbl, 0.3, {TextTransparency = 1})
+        tween(stroke, 0.3, {Transparency = 1})
+        task.wait(0.4)
+        entry:Destroy()
+    end)
+end
 -- =============================================
 -- PLAYER LIST LOGIC
 -- =============================================
@@ -2513,8 +2576,22 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         end)
     end
 
-    if input.KeyCode == Enum.KeyCode.Escape then
+   if input.KeyCode == Enum.KeyCode.Escape then
         if SearchBox:IsFocused() then SearchBox:ReleaseFocus() end
+    end
+    
+    -- PANIC KEY (End tuşu)
+    if input.KeyCode == Enum.KeyCode.End then
+        MainFrame.Visible = false
+        Watermark.Visible = false
+        locked = false
+        Settings.CurrentTarget = nil
+        if fovCircle then pcall(function() fovCircle.Visible = false end) end
+        for name in pairs(highlightObjects) do removeHighlight(name) end
+        for _, esp in pairs(espDrawings) do 
+            for _, obj in pairs(esp) do pcall(function() obj.Visible = false end) end 
+        end
+        showToast("PANIC", "All features disabled", "error")
     end
 end)
 
