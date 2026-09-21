@@ -1509,7 +1509,9 @@ PlayerScroll.Parent = p4
 local PlayerListLayout = Instance.new("UIListLayout", PlayerScroll)
 PlayerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 PlayerListLayout.Padding = UDim.new(0,3)
-
+local getAutoReselect = addToggle(p4, "Auto Reselect on Rejoin", true, function(v)
+    autoReselect = v
+end, 4.5, false)
 addSeparator(p4, 5)
 addLabel(p4, "ACTIONS", 6)
 
@@ -2253,14 +2255,37 @@ ClearAllBtn.MouseButton1Click:Connect(function()
     for name in pairs(highlightObjects) do removeHighlight(name) end
     Settings.SelectedPlayers = {}; Settings.CurrentTarget = nil; refreshPlayerList()
 end)
+-- Otomatik yeniden seçim için geçmiş isim listesi
+local recentlyLeftPlayers = {} -- {name = true} şeklinde takip
+local autoReselect = true       -- Bu özelliği toggle ile aç/kapa yapabilirsin
+
 refreshPlayerList()
-Players.PlayerAdded:Connect(function() task.wait(0.5); refreshPlayerList() end)
+
+Players.PlayerAdded:Connect(function(player)
+    task.wait(0.5)
+    -- Eğer bu oyuncu daha önce seçiliydiyse ve şimdi yeniden geldiyse otomatik seç
+    if autoReselect and recentlyLeftPlayers[player.Name] then
+        Settings.SelectedPlayers[player.Name] = player
+        recentlyLeftPlayers[player.Name] = nil
+        showToast("Auto Reselect", player.DisplayName .. " yeniden secildi", "info")
+    end
+    refreshPlayerList()
+end)
+
 Players.PlayerRemoving:Connect(function(player)
+    -- Oyuncu seçiliydiyse ismini "geçmiş" listesine ekle
+    if Settings.SelectedPlayers[player.Name] then
+        recentlyLeftPlayers[player.Name] = true
+    end
+    
     Settings.SelectedPlayers[player.Name] = nil
     if Settings.CurrentTarget == player then Settings.CurrentTarget = nil end
     if Settings.FollowTarget == player then Settings.FollowTarget = nil end
-    removeHighlight(player.Name); task.wait(0.1); refreshPlayerList()
+    removeHighlight(player.Name)
+    task.wait(0.1)
+    refreshPlayerList()
 end)
+
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- =============================================
