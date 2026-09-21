@@ -16,7 +16,49 @@ local TeleportService = game:GetService("TeleportService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
+-- =============================================
+-- SILENT AIM (Da Hood için)
+-- =============================================
+local silentAimEnabled = false
+local silentAimTargetPart = "Head"
 
+local oldIndex
+oldIndex = hookmetamethod(game, "__index", function(t, k)
+    -- Silent Aim kapalıysa normal davranış
+    if not silentAimEnabled then
+        return oldIndex(t, k)
+    end
+    
+    -- Aktif hedef yoksa normal davranış
+    if not Settings or not Settings.CurrentTarget then
+        return oldIndex(t, k)
+    end
+    
+    local target = Settings.CurrentTarget
+    if not target or not target.Character then
+        return oldIndex(t, k)
+    end
+    
+    -- Hedefin ilgili parçasını bul
+    local part = target.Character:FindFirstChild(silentAimTargetPart)
+    if not part then
+        part = target.Character:FindFirstChild("HumanoidRootPart")
+    end
+    if not part then
+        return oldIndex(t, k)
+    end
+    
+    -- Mouse.Hit ve Mouse.Target'ı hedefe yönlendir
+    if t:IsA("Mouse") then
+        if k == "Hit" then
+            return part.CFrame
+        elseif k == "Target" then
+            return part
+        end
+    end
+    
+    return oldIndex(t, k)
+end)
 -- =============================================
 -- GUI PARENT
 -- =============================================
