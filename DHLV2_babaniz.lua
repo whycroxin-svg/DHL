@@ -80,8 +80,9 @@ local Settings = {
     Kills = 0, SessionStart = tick(),
     SelectedPlayers = {}, CurrentTarget = nil,
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
-    Spinbot = false, SpinbotSpeed = 30,
+    Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
+    AutoTP = false,
 }
 
 -- =============================================
@@ -1322,8 +1323,7 @@ addButton(p4, "Kill First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
-            if hum then
-                pcall(function() hum.Health = 0 end)
+            if hum then                pcall(function() hum.Health = 0 end)
                 Settings.Kills = Settings.Kills + 1
                 showToast("Target Eliminated", plr.DisplayName, "success")
             end
@@ -1337,7 +1337,7 @@ local getAutoSelectAttacker = addToggle(p4, "Auto Select Attacker", true, functi
 end, 12, false)
 
 -- =============================================
--- PAGE 5: COMBAT (Kill Aura + Spinbot)
+-- PAGE 5: COMBAT
 -- =============================================
 local pCombat = tabPages["COMBAT"]
 addLabel(pCombat, "KILL AURA", 1)
@@ -1347,29 +1347,30 @@ local getKillAuraDelay = addSlider(pCombat, "Aura Delay (ms)", 10, 500, 100, nil
 local getKillAuraTargets = addCycleButton(pCombat, "Targets", {"All", "Selected Only"}, "All", nil, 5)
 
 addSeparator(pCombat, 6)
-addLabel(pCombat, "SPINBOT", 7)
-local getSpinbot = addToggle(pCombat, "Spinbot", false, nil, 8, true)
-local getSpinbotSpeed = addSlider(pCombat, "Spin Speed", 10, 100, 30, nil, 9)
+addLabel(pCombat, "ORBIT SPINBOT", 7)
+local getSpinbot = addToggle(pCombat, "Orbit Spinbot", false, nil, 8, true)
+local getSpinbotSpeed = addSlider(pCombat, "Orbit Speed", 5, 60, 30, nil, 9)
+local getSpinbotRadius = addSlider(pCombat, "Orbit Radius", 1, 10, 3, nil, 10)
 
-addSeparator(pCombat, 10)
-addLabel(pCombat, "AUTO ATTACK", 11)
-local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 12, true)
-local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 13)
+addSeparator(pCombat, 11)
+addLabel(pCombat, "AUTO ATTACK", 12)
+local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 13, true)
+local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 14)
 
-addSeparator(pCombat, 14)
-addLabel(pCombat, "INFO", 15)
+addSeparator(pCombat, 15)
+addLabel(pCombat, "INFO", 16)
 local combatInfo = Instance.new("TextLabel")
-combatInfo.Size = UDim2.new(1,-8,0,50)
+combatInfo.Size = UDim2.new(1,-8,0,60)
 combatInfo.BackgroundColor3 = CurrentTheme.Button
 combatInfo.BackgroundTransparency = InitialTransparency + 0.4
 combatInfo.BorderSizePixel = 0
-combatInfo.Text = "  Kill Aura: Etrafindaki herkese vurur\n  Spinbot: Hizli doner\n  Dikkat: Ban riski yuksek!"
+combatInfo.Text = "  Orbit Spinbot: Hedefin etrafinda doner\n  Kill Aura: Etrafindaki herkese vurur\n  Dikkat: Ban riski cok yuksek!"
 combatInfo.TextColor3 = CurrentTheme.SubText
 combatInfo.TextSize = 10
 combatInfo.Font = Enum.Font.Code
 combatInfo.TextXAlignment = Enum.TextXAlignment.Left
 combatInfo.TextYAlignment = Enum.TextYAlignment.Top
-combatInfo.LayoutOrder = 16
+combatInfo.LayoutOrder = 17
 combatInfo.ZIndex = 3
 combatInfo.Parent = pCombat
 Instance.new("UICorner", combatInfo).CornerRadius = UDim.new(0, 4)
@@ -1784,7 +1785,7 @@ end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- =============================================
--- AUTO SELECT ATTACKER (v4: sadece sana vurana)
+-- AUTO SELECT ATTACKER (v4)
 -- =============================================
 local lastAttackerSelect = 0
 local attackerCooldown = 0.5
@@ -2172,7 +2173,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- Infinite Jump
 RunService.Heartbeat:Connect(function()
     if getInfJump() and LocalPlayer.Character then
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -2193,20 +2193,53 @@ RunService.Stepped:Connect(function()
 end)
 
 -- =============================================
--- KILL AURA + SPINBOT + AUTO ATTACK
+-- KILL AURA + ORBIT SPINBOT + AUTO ATTACK
 -- =============================================
 local lastAuraAttack = 0
 local lastAutoAttack = 0
+local orbitAngle = 0
 
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    -- SPINBOT
+    -- ORBIT SPINBOT: Hedefin etrafında dön
     if getSpinbot() then
-        local speed = getSpinbotSpeed()
-        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(speed), 0)
+        local target = nil
+        local shortest = getKillAuraRange()
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                local thum = plr.Character:FindFirstChildOfClass("Humanoid")
+                if thrp and thum and thum.Health > 0 then
+                    local targets = getKillAuraTargets()
+                    local isValid = (targets == "All") or (Settings.SelectedPlayers[plr.Name] ~= nil)
+                    if isValid then
+                        local dist = (hrp.Position - thrp.Position).Magnitude
+                        if dist < shortest then
+                            shortest = dist
+                            target = plr
+                        end
+                    end
+                end
+            end
+        end
+        
+        if target and target.Character then
+            local thrp = target.Character:FindFirstChild("HumanoidRootPart")
+            if thrp then
+                orbitAngle = orbitAngle + math.rad(getSpinbotSpeed())
+                local radius = getSpinbotRadius()
+                local offset = Vector3.new(
+                    math.cos(orbitAngle) * radius,
+                    0,
+                    math.sin(orbitAngle) * radius
+                )
+                local targetPos = thrp.Position + offset
+                hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(targetPos, thrp.Position), 0.3)
+            end
+        end
     end
 
     -- KILL AURA
@@ -2246,15 +2279,15 @@ RunService.Heartbeat:Connect(function()
             local range = getAutoAttackRange()
             local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
             if tool then
-                local closest, shortest = nil, range
+                local closest, shortest2 = nil, range
                 for _, plr in ipairs(Players:GetPlayers()) do
                     if plr ~= LocalPlayer and plr.Character then
                         local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
                         local thum = plr.Character:FindFirstChildOfClass("Humanoid")
                         if thrp and thum and thum.Health > 0 then
                             local dist = (hrp.Position - thrp.Position).Magnitude
-                            if dist < shortest then
-                                shortest = dist
+                            if dist < shortest2 then
+                                shortest2 = dist
                                 closest = plr
                             end
                         end
