@@ -82,7 +82,6 @@ local Settings = {
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
-    AutoTP = false,
 }
 
 -- =============================================
@@ -1323,7 +1322,8 @@ addButton(p4, "Kill First Selected", function()
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
-            if hum then                pcall(function() hum.Health = 0 end)
+            if hum then
+                pcall(function() hum.Health = 0 end)
                 Settings.Kills = Settings.Kills + 1
                 showToast("Target Eliminated", plr.DisplayName, "success")
             end
@@ -1360,11 +1360,11 @@ local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil
 addSeparator(pCombat, 15)
 addLabel(pCombat, "INFO", 16)
 local combatInfo = Instance.new("TextLabel")
-combatInfo.Size = UDim2.new(1,-8,0,60)
+combatInfo.Size = UDim2.new(1,-8,0,70)
 combatInfo.BackgroundColor3 = CurrentTheme.Button
 combatInfo.BackgroundTransparency = InitialTransparency + 0.4
 combatInfo.BorderSizePixel = 0
-combatInfo.Text = "  Orbit Spinbot: Hedefin etrafinda doner\n  Kill Aura: Etrafindaki herkese vurur\n  Dikkat: Ban riski cok yuksek!"
+combatInfo.Text = "  Orbit Spinbot: Hedefin etrafinda doner\n  Kill Aura: Etrafindaki herkese vurur\n  Targets = Selected Only yaparsan\n  sadece sectigin kisiye odaklanir"
 combatInfo.TextColor3 = CurrentTheme.SubText
 combatInfo.TextSize = 10
 combatInfo.Font = Enum.Font.Code
@@ -1785,11 +1785,52 @@ end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- =============================================
--- AUTO SELECT ATTACKER (v4)
+-- AUTO SELECT ATTACKER (v5: mesafe yok, hasar verene kilit)
 -- =============================================
 local lastAttackerSelect = 0
 local attackerCooldown = 0.5
+local lastDamageSource = nil
+local lastDamageTime = 0
 
+-- Tüm oyuncuların tool kullanımını izle
+local function trackPlayerTool(plr)
+    if plr == LocalPlayer then return end
+    
+    local function watchTool(tool, char)
+        if not tool:IsA("Tool") then return end
+        tool.Activated:Connect(function()
+            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local thrp = char:FindFirstChild("HumanoidRootPart")
+            if lhrp and thrp then
+                lastDamageSource = plr
+                lastDamageTime = tick()
+            end
+        end)
+    end
+    
+    local function onChar(char)
+        for _, child in ipairs(char:GetChildren()) do
+            if child:IsA("Tool") then
+                watchTool(child, char)
+            end
+        end
+        char.ChildAdded:Connect(function(child)
+            if child:IsA("Tool") then
+                watchTool(child, char)
+            end
+        end)
+    end
+    
+    plr.CharacterAdded:Connect(onChar)
+    if plr.Character then onChar(plr.Character) end
+end
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then trackPlayerTool(plr) end
+end
+Players.PlayerAdded:Connect(trackPlayerTool)
+
+-- LocalPlayer hasar aldığında tetikle
 local function onLocalCharacter(char)
     local hum = char:WaitForChild("Humanoid", 5)
     if not hum then return end
@@ -1797,45 +1838,59 @@ local function onLocalCharacter(char)
     local lastHealth = hum.Health
     hum.HealthChanged:Connect(function(newHealth)
         local damageTaken = lastHealth - newHealth
-        if damageTaken >= 1 and autoSelectAttacker then
+        if damageTaken >= 0.5 and autoSelectAttacker then
             local now = tick()
             if now - lastAttackerSelect < attackerCooldown then
                 lastHealth = newHealth
                 return
             end
-
-            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if not lhrp then lastHealth = newHealth; return end
-
+            
             local attacker = nil
-            local closestDist = 30
-
-            for _, plr in ipairs(Players:GetPlayers()) do
-                if plr ~= LocalPlayer and plr.Character then
-                    local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
-                    local thum = plr.Character:FindFirstChildOfClass("Humanoid")
-                    if thrp and thum and thum.Health > 0 then
-                        local dist = (lhrp.Position - thrp.Position).Magnitude
-                        if dist < closestDist then
-                            closestDist = dist
-                            attacker = plr
-                        end
+            
+            -- 1. Öncelik: Son 1 saniye içinde tool kullanan oyuncu
+            if lastDamageSource and (now - lastDamageTime) < 1 then
+                if lastDamageSource.Character then
+                    local thum = lastDamageSource.Character:FindFirstChildOfClass("Humanoid")
+                    if thum and thum.Health > 0 then
+                        attacker = lastDamageSource
                     end
                 end
             end
-
+            
+            -- 2. Fallback: En yakın oyuncu (mesafe yok!)
+            if not attacker then
+                local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if lhrp then
+                    local closest, shortest = nil, math.huge
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= LocalPlayer and plr.Character then
+                            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                            local thum = plr.Character:FindFirstChildOfClass("Humanoid")
+                            if thrp and thum and thum.Health > 0 then
+                                local dist = (lhrp.Position - thrp.Position).Magnitude
+                                if dist < shortest then
+                                    shortest = dist
+                                    closest = plr
+                                end
+                            end
+                        end
+                    end
+                    attacker = closest
+                end
+            end
+            
             if attacker then
                 lastAttackerSelect = now
                 local wasAlreadySelected = Settings.SelectedPlayers[attacker.Name] ~= nil
-
+                
                 Settings.SelectedPlayers[attacker.Name] = attacker
                 refreshPlayerList()
-
+                
                 if getCamlock() then
                     Settings.CurrentTarget = attacker
                     locked = true
                 end
-
+                
                 if not wasAlreadySelected then
                     showToast("Under Attack", attacker.DisplayName .. " sana vurdu!", "error")
                 end
@@ -2204,7 +2259,7 @@ RunService.Heartbeat:Connect(function()
     local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    -- ORBIT SPINBOT: Hedefin etrafında dön
+    -- ORBIT SPINBOT
     if getSpinbot() then
         local target = nil
         local shortest = getKillAuraRange()
