@@ -144,7 +144,7 @@ if guiParent:IsA("ScreenGui") then
 else ScreenGui.Parent = guiParent end
 
 -- =============================================
--- SPLASH SCREEN
+-- SPLASH
 -- =============================================
 local splashGui = Instance.new("ScreenGui")
 splashGui.Name = "SOUHUB_Splash"
@@ -523,17 +523,9 @@ local tabConfig = {
 local tabPages = {}
 local tabButtons = {}
 local activeTab = "AIMLOCK"
-local uiElements = {}
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
 local keybindNames = {}
-
-local function animatePageSwitch(oldPage, newPage)
-    if oldPage then
-        oldPage.Visible = false
-    end
-    newPage.Visible = true
-end
 
 for i, config in ipairs(tabConfig) do
     local name = config.Name
@@ -629,7 +621,8 @@ for i, config in ipairs(tabConfig) do
             if nl then tween(nl, 0.15, {TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText}) end
         end
         
-        animatePageSwitch(tabPages[oldTab], page)
+        tabPages[oldTab].Visible = false
+        page.Visible = true
     end)
 end
 
@@ -719,7 +712,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         end)
 
         local function assignKeybind(keyCode)
-            -- Eski keybind'i temizle
             for k, v in pairs(keybindCallbacks) do
                 if v == doToggle then
                     keybindCallbacks[k] = nil
@@ -937,7 +929,7 @@ local function getFOVThemeColor()
 end
 
 -- =============================================
--- KEYBIND FLOATING PANEL (sol alt)
+-- KEYBIND FLOATING PANEL
 -- =============================================
 local keybindPanel = Instance.new("Frame")
 keybindPanel.Name = "KeybindPanel"
@@ -1010,6 +1002,7 @@ kpLayout.SortOrder = Enum.SortOrder.LayoutOrder
 kpLayout.Padding = UDim.new(0, 2)
 
 function updateKeybindPanel()
+    if not kpScroll then return end
     for _, child in ipairs(kpScroll:GetChildren()) do
         if child:IsA("TextLabel") then child:Destroy() end
     end
@@ -1048,7 +1041,6 @@ function updateKeybindPanel()
         empty.Parent = kpScroll
     end
     
-    -- Panel boyutunu ayarla
     local targetHeight = math.min(30 + count * 24 + 8, 250)
     keybindPanel.Size = UDim2.new(0, 200, 0, targetHeight)
 end
@@ -1433,8 +1425,6 @@ end, 14, CurrentTheme.Button)
 local p7 = tabPages["THEMES"]
 addLabel(p7, "SELECT A THEME", 1)
 
-_G.SOUHUB_ThemeButtons = _G.SOUHUB_ThemeButtons or {}
-
 local themeGrid = Instance.new("Frame")
 themeGrid.Size = UDim2.new(1, -8, 0, 400)
 themeGrid.BackgroundTransparency = 1
@@ -1655,7 +1645,6 @@ end)
 -- PLAYER LIST LOGIC
 -- =============================================
 local playerButtons = {}
-local originalSizes = {}
 local recentlyLeftPlayers = {}
 local autoReselect = true
 local autoSelectAttacker = true
@@ -1757,16 +1746,14 @@ end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- =============================================
--- AUTO SELECT ATTACKER (sadece SEN hasar yediğinde)
+-- AUTO SELECT ATTACKER (Sadece SEN hasar yediğinde)
 -- =============================================
 local lastAttackerSelect = 0
-local attackerCooldown = 1 -- saniye
+local attackerCooldown = 1
 
 local function findAttacker()
-    -- En yakın oyuncuyu bul (sana en yakın olan saldırgan)
     local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not lhrp then return nil end
-    
     local closest, shortest = nil, math.huge
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
@@ -1774,7 +1761,6 @@ local function findAttacker()
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
             if thrp and hum and hum.Health > 0 then
                 local dist = (lhrp.Position - thrp.Position).Magnitude
-                -- 50 stud içindeki en yakın oyuncu
                 if dist < 50 and dist < shortest then
                     shortest = dist
                     closest = plr
@@ -1791,37 +1777,40 @@ local function onLocalCharacter(char)
     
     local lastHealth = hum.Health
     hum.HealthChanged:Connect(function(newHealth)
-        -- Sadece hasar aldığımızda (health azaldığında)
-        if newHealth < lastHealth and autoSelectAttacker then
+        local damageTaken = lastHealth - newHealth
+        -- Sadece GERÇEK hasar aldığında (en az 1 HP)
+        if damageTaken >= 1 and autoSelectAttacker then
             local now = tick()
             if now - lastAttackerSelect < attackerCooldown then
                 lastHealth = newHealth
                 return
             end
             
-            -- En yakın oyuncuyu bul
             local attacker = findAttacker()
             if attacker then
                 lastAttackerSelect = now
+                local wasAlreadySelected = Settings.SelectedPlayers[attacker.Name] ~= nil
                 
-                -- Oyuncuyu seç
+                -- Seç
                 Settings.SelectedPlayers[attacker.Name] = attacker
                 refreshPlayerList()
                 
-                -- Camlock açıksa anında o kişiye kilitlen
+                -- Camlock açıksa anında o kişiye kilitle
                 if getCamlock() then
                     Settings.CurrentTarget = attacker
                     locked = true
                 end
                 
-                showToast("Under Attack", attacker.DisplayName .. " sana vurdu!", "error")
+                -- Sadece daha önce seçili DEĞİLSE bildirim göster
+                if not wasAlreadySelected then
+                    showToast("Under Attack", attacker.DisplayName .. " sana vurdu!", "error")
+                end
             end
         end
         lastHealth = newHealth
     end)
 end
 
--- Sadece LocalPlayer'ın karakterini dinle
 if LocalPlayer.Character then
     onLocalCharacter(LocalPlayer.Character)
 end
@@ -1851,20 +1840,58 @@ local espDrawings = {}
 
 local function addHighlight(player)
     if not player or not player.Character then return end
-    if highlightObjects[player.Name] then
-        if highlightObjects[player.Name].Parent ~= player.Character then
-            highlightObjects[player.Name]:Destroy(); highlightObjects[player.Name] = nil
-        else return end
+    if highlightObjects[player.Name] and highlightObjects[player.Name].Parent == player.Character then
+        -- zaten var
+    else
+        if highlightObjects[player.Name] then highlightObjects[player.Name]:Destroy() end
+        local hl = Instance.new("Highlight")
+        hl.Name = "SOUHUB_Highlight"
+        hl.FillColor = Settings.HighlightColor
+        hl.OutlineColor = Settings.HighlightColor
+        hl.FillTransparency = Settings.HighlightFillTransparency
+        hl.OutlineTransparency = 0.3
+        hl.Adornee = player.Character
+        hl.Parent = player.Character
+        highlightObjects[player.Name] = hl
     end
-    local hl = Instance.new("Highlight")
-    hl.Name = "SOUHUB_Highlight"
-    hl.FillColor = Settings.HighlightColor
-    hl.OutlineColor = Settings.HighlightColor
-    hl.FillTransparency = Settings.HighlightFillTransparency
-    hl.OutlineTransparency = 0.3
-    hl.Adornee = player.Character
-    hl.Parent = player.Character
-    highlightObjects[player.Name] = hl
+    
+    if usingDrawing and not espDrawings[player.Name] then
+        local esp = {}
+        esp.name = Drawing.new("Text")
+        esp.name.Color = Settings.HighlightColor
+        esp.name.Size = 14
+        esp.name.Center = true
+        esp.name.Outline = true
+        esp.name.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.name.Visible = false
+        esp.name.Font = 2
+        
+        esp.distance = Drawing.new("Text")
+        esp.distance.Color = Color3.fromRGB(200,200,200)
+        esp.distance.Size = 12
+        esp.distance.Center = true
+        esp.distance.Outline = true
+        esp.distance.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.distance.Visible = false
+        esp.distance.Font = 2
+        
+        esp.healthText = Drawing.new("Text")
+        esp.healthText.Color = Color3.fromRGB(0,255,0)
+        esp.healthText.Size = 12
+        esp.healthText.Center = true
+        esp.healthText.Outline = true
+        esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
+        esp.healthText.Visible = false
+        esp.healthText.Font = 2
+        
+        esp.tracer = Drawing.new("Line")
+        esp.tracer.Color = Settings.HighlightColor
+        esp.tracer.Thickness = 1
+        esp.tracer.Visible = false
+        esp.tracer.Transparency = 0.6
+        
+        espDrawings[player.Name] = esp
+    end
 end
 
 function removeHighlight(playerName)
@@ -1883,12 +1910,61 @@ local function updateESP()
             local shouldShow = espEnabled and selected
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                if humanoid and humanoid.Health > 0 then
+                local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
+                local head = player.Character:FindFirstChild("Head")
+                if humanoid and humanoid.Health > 0 and rootPart then
                     addHighlight(player)
                     if highlightObjects[player.Name] then
                         highlightObjects[player.Name].FillColor = Settings.HighlightColor
                         highlightObjects[player.Name].OutlineColor = Settings.HighlightColor
                         highlightObjects[player.Name].FillTransparency = getFillTransparency()
+                    end
+                    
+                    if usingDrawing and espDrawings[player.Name] then
+                        local esp = espDrawings[player.Name]
+                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+                        
+                        if onScreen then
+                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                            local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
+                            local yOff = -20
+                            
+                            if getESPNames() then
+                                esp.name.Text = player.DisplayName
+                                esp.name.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.name.Color = Settings.HighlightColor
+                                esp.name.Visible = true
+                                yOff = yOff - 16
+                            else esp.name.Visible = false end
+                            
+                            if getESPHealth() then
+                                esp.healthText.Text = hp .. "%"
+                                esp.healthText.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.healthText.Color = Color3.fromRGB(255*(1-hp/100), 255*(hp/100), 0)
+                                esp.healthText.Visible = true
+                                yOff = yOff - 14
+                            else esp.healthText.Visible = false end
+                            
+                            if getESPDistance() then
+                                esp.distance.Text = dist .. "m"
+                                esp.distance.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.distance.Visible = true
+                            else esp.distance.Visible = false end
+                            
+                            if getESPTracers() then
+                                esp.tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                                esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
+                                esp.tracer.Color = Settings.HighlightColor
+                                esp.tracer.Visible = true
+                            else esp.tracer.Visible = false end
+                        else
+                            if espDrawings[player.Name] then
+                                for _, obj in pairs(espDrawings[player.Name]) do
+                                    pcall(function() obj.Visible = false end)
+                                end
+                            end
+                        end
                     end
                 else removeHighlight(player.Name) end
             else removeHighlight(player.Name) end
