@@ -2304,9 +2304,22 @@ end
 
 local function isDowned(character)
     if not character then return false end
-    local hum = character:FindFirstChildOfClass("Humanoid")
-    if not hum then return false end
-    return (hum.Health / hum.MaxHealth) < 0.20
+    
+    -- K.O. kontrolü (BodyEffects içindeki "K.O" değeri)
+    local bodyEffects = character:FindFirstChild("BodyEffects")
+    if bodyEffects then
+        local ko = bodyEffects:FindFirstChild("K.O")
+        if ko and ko.Value == true then 
+            return true 
+        end
+    end
+    
+    -- Grabbed (tutulma) kontrolü
+    if character:FindFirstChild("GRABBING_CONSTRAINT") then 
+        return true 
+    end
+    
+    return false
 end
 
 local function getPredictedPosition(part)
