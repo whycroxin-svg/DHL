@@ -194,7 +194,7 @@ local splashSub = Instance.new("TextLabel")
 splashSub.Size = UDim2.new(1, 0, 0, 16)
 splashSub.Position = UDim2.new(0, 0, 0.5, 22)
 splashSub.BackgroundTransparency = 1
-splashSub.Text = "T O U C H L I N E   E D I T I O N"
+splashSub.Text = "W I N T E R   E D I T I O N"
 splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
@@ -453,7 +453,7 @@ tl.Parent = MainFrame
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
-cl.Text = "TOUCHLINE EDITION"
+cl.Text = "WINTER EDITION"
 cl.TextColor3 = CurrentTheme.SubText
 cl.TextSize = 9
 cl.Font = Enum.Font.GothamSemibold
@@ -1218,7 +1218,7 @@ end
 local p1 = tabPages["AIMLOCK"]
 addLabel(p1, "CAMLOCK", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
-local getWallCheck = addToggle(p1, "Wall Check", false, nil, 3, true)
+local getWallCheck = addToggle(p1, "Wall Check", false, function(v) Settings.WallCheck = v end, 3, true)
 local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
 local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 6, true)
@@ -1981,8 +1981,7 @@ wmAccent.Size = UDim2.new(0, 30, 0, 1)
 wmAccent.Position = UDim2.new(0, 12, 0, 1)
 wmAccent.BackgroundColor3 = CurrentTheme.Primary
 wmAccent.BorderSizePixel = 0
-wmAccent.ZIndex = 502
-wmAccent.Parent = Watermark
+wmAccent.ZIndex = 502wmAccent.Parent = Watermark
 
 local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -2281,16 +2280,26 @@ end)
 -- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
+    if not targetPart or not targetPart.Parent then return false end
+    
     local origin = Camera.CFrame.Position
-    local rp = RaycastParams.new(); rp.FilterType = Enum.RaycastFilterType.Exclude
-    rp.FilterDescendantsInstances = {LocalPlayer.Character}
-    local result = workspace:Raycast(origin, targetPart.Position - origin, rp)
-    if result then
-        local tc = targetPart:FindFirstAncestorWhichIsA("Model")
-        if tc and result.Instance:IsDescendantOf(tc) then return true end
-        return false
+    local direction = targetPart.Position - origin
+    
+    local rp = RaycastParams.new()
+    rp.FilterType = Enum.RaycastFilterType.Exclude
+    rp.FilterDescendantsInstances = {LocalPlayer.Character, Camera}
+    rp.IgnoreWater = true
+    
+    local result = workspace:Raycast(origin, direction, rp)
+    
+    if not result then return true end
+    
+    local targetChar = targetPart:FindFirstAncestorOfClass("Model")
+    if targetChar and result.Instance:IsDescendantOf(targetChar) then
+        return true
     end
-    return true
+    
+    return false
 end
 
 local function isDowned(character)
@@ -2328,7 +2337,11 @@ local function getClosestFromSelected()
                 if onScreen then
                     local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
                     if d < fov and d < shortest then
-                        if getStickyAim() or isVisible(part) then shortest = d; closest = player end
+                        -- WALL CHECK HER ZAMAN UYGULANIR (StickyAim olsa bile)
+                        if isVisible(part) then 
+                            shortest = d
+                            closest = player 
+                        end
                     end
                 end
             end
@@ -2634,8 +2647,9 @@ RunService.RenderStepped:Connect(function()
                     else locked = false; Settings.CurrentTarget = nil end
                     return
                 end
+                -- WALL CHECK HER ZAMAN UYGULANIR (StickyAim olsa bile)
                 local canSee = isVisible(part)
-                if canSee or getStickyAim() then
+                if canSee then
                     local smoothness = getSmoothness()
                     local shake = getAimShake()
                     local predictedPos = getPredictedPosition(part)
@@ -2648,10 +2662,12 @@ RunService.RenderStepped:Connect(function()
                     local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
                     Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, smoothness)
                 else
-                    if getWallCheck() and not getStickyAim() then
-                        if getAutoSwitch() then
-                            Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
-                        else locked = false; Settings.CurrentTarget = nil end
+                    -- Duvar arkasında, hedefi bırak (StickyAim bile olsa)
+                    if getAutoSwitch() then
+                        Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil
+                    else 
+                        locked = false
+                        Settings.CurrentTarget = nil 
                     end
                 end
             else
@@ -2740,7 +2756,7 @@ end)
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
 
-print("[SOU HUB] Touchline Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
+print("[SOU HUB] Winter Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
 
 -- Splash sonrasi GUI ac
 task.spawn(function()
@@ -2755,7 +2771,7 @@ task.spawn(function()
     }, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     
     task.wait(0.7)
-    showToast("SOU HUB", "Touchline Edition hazir!", "success")
+    showToast("SOU HUB", "Winter Edition hazir!", "success")
     task.wait(0.6)
     
     if hasFileSupport and hasFileSupport() then
@@ -2775,7 +2791,7 @@ end)
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "SOU HUB",
-        Text = "Touchline Edition loaded!",
+        Text = "Winter Edition loaded!",
         Duration = 5
     })
 end)
