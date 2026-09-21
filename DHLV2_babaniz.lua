@@ -1756,58 +1756,76 @@ end)
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
--- Auto Select Attacker (hasar anında tetiklenir)
-local lastAttackTime = {}
+-- =============================================
+-- AUTO SELECT ATTACKER (sadece SEN hasar yediğinde)
+-- =============================================
+local lastAttackerSelect = 0
+local attackerCooldown = 1 -- saniye
 
-local function watchForAttackers(player)
-    if player == LocalPlayer then return end
+local function findAttacker()
+    -- En yakın oyuncuyu bul (sana en yakın olan saldırgan)
+    local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not lhrp then return nil end
     
-    local function onCharacter(char)
-        local hum = char:WaitForChild("Humanoid", 5)
-        if not hum then return end
-        
-        -- Hasar takibi: HealthChanged her değiştiğinde tetiklenir
-        local lastHealth = hum.Health
-        hum.HealthChanged:Connect(function(newHealth)
-            if newHealth < lastHealth and autoSelectAttacker then
-                -- Hasar aldık! Saldırganı bul
-                local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                local thrp = char:FindFirstChild("HumanoidRootPart")
-                if lhrp and thrp then
-                    local dist = (lhrp.Position - thrp.Position).Magnitude
-                    if dist < 40 then -- 40 stud yakınındaysa
-                        -- Cooldown: Aynı oyuncuyu 2 saniye içinde tekrar seçme
-                        local now = tick()
-                        if not lastAttackTime[player.Name] or now - lastAttackTime[player.Name] > 2 then
-                            lastAttackTime[player.Name] = now
-                            
-                            -- Oyuncuyu seç
-                            Settings.SelectedPlayers[player.Name] = player
-                            refreshPlayerList()
-                            
-                            -- Anında o kişiye kilitlen (camlock için)
-                            if getCamlock() then
-                                Settings.CurrentTarget = player
-                                locked = true
-                            end
-                            
-                            showToast("Under Attack", player.DisplayName .. " sana vurdu!", "error")
-                        end
-                    end
+    local closest, shortest = nil, math.huge
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local thrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+            if thrp and hum and hum.Health > 0 then
+                local dist = (lhrp.Position - thrp.Position).Magnitude
+                -- 50 stud içindeki en yakın oyuncu
+                if dist < 50 and dist < shortest then
+                    shortest = dist
+                    closest = plr
                 end
             end
-            lastHealth = newHealth
-        end)
+        end
     end
-    
-    player.CharacterAdded:Connect(onCharacter)
-    if player.Character then onCharacter(player.Character) end
+    return closest
 end
 
-for _, plr in ipairs(Players:GetPlayers()) do
-    if plr ~= LocalPlayer then watchForAttackers(plr) end
+local function onLocalCharacter(char)
+    local hum = char:WaitForChild("Humanoid", 5)
+    if not hum then return end
+    
+    local lastHealth = hum.Health
+    hum.HealthChanged:Connect(function(newHealth)
+        -- Sadece hasar aldığımızda (health azaldığında)
+        if newHealth < lastHealth and autoSelectAttacker then
+            local now = tick()
+            if now - lastAttackerSelect < attackerCooldown then
+                lastHealth = newHealth
+                return
+            end
+            
+            -- En yakın oyuncuyu bul
+            local attacker = findAttacker()
+            if attacker then
+                lastAttackerSelect = now
+                
+                -- Oyuncuyu seç
+                Settings.SelectedPlayers[attacker.Name] = attacker
+                refreshPlayerList()
+                
+                -- Camlock açıksa anında o kişiye kilitlen
+                if getCamlock() then
+                    Settings.CurrentTarget = attacker
+                    locked = true
+                end
+                
+                showToast("Under Attack", attacker.DisplayName .. " sana vurdu!", "error")
+            end
+        end
+        lastHealth = newHealth
+    end)
 end
-Players.PlayerAdded:Connect(watchForAttackers)
+
+-- Sadece LocalPlayer'ın karakterini dinle
+if LocalPlayer.Character then
+    onLocalCharacter(LocalPlayer.Character)
+end
+LocalPlayer.CharacterAdded:Connect(onLocalCharacter)
 
 -- =============================================
 -- FOV CIRCLE
