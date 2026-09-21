@@ -82,6 +82,7 @@ local Settings = {
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
+    AutoSelectAttacker = true,
 }
 
 -- =============================================
@@ -1333,7 +1334,7 @@ addButton(p4, "Kill First Selected", function()
 end, 11, Color3.fromRGB(100, 30, 35))
 
 local getAutoSelectAttacker = addToggle(p4, "Auto Select Attacker", true, function(v)
-    autoSelectAttacker = v
+    Settings.AutoSelectAttacker = v
 end, 12, false)
 
 -- =============================================
@@ -1686,7 +1687,6 @@ end)
 local playerButtons = {}
 local recentlyLeftPlayers = {}
 local autoReselect = true
-local autoSelectAttacker = true
 
 local function updateSelectCount()
     local c = 0
@@ -1785,7 +1785,7 @@ end)
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
 -- =============================================
--- AUTO SELECT ATTACKER (v5: mesafe yok, hasar verene kilit)
+-- AUTO SELECT ATTACKER (v6: Settings tablosu kullanıyor)
 -- =============================================
 local lastAttackerSelect = 0
 local attackerCooldown = 0.5
@@ -1799,12 +1799,8 @@ local function trackPlayerTool(plr)
     local function watchTool(tool, char)
         if not tool:IsA("Tool") then return end
         tool.Activated:Connect(function()
-            local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            local thrp = char:FindFirstChild("HumanoidRootPart")
-            if lhrp and thrp then
-                lastDamageSource = plr
-                lastDamageTime = tick()
-            end
+            lastDamageSource = plr
+            lastDamageTime = tick()
         end)
     end
     
@@ -1830,7 +1826,6 @@ for _, plr in ipairs(Players:GetPlayers()) do
 end
 Players.PlayerAdded:Connect(trackPlayerTool)
 
--- LocalPlayer hasar aldığında tetikle
 local function onLocalCharacter(char)
     local hum = char:WaitForChild("Humanoid", 5)
     if not hum then return end
@@ -1838,7 +1833,7 @@ local function onLocalCharacter(char)
     local lastHealth = hum.Health
     hum.HealthChanged:Connect(function(newHealth)
         local damageTaken = lastHealth - newHealth
-        if damageTaken >= 0.5 and autoSelectAttacker then
+        if damageTaken >= 0.5 and Settings.AutoSelectAttacker then
             local now = tick()
             if now - lastAttackerSelect < attackerCooldown then
                 lastHealth = newHealth
@@ -1847,7 +1842,6 @@ local function onLocalCharacter(char)
             
             local attacker = nil
             
-            -- 1. Öncelik: Son 1 saniye içinde tool kullanan oyuncu
             if lastDamageSource and (now - lastDamageTime) < 1 then
                 if lastDamageSource.Character then
                     local thum = lastDamageSource.Character:FindFirstChildOfClass("Humanoid")
@@ -1857,7 +1851,6 @@ local function onLocalCharacter(char)
                 end
             end
             
-            -- 2. Fallback: En yakın oyuncu (mesafe yok!)
             if not attacker then
                 local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                 if lhrp then
