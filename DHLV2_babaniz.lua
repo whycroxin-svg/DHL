@@ -1756,29 +1756,50 @@ end)
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
 
--- Auto Select Attacker
+-- Auto Select Attacker (hasar anında tetiklenir)
+local lastAttackTime = {}
+
 local function watchForAttackers(player)
     if player == LocalPlayer then return end
+    
     local function onCharacter(char)
         local hum = char:WaitForChild("Humanoid", 5)
         if not hum then return end
+        
+        -- Hasar takibi: HealthChanged her değiştiğinde tetiklenir
         local lastHealth = hum.Health
         hum.HealthChanged:Connect(function(newHealth)
             if newHealth < lastHealth and autoSelectAttacker then
+                -- Hasar aldık! Saldırganı bul
                 local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                 local thrp = char:FindFirstChild("HumanoidRootPart")
                 if lhrp and thrp then
                     local dist = (lhrp.Position - thrp.Position).Magnitude
-                    if dist < 30 then
-                        Settings.SelectedPlayers[player.Name] = player
-                        refreshPlayerList()
-                        showToast("Auto Select", player.DisplayName .. " saldirdi!", "warning")
+                    if dist < 40 then -- 40 stud yakınındaysa
+                        -- Cooldown: Aynı oyuncuyu 2 saniye içinde tekrar seçme
+                        local now = tick()
+                        if not lastAttackTime[player.Name] or now - lastAttackTime[player.Name] > 2 then
+                            lastAttackTime[player.Name] = now
+                            
+                            -- Oyuncuyu seç
+                            Settings.SelectedPlayers[player.Name] = player
+                            refreshPlayerList()
+                            
+                            -- Anında o kişiye kilitlen (camlock için)
+                            if getCamlock() then
+                                Settings.CurrentTarget = player
+                                locked = true
+                            end
+                            
+                            showToast("Under Attack", player.DisplayName .. " sana vurdu!", "error")
+                        end
                     end
                 end
             end
             lastHealth = newHealth
         end)
     end
+    
     player.CharacterAdded:Connect(onCharacter)
     if player.Character then onCharacter(player.Character) end
 end
