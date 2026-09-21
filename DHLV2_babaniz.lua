@@ -1562,8 +1562,6 @@ addButton(p4, "Refresh Player List", function()
 end, 10.5, CurrentTheme.Button)
 
 addButton(p4, "Kill First Selected", function()
-    -- ...
-end, 11, Color3.fromRGB(100, 30, 35))
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -1575,7 +1573,7 @@ end, 11, Color3.fromRGB(100, 30, 35))
             break
         end
     end
-end, 10, Color3.fromRGB(100, 30, 35))
+end, 12, Color3.fromRGB(100, 30, 35))
 
 -- =============================================
 -- PAGE 5: WORLD
@@ -2255,7 +2253,8 @@ wmAccent.Size = UDim2.new(0, 30, 0, 1)
 wmAccent.Position = UDim2.new(0, 12, 0, 1)
 wmAccent.BackgroundColor3 = CurrentTheme.Primary
 wmAccent.BorderSizePixel = 0
-wmAccent.ZIndex = 502wmAccent.Parent = Watermark
+wmAccent.ZIndex = 502
+wmAccent.Parent = Watermark
 
 local wmTitle = Instance.new("TextLabel")
 wmTitle.Size = UDim2.new(1, 0, 0, 18)
@@ -2439,67 +2438,6 @@ local recentlyLeftPlayers = {} -- {name = true} şeklinde takip
 local autoReselect = true       -- Bu özelliği toggle ile aç/kapa yapabilirsin
 
 refreshPlayerList()
--- =============================================
--- OTOMATİK SEÇİM: Sana vuran oyuncuyu seç
--- =============================================
-local autoSelectAttacker = true -- Toggle ile değiştirilebilir
-
-local function watchForAttackers(player)
-    if player == LocalPlayer then return end
-    
-    local function onCharacter(char)
-        -- Tool hasarı takibi (Da Hood'da silah/yumruk hasarı)
-        local hum = char:WaitForChild("Humanoid", 5)
-        if not hum then return end
-        
-        -- Humanoid.HealthChanged ile hasar takibi
-        local lastHealth = hum.Health
-        hum.HealthChanged:Connect(function(newHealth)
-            if newHealth < lastHealth and autoSelectAttacker then
-                -- Yakında bir saldırgan var mı kontrol et
-                local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                local thrp = char:FindFirstChild("HumanoidRootPart")
-                if lhrp and thrp then
-                    local dist = (lhrp.Position - thrp.Position).Magnitude
-                    if dist < 30 then -- 30 stud yakınındaysa
-                        Settings.SelectedPlayers[player.Name] = player
-                        refreshPlayerList()
-                        showToast("Auto Select", player.DisplayName .. " saldirdi!", "warning")
-                    end
-                end
-            end
-            lastHealth = newHealth
-        end)
-        
-        -- K.O. olma durumu
-        local bodyEffects = char:WaitForChild("BodyEffects", 5)
-        if bodyEffects then
-            local ko = bodyEffects:FindFirstChild("K.O")
-            if ko then
-                ko.Changed:Connect(function()
-                    if ko.Value == true and autoSelectAttacker then
-                        Settings.SelectedPlayers[player.Name] = player
-                        refreshPlayerList()
-                        showToast("Auto Select", player.DisplayName .. " seni K.O. yapti!", "error")
-                    end
-                end)
-            end
-        end
-    end
-    
-    player.CharacterAdded:Connect(onCharacter)
-    if player.Character then onCharacter(player.Character) end
-end
-
-for _, plr in ipairs(Players:GetPlayers()) do
-    if plr ~= LocalPlayer then watchForAttackers(plr) end
-end
-Players.PlayerAdded:Connect(watchForAttackers)
-
--- Toggle
-local getAutoSelectAttacker = addToggle(p4, "Auto Select Attacker", true, function(v)
-    autoSelectAttacker = v
-end, 11, false)
 -- =============================================
 -- OTOMATİK SEÇİM: Sana vuran oyuncuyu seç
 -- =============================================
