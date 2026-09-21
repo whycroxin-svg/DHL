@@ -1556,8 +1556,14 @@ local getFollowPlayer = addToggle(p4, "Follow First Selected", false, function(s
         Settings.FollowTarget = nil
     end
 end, 9, true)
+addButton(p4, "Refresh Player List", function()
+    refreshPlayerList()
+    showToast("Players", "Liste yenilendi", "info")
+end, 10.5, CurrentTheme.Button)
 
 addButton(p4, "Kill First Selected", function()
+    -- ...
+end, 11, Color3.fromRGB(100, 30, 35))
     for _, plr in pairs(Settings.SelectedPlayers) do
         if plr and plr.Character then
             local hum = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -1618,7 +1624,56 @@ addButton(p5, "Server Hop", function()
 end, 10, CurrentTheme.Button)
 
 addSeparator(p5, 11)
-addLabel(p5, "SERVER INFO", 12)
+addLabel(p5, "PERFORMANCE", 12)
+local getFPSBoost = addToggle(p5, "FPS Boost", false, function(state)
+    if state then
+        -- Texture'ları kaldır
+        for _, obj in ipairs(game:GetDescendants()) do
+            pcall(function()
+                if obj:IsA("Decal") or obj:IsA("Texture") then
+                    obj.Transparency = 1
+                elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+                    obj.Enabled = false
+                elseif obj:IsA("Beam") then
+                    obj.Enabled = false
+                end
+            end)
+        end
+        -- Gölgeleri kapat
+        Lighting.GlobalShadows = false
+        Lighting.ShadowSoftness = 0
+        -- Su ve terrain detayını düşür
+        pcall(function() workspace.Terrain.WaterWaveSize = 0 end)
+        pcall(function() workspace.Terrain.WaterWaveSpeed = 0 end)
+        pcall(function() workspace.Terrain.WaterReflectance = 0 end)
+        pcall(function() workspace.Terrain.WaterTransparency = 1 end)
+        -- Roblox grafik ayarlarını düşür
+        pcall(function()
+            settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        end)
+        showToast("FPS Boost", "Grafikler düşürüldü", "success")
+    else
+        showToast("FPS Boost", "Kapatıldı — eski haline dönmek için oyunu yeniden başlat", "warning")
+    end
+end, 12, true)
+
+local getRemoveAccessories = addToggle(p5, "Remove Accessories", false, function(state)
+    if state then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr.Character then
+                for _, obj in ipairs(plr.Character:GetChildren()) do
+                    if obj:IsA("Accessory") or obj:IsA("Hat") then
+                        obj:Destroy()
+                    end
+                end
+            end
+        end
+        showToast("Accessories", "Tum aksesuarlar kaldirildi", "success")
+    end
+end, 13, false)
+
+addSeparator(p5, 14)
+addLabel(p5, "SERVER INFO", 15)
 local worldInfoLabel = Instance.new("TextLabel")
 worldInfoLabel.Size = UDim2.new(1,-8,0,80)
 worldInfoLabel.BackgroundColor3 = CurrentTheme.Button
@@ -1882,6 +1937,26 @@ end
 -- PAGE 8: SETTINGS
 -- =============================================
 local p8 = tabPages["SETTINGS"]
+
+-- Ayar arama kutusu
+local searchSettingBox = Instance.new("TextBox")
+searchSettingBox.Size = UDim2.new(1, -8, 0, 32)
+searchSettingBox.BackgroundColor3 = CurrentTheme.Button
+searchSettingBox.BackgroundTransparency = InitialTransparency + 0.3
+searchSettingBox.BorderSizePixel = 0
+searchSettingBox.PlaceholderText = "🔍 Search settings..."
+searchSettingBox.PlaceholderColor3 = CurrentTheme.SubText
+searchSettingBox.Text = ""
+searchSettingBox.TextColor3 = CurrentTheme.Text
+searchSettingBox.TextSize = 11
+searchSettingBox.Font = Enum.Font.Gotham
+searchSettingBox.ClearTextOnFocus = false
+searchSettingBox.LayoutOrder = 0
+searchSettingBox.ZIndex = 3
+searchSettingBox.Parent = p8
+Instance.new("UICorner", searchSettingBox).CornerRadius = UDim.new(0, 4)
+table.insert(uiElements, {element=searchSettingBox, type="bg"})
+
 addLabel(p8, "INTERFACE", 1)
 local getGuiTransparency = addSlider(p8, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
     Settings.GuiTransparency = v
@@ -2016,13 +2091,117 @@ end
 
 addButton(p8, "Save Config", saveConfig, 10, CurrentTheme.Button)
 addButton(p8, "Load Config", loadConfig, 11, CurrentTheme.Button)
+addSeparator(p8, 12)
+addLabel(p8, "KEYBINDS", 13)
 
+-- Keybind list paneli (açılıp kapanabilir)
+local keybindPanelOpen = false
+local keybindPanel = Instance.new("Frame")
+keybindPanel.Size = UDim2.new(1, -8, 0, 0)
+keybindPanel.BackgroundColor3 = CurrentTheme.Button
+keybindPanel.BackgroundTransparency = InitialTransparency + 0.4
+keybindPanel.BorderSizePixel = 0
+keybindPanel.ClipsDescendants = true
+keybindPanel.LayoutOrder = 14
+keybindPanel.ZIndex = 3
+keybindPanel.Parent = p8
+Instance.new("UICorner", keybindPanel).CornerRadius = UDim.new(0, 4)
+table.insert(uiElements, {element=keybindPanel, type="bg"})
+
+local keybindScroll = Instance.new("ScrollingFrame")
+keybindScroll.Size = UDim2.new(1, -8, 1, -8)
+keybindScroll.Position = UDim2.new(0, 4, 0, 4)
+keybindScroll.BackgroundTransparency = 1
+keybindScroll.BorderSizePixel = 0
+keybindScroll.ScrollBarThickness = 2
+keybindScroll.ScrollBarImageColor3 = CurrentTheme.Button
+keybindScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+keybindScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+keybindScroll.ZIndex = 4
+keybindScroll.Parent = keybindPanel
+
+local kbListLayout = Instance.new("UIListLayout", keybindScroll)
+kbListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+kbListLayout.Padding = UDim.new(0, 2)
+
+local function refreshKeybindList()
+    for _, child in ipairs(keybindScroll:GetChildren()) do
+        if child:IsA("TextLabel") then child:Destroy() end
+    end
+    
+    local count = 0
+    for keyCode, callback in pairs(keybindCallbacks) do
+        count = count + 1
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, -4, 0, 22)
+        lbl.BackgroundColor3 = CurrentTheme.Button
+        lbl.BackgroundTransparency = InitialTransparency + 0.3
+        lbl.BorderSizePixel = 0
+        lbl.Text = "  " .. keyCode.Name .. "  →  Toggle"
+        lbl.TextColor3 = CurrentTheme.Text
+        lbl.TextSize = 10
+        lbl.Font = Enum.Font.Code
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.LayoutOrder = count
+        lbl.ZIndex = 5
+        lbl.Parent = keybindScroll
+        Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 3)
+    end
+    
+    if count == 0 then
+        local emptyLbl = Instance.new("TextLabel")
+        emptyLbl.Size = UDim2.new(1, -4, 0, 22)
+        emptyLbl.BackgroundTransparency = 1
+        emptyLbl.Text = "  Henuz keybind atanmadi"
+        emptyLbl.TextColor3 = CurrentTheme.SubText
+        emptyLbl.TextSize = 10
+        emptyLbl.Font = Enum.Font.Gotham
+        emptyLbl.TextXAlignment = Enum.TextXAlignment.Left
+        emptyLbl.LayoutOrder = 1
+        emptyLbl.ZIndex = 5
+        emptyLbl.Parent = keybindScroll
+    end
+end
+
+local keybindToggleBtn = Instance.new("TextButton")
+keybindToggleBtn.Size = UDim2.new(1, -8, 0, 32)
+keybindToggleBtn.BackgroundColor3 = CurrentTheme.Button
+keybindToggleBtn.BackgroundTransparency = InitialTransparency + 0.3
+keybindToggleBtn.BorderSizePixel = 0
+keybindToggleBtn.Text = "▶  Keybind Listesini Goster"
+keybindToggleBtn.TextColor3 = CurrentTheme.Text
+keybindToggleBtn.TextSize = 11
+keybindToggleBtn.Font = Enum.Font.GothamSemibold
+keybindToggleBtn.AutoButtonColor = false
+keybindToggleBtn.LayoutOrder = 13
+keybindToggleBtn.ZIndex = 5
+keybindToggleBtn.Parent = p8
+Instance.new("UICorner", keybindToggleBtn).CornerRadius = UDim.new(0, 4)
+
+keybindToggleBtn.MouseEnter:Connect(function()
+    tween(keybindToggleBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15})
+end)
+keybindToggleBtn.MouseLeave:Connect(function()
+    tween(keybindToggleBtn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3})
+end)
+
+keybindToggleBtn.MouseButton1Click:Connect(function()
+    keybindPanelOpen = not keybindPanelOpen
+    if keybindPanelOpen then
+        refreshKeybindList()
+        keybindToggleBtn.Text = "▼  Keybind Listesini Gizle"
+        tween(keybindPanel, 0.3, {Size = UDim2.new(1, -8, 0, 120)}, Enum.EasingStyle.Quint)
+    else
+        keybindToggleBtn.Text = "▶  Keybind Listesini Goster"
+        tween(keybindPanel, 0.3, {Size = UDim2.new(1, -8, 0, 0)}, Enum.EasingStyle.Quint)
+    end
+end)
 GuiService.MenuOpened:Connect(function()
     task.spawn(function() pcall(saveConfig) end)
 end)
 
-addSeparator(p8, 12)
-addLabel(p8, "SESSION", 13)
+addSeparator(p8, 15)
+addLabel(p8, "SESSION", 16)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,80)
 statLabel.BackgroundColor3 = CurrentTheme.Button
@@ -2034,7 +2213,7 @@ statLabel.TextSize = 10
 statLabel.Font = Enum.Font.Code
 statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
-statLabel.LayoutOrder = 14
+statLabel.LayoutOrder = 17
 statLabel.ZIndex = 3
 statLabel.Parent = p8
 Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 4)
@@ -2260,7 +2439,128 @@ local recentlyLeftPlayers = {} -- {name = true} şeklinde takip
 local autoReselect = true       -- Bu özelliği toggle ile aç/kapa yapabilirsin
 
 refreshPlayerList()
+-- =============================================
+-- OTOMATİK SEÇİM: Sana vuran oyuncuyu seç
+-- =============================================
+local autoSelectAttacker = true -- Toggle ile değiştirilebilir
 
+local function watchForAttackers(player)
+    if player == LocalPlayer then return end
+    
+    local function onCharacter(char)
+        -- Tool hasarı takibi (Da Hood'da silah/yumruk hasarı)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not hum then return end
+        
+        -- Humanoid.HealthChanged ile hasar takibi
+        local lastHealth = hum.Health
+        hum.HealthChanged:Connect(function(newHealth)
+            if newHealth < lastHealth and autoSelectAttacker then
+                -- Yakında bir saldırgan var mı kontrol et
+                local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                local thrp = char:FindFirstChild("HumanoidRootPart")
+                if lhrp and thrp then
+                    local dist = (lhrp.Position - thrp.Position).Magnitude
+                    if dist < 30 then -- 30 stud yakınındaysa
+                        Settings.SelectedPlayers[player.Name] = player
+                        refreshPlayerList()
+                        showToast("Auto Select", player.DisplayName .. " saldirdi!", "warning")
+                    end
+                end
+            end
+            lastHealth = newHealth
+        end)
+        
+        -- K.O. olma durumu
+        local bodyEffects = char:WaitForChild("BodyEffects", 5)
+        if bodyEffects then
+            local ko = bodyEffects:FindFirstChild("K.O")
+            if ko then
+                ko.Changed:Connect(function()
+                    if ko.Value == true and autoSelectAttacker then
+                        Settings.SelectedPlayers[player.Name] = player
+                        refreshPlayerList()
+                        showToast("Auto Select", player.DisplayName .. " seni K.O. yapti!", "error")
+                    end
+                end)
+            end
+        end
+    end
+    
+    player.CharacterAdded:Connect(onCharacter)
+    if player.Character then onCharacter(player.Character) end
+end
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then watchForAttackers(plr) end
+end
+Players.PlayerAdded:Connect(watchForAttackers)
+
+-- Toggle
+local getAutoSelectAttacker = addToggle(p4, "Auto Select Attacker", true, function(v)
+    autoSelectAttacker = v
+end, 11, false)
+-- =============================================
+-- OTOMATİK SEÇİM: Sana vuran oyuncuyu seç
+-- =============================================
+local autoSelectAttacker = true -- Toggle ile değiştirilebilir
+
+local function watchForAttackers(player)
+    if player == LocalPlayer then return end
+    
+    local function onCharacter(char)
+        -- Tool hasarı takibi (Da Hood'da silah/yumruk hasarı)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not hum then return end
+        
+        -- Humanoid.HealthChanged ile hasar takibi
+        local lastHealth = hum.Health
+        hum.HealthChanged:Connect(function(newHealth)
+            if newHealth < lastHealth and autoSelectAttacker then
+                -- Yakında bir saldırgan var mı kontrol et
+                local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                local thrp = char:FindFirstChild("HumanoidRootPart")
+                if lhrp and thrp then
+                    local dist = (lhrp.Position - thrp.Position).Magnitude
+                    if dist < 30 then -- 30 stud yakınındaysa
+                        Settings.SelectedPlayers[player.Name] = player
+                        refreshPlayerList()
+                        showToast("Auto Select", player.DisplayName .. " saldirdi!", "warning")
+                    end
+                end
+            end
+            lastHealth = newHealth
+        end)
+        
+        -- K.O. olma durumu
+        local bodyEffects = char:WaitForChild("BodyEffects", 5)
+        if bodyEffects then
+            local ko = bodyEffects:FindFirstChild("K.O")
+            if ko then
+                ko.Changed:Connect(function()
+                    if ko.Value == true and autoSelectAttacker then
+                        Settings.SelectedPlayers[player.Name] = player
+                        refreshPlayerList()
+                        showToast("Auto Select", player.DisplayName .. " seni K.O. yapti!", "error")
+                    end
+                end)
+            end
+        end
+    end
+    
+    player.CharacterAdded:Connect(onCharacter)
+    if player.Character then onCharacter(player.Character) end
+end
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then watchForAttackers(plr) end
+end
+Players.PlayerAdded:Connect(watchForAttackers)
+
+-- Toggle
+local getAutoSelectAttacker = addToggle(p4, "Auto Select Attacker", true, function(v)
+    autoSelectAttacker = v
+end, 11, false)
 Players.PlayerAdded:Connect(function(player)
     task.wait(0.5)
     -- Eğer bu oyuncu daha önce seçiliydiyse ve şimdi yeniden geldiyse otomatik seç
@@ -2952,7 +3252,33 @@ end)
 
 UserInputService.WindowFocused:Connect(function() task.wait(0.2); resetInput() end)
 UserInputService.WindowFocusReleased:Connect(function() resetInput() end)
+-- =============================================
+-- AYAR ARAMA MANTIĞI
+-- =============================================
+local function filterSettings(searchText)
+    searchText = searchText:lower()
+    for _, element in ipairs(p8:GetChildren()) do
+        if element:IsA("GuiObject") and element ~= searchSettingBox then
+            local found = false
+            local labels = element:GetDescendants()
+            for _, d in ipairs(labels) do
+                if d:IsA("TextLabel") and d.Text:lower():find(searchText, 1, true) then
+                    found = true
+                    break
+                end
+            end
+            if searchText == "" then
+                element.Visible = true
+            else
+                element.Visible = found
+            end
+        end
+    end
+end
 
+searchSettingBox:GetPropertyChangedSignal("Text"):Connect(function()
+    filterSettings(searchSettingBox.Text)
+end)
 print("[SOU HUB] Winter Edition yuklendi! Transparency: " .. Settings.GuiTransparency .. "/500")
 
 -- Splash sonrasi GUI ac
