@@ -433,7 +433,47 @@ local mainStroke = Instance.new("UIStroke", MainFrame)
 mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
 mainStroke.Transparency = InitialTransparency + 0.2
+-- =============================================
+-- KAR EFEKTİ (Winter Theme)
+-- =============================================
+local snowContainer = Instance.new("Frame")
+snowContainer.Name = "SnowContainer"
+snowContainer.Size = UDim2.new(1, 0, 1, 0)
+snowContainer.Position = UDim2.new(0, 0, 0, 0)
+snowContainer.BackgroundTransparency = 1
+snowContainer.ClipsDescendants = true
+snowContainer.ZIndex = 1
+snowContainer.Parent = MainFrame
+Instance.new("UICorner", snowContainer).CornerRadius = UDim.new(0, 8)
 
+task.spawn(function()
+    while snowContainer.Parent do
+        local flake = Instance.new("Frame")
+        local size = math.random(2, 5)
+        flake.Size = UDim2.new(0, size, 0, size)
+        flake.Position = UDim2.new(math.random(), 0, -0.05, 0)
+        flake.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        flake.BackgroundTransparency = math.random(30, 70) / 100
+        flake.BorderSizePixel = 0
+        flake.ZIndex = 1
+        flake.Parent = snowContainer
+        Instance.new("UICorner", flake).CornerRadius = UDim.new(1, 0)
+        
+        local duration = math.random(4, 10)
+        local drift = math.random(-80, 80)
+        
+        tween(flake, duration, {
+            Position = UDim2.new(flake.Position.X.Scale + drift / 1000, 0, 1.05, 0),
+            BackgroundTransparency = 1
+        }, Enum.EasingStyle.Linear)
+        
+        task.delay(duration, function() 
+            if flake and flake.Parent then flake:Destroy() end 
+        end)
+        
+        task.wait(math.random(8, 20) / 100) -- 0.08 - 0.20 saniye arası
+    end
+end)
 -- =============================================
 -- ANIME KIZI ARKA PLANI
 -- =============================================
