@@ -39,21 +39,21 @@ end
 -- THEMES
 -- =============================================
 local Themes = {
-    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195), G1=Color3.fromRGB(180,210,240), G2=Color3.fromRGB(100,130,170)},
-    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140), G1=Color3.fromRGB(140,150,170), G2=Color3.fromRGB(80,90,110)},
-    Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160), G1=Color3.fromRGB(80,140,220), G2=Color3.fromRGB(40,80,160)},
-    Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120), G1=Color3.fromRGB(180,180,180), G2=Color3.fromRGB(80,80,80)},
-    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120), G1=Color3.fromRGB(200,60,90), G2=Color3.fromRGB(100,20,40)},
-    Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130), G1=Color3.fromRGB(70,190,140), G2=Color3.fromRGB(30,90,70)},
-    Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170), G1=Color3.fromRGB(150,100,240), G2=Color3.fromRGB(80,40,140)},
-    Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150), G1=Color3.fromRGB(120,150,180), G2=Color3.fromRGB(60,80,100)},
-    Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90),  G1=Color3.fromRGB(255,140,60), G2=Color3.fromRGB(160,60,20)},
-    Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90),  G1=Color3.fromRGB(220,180,110),G2=Color3.fromRGB(140,90,50)},
-    Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200), G1=Color3.fromRGB(60,160,240), G2=Color3.fromRGB(20,80,160)},
-    Sakura   = {Name="Sakura",   Category="Special", Primary=Color3.fromRGB(245,165,184), Accent=Color3.fromRGB(255,209,220), Bg=Color3.fromRGB(26,13,18),  Panel=Color3.fromRGB(42,21,32),  Button=Color3.fromRGB(58,31,46),  Text=Color3.fromRGB(255,225,235), SubText=Color3.fromRGB(210,160,180), G1=Color3.fromRGB(255,180,210), G2=Color3.fromRGB(200,120,160)},
-    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220), G1=Color3.fromRGB(255,0,170), G2=Color3.fromRGB(0,255,255)},
-    Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160), G1=Color3.fromRGB(230,60,60), G2=Color3.fromRGB(20,140,60)},
-    Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150), G1=Color3.fromRGB(255,140,90), G2=Color3.fromRGB(180,60,120)},
+    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195)},
+    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140)},
+    Cobalt   = {Name="Cobalt",   Category="Classic", Primary=Color3.fromRGB(50,100,180),  Accent=Color3.fromRGB(100,160,240), Bg=Color3.fromRGB(10,12,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,42),  Text=Color3.fromRGB(200,215,235), SubText=Color3.fromRGB(110,130,160)},
+    Noir     = {Name="Noir",     Category="Classic", Primary=Color3.fromRGB(80,80,80),    Accent=Color3.fromRGB(200,200,200), Bg=Color3.fromRGB(8,8,8),     Panel=Color3.fromRGB(14,14,14),  Button=Color3.fromRGB(22,22,22),  Text=Color3.fromRGB(230,230,230), SubText=Color3.fromRGB(120,120,120)},
+    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120)},
+    Emerald  = {Name="Emerald",  Category="Classic", Primary=Color3.fromRGB(40,140,100),  Accent=Color3.fromRGB(90,220,170),  Bg=Color3.fromRGB(8,14,12),   Panel=Color3.fromRGB(14,22,18),  Button=Color3.fromRGB(22,34,28),  Text=Color3.fromRGB(200,230,215), SubText=Color3.fromRGB(110,150,130)},
+    Violet   = {Name="Violet",   Category="Classic", Primary=Color3.fromRGB(110,60,180),  Accent=Color3.fromRGB(180,120,255), Bg=Color3.fromRGB(12,10,20),  Panel=Color3.fromRGB(20,16,32),  Button=Color3.fromRGB(30,24,48),  Text=Color3.fromRGB(220,210,240), SubText=Color3.fromRGB(140,120,170)},
+    Slate    = {Name="Slate",    Category="Classic", Primary=Color3.fromRGB(70,90,110),   Accent=Color3.fromRGB(130,170,200), Bg=Color3.fromRGB(10,13,18),  Panel=Color3.fromRGB(16,20,28),  Button=Color3.fromRGB(24,30,40),  Text=Color3.fromRGB(200,215,230), SubText=Color3.fromRGB(110,130,150)},
+    Halloween= {Name="Halloween",Category="Special", Primary=Color3.fromRGB(255,107,26),  Accent=Color3.fromRGB(255,165,0),   Bg=Color3.fromRGB(13,6,5),    Panel=Color3.fromRGB(26,14,8),   Button=Color3.fromRGB(42,24,16),  Text=Color3.fromRGB(255,220,190), SubText=Color3.fromRGB(200,140,90)},
+    Desert   = {Name="Desert",   Category="Special", Primary=Color3.fromRGB(200,148,74),  Accent=Color3.fromRGB(244,217,160), Bg=Color3.fromRGB(26,15,10),  Panel=Color3.fromRGB(42,26,15),  Button=Color3.fromRGB(58,40,24),  Text=Color3.fromRGB(240,220,190), SubText=Color3.fromRGB(180,140,90)},
+    Ocean    = {Name="Ocean",    Category="Special", Primary=Color3.fromRGB(30,144,255),  Accent=Color3.fromRGB(126,200,227), Bg=Color3.fromRGB(4,18,32),   Panel=Color3.fromRGB(8,32,52),   Button=Color3.fromRGB(14,46,72),  Text=Color3.fromRGB(200,225,245), SubText=Color3.fromRGB(120,170,200)},
+    Sakura   = {Name="Sakura",   Category="Special", Primary=Color3.fromRGB(245,165,184), Accent=Color3.fromRGB(255,209,220), Bg=Color3.fromRGB(26,13,18),  Panel=Color3.fromRGB(42,21,32),  Button=Color3.fromRGB(58,31,46),  Text=Color3.fromRGB(255,225,235), SubText=Color3.fromRGB(210,160,180)},
+    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220)},
+    Christmas= {Name="Christmas",Category="Special", Primary=Color3.fromRGB(212,36,38),   Accent=Color3.fromRGB(15,139,60),   Bg=Color3.fromRGB(10,26,14),  Panel=Color3.fromRGB(20,42,26),  Button=Color3.fromRGB(30,58,36),  Text=Color3.fromRGB(230,240,230), SubText=Color3.fromRGB(160,190,160)},
+    Sunset   = {Name="Sunset",   Category="Special", Primary=Color3.fromRGB(255,123,84),  Accent=Color3.fromRGB(255,178,107), Bg=Color3.fromRGB(26,15,26),  Panel=Color3.fromRGB(42,22,32),  Button=Color3.fromRGB(58,32,48),  Text=Color3.fromRGB(255,230,220), SubText=Color3.fromRGB(210,160,150)},
 }
 local CurrentTheme = Themes.Winter
 
@@ -70,32 +70,15 @@ local OriginalLighting = {
 -- SETTINGS
 -- =============================================
 local Settings = {
-    CamlockEnabled = true, WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
+    WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
     TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
     SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
     FOVRadius = 150, FOVUseTheme = true,
-    
-    ESPEnabled = true, ESPNames = true, ESPHealth = true, ESPDistance = true,
-    ESPTracers = true, ESPBoxes = false, ESPTracerOrigin = "Bottom",
     HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,168,200),
-    
-    SpeedEnabled = false, SpeedValue = 16, JumpPowerEnabled = false, JumpPowerValue = 50,
-    InfiniteJump = false, Noclip = false, FlyEnabled = false, FlySpeed = 50, NoclipFly = false,
-    
-    AntiAFK = true, HitboxExpand = false, HitboxSize = 1.3,
-    Watermark = true, FPSDisplay = true, PingDisplay = true,
     GuiTransparency = 250,
-    
     FollowPlayer = false, FollowTarget = nil,
-    DamageAura = false, DamageAuraRange = 10, DamageAuraAmount = 5,
-    AntiFling = false, GodMode = false, CharacterSize = false, CharacterSizeValue = 1.0,
-    
-    Fullbright = false, NoFog = false, RemoveShadows = false,
-    TimeChanger = false, TimeValue = 12,
-    
     Kills = 0, SessionStart = tick(),
     SelectedPlayers = {}, CurrentTarget = nil,
-    ParticlesEnabled = true,
 }
 
 -- =============================================
@@ -104,18 +87,13 @@ local Settings = {
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
     pcall(function() 
         local o = loc:FindFirstChild("SOUHUB_Winter"); if o then o:Destroy() end
-        local o2 = loc:FindFirstChild("SOUHUB_Snow"); if o2 then o2:Destroy() end
     end)
 end
 pcall(function() 
     if gethui then 
         local o = gethui():FindFirstChild("SOUHUB_Winter"); if o then o:Destroy() end
-        local o2 = gethui():FindFirstChild("SOUHUB_Snow"); if o2 then o2:Destroy() end
     end 
 end)
-for _, plr in ipairs(Players:GetPlayers()) do
-    pcall(function() if plr.Character then local h = plr.Character:FindFirstChild("SOUHUB_Highlight"); if h then h:Destroy() end end end)
-end
 
 -- =============================================
 -- TWEEN HELPER
@@ -128,7 +106,7 @@ local function tween(obj, time, props, style, dir)
 end
 
 -- =============================================
--- SILENT AIM (pcall ile korumalı)
+-- SILENT AIM
 -- =============================================
 local silentAimEnabled = false
 local silentAimTargetPart = "Head"
@@ -173,14 +151,12 @@ splashGui.Name = "SOUHUB_Splash"
 splashGui.ResetOnSpawn = false
 splashGui.DisplayOrder = 10000
 splashGui.IgnoreGuiInset = true
-splashGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 splashGui.Parent = guiParent
 
 local splashFrame = Instance.new("Frame")
 splashFrame.Size = UDim2.new(1, 0, 1, 0)
 splashFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 splashFrame.BorderSizePixel = 0
-splashFrame.ZIndex = 1
 splashFrame.Parent = splashGui
 
 local splashTitle = Instance.new("TextLabel")
@@ -192,7 +168,6 @@ splashTitle.TextColor3 = Color3.fromRGB(255,255,255)
 splashTitle.TextSize = 36
 splashTitle.Font = Enum.Font.GothamBlack
 splashTitle.TextTransparency = 1
-splashTitle.ZIndex = 3
 splashTitle.Parent = splashFrame
 
 local splashSub = Instance.new("TextLabel")
@@ -204,7 +179,6 @@ splashSub.TextColor3 = CurrentTheme.SubText
 splashSub.TextSize = 9
 splashSub.Font = Enum.Font.GothamSemibold
 splashSub.TextTransparency = 1
-splashSub.ZIndex = 3
 splashSub.Parent = splashFrame
 
 task.spawn(function()
@@ -221,7 +195,7 @@ task.spawn(function()
 end)
 
 -- =============================================
--- TOAST SISTEMI
+-- TOAST
 -- =============================================
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
@@ -391,31 +365,8 @@ task.spawn(function()
 end)
 
 -- =============================================
--- ANIME ARKA PLAN
+-- TOP ACCENT + TITLE
 -- =============================================
-local animeBg = Instance.new("ImageLabel")
-animeBg.Name = "AnimeBackground"
-animeBg.Size = UDim2.new(1, 0, 1, 0)
-animeBg.BackgroundTransparency = 1
-animeBg.ImageTransparency = 0.55
-animeBg.ScaleType = Enum.ScaleType.Crop
-animeBg.ZIndex = 0
-animeBg.Parent = MainFrame
-Instance.new("UICorner", animeBg).CornerRadius = UDim.new(0, 8)
-
-pcall(function()
-    local fn = "anime_bg.jpg"
-    local url = "https://raw.githubusercontent.com/whycroxin-svg/ahh/main/hile%20gui%20arka%20plan.jpg"
-    if writefile and isfile and getcustomasset then
-        if not isfile(fn) then
-            writefile(fn, game:HttpGet(url))
-        end
-        animeBg.Image = getcustomasset(fn)
-    else
-        animeBg.Image = url
-    end
-end)
-
 local topAccent = Instance.new("Frame")
 topAccent.Size = UDim2.new(0, 120, 0, 1)
 topAccent.Position = UDim2.new(0, 24, 0, 1)
@@ -451,18 +402,6 @@ cl.TextXAlignment = Enum.TextXAlignment.Left
 cl.ZIndex = 5
 cl.Parent = MainFrame
 
-local versionLbl = Instance.new("TextLabel")
-versionLbl.Size = UDim2.new(0, 60, 0, 14)
-versionLbl.Position = UDim2.new(1, -120, 0, 20)
-versionLbl.BackgroundTransparency = 1
-versionLbl.Text = "v1.0"
-versionLbl.TextColor3 = CurrentTheme.SubText
-versionLbl.TextSize = 10
-versionLbl.Font = Enum.Font.Gotham
-versionLbl.TextXAlignment = Enum.TextXAlignment.Right
-versionLbl.ZIndex = 5
-versionLbl.Parent = MainFrame
-
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -38, 0, 14)
@@ -477,19 +416,8 @@ closeBtn.AutoButtonColor = false
 closeBtn.ZIndex = 11
 closeBtn.Parent = MainFrame
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 4)
-closeBtn.MouseEnter:Connect(function()
-    tween(closeBtn, 0.15, {BackgroundColor3 = Color3.fromRGB(180, 50, 50), BackgroundTransparency = 0, TextColor3 = Color3.fromRGB(255,255,255)})
-end)
-closeBtn.MouseLeave:Connect(function()
-    tween(closeBtn, 0.15, {BackgroundColor3 = CurrentTheme.Button, BackgroundTransparency = InitialTransparency + 0.2, TextColor3 = CurrentTheme.SubText})
-end)
 closeBtn.MouseButton1Click:Connect(function()
-    tween(MainFrame, 0.35, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1}, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    task.wait(0.4)
     MainFrame.Visible = false
-    MainFrame.Size = UDim2.new(0, 700, 0, 480)
-    MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
-    MainFrame.BackgroundTransparency = InitialTransparency
 end)
 
 -- =============================================
@@ -598,20 +526,13 @@ local activeTab = "AIMLOCK"
 local uiElements = {}
 local activeKeybindBtn = nil
 local keybindCallbacks = {}
+local keybindNames = {}
 
 local function animatePageSwitch(oldPage, newPage)
     if oldPage then
-        tween(oldPage, 0.15, {Position = UDim2.new(0, -20, 0, 0)}, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
-        task.delay(0.15, function()
-            oldPage.Visible = false
-            oldPage.Position = UDim2.new(0, 0, 0, 0)
-        end)
+        oldPage.Visible = false
     end
-    task.delay(0.05, function()
-        newPage.Visible = true
-        newPage.Position = UDim2.new(0, 20, 0, 0)
-        tween(newPage, 0.25, {Position = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Quint)
-    end)
+    newPage.Visible = true
 end
 
 for i, config in ipairs(tabConfig) do
@@ -667,17 +588,6 @@ for i, config in ipairs(tabConfig) do
     subLbl.Parent = btn
     
     tabButtons[name] = btn
-    
-    btn.MouseEnter:Connect(function()
-        if activeTab ~= name then
-            tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3, BackgroundColor3 = CurrentTheme.Button})
-        end
-    end)
-    btn.MouseLeave:Connect(function()
-        if activeTab ~= name then
-            tween(btn, 0.15, {BackgroundTransparency = 1, BackgroundColor3 = Color3.fromRGB(0,0,0)})
-        end
-    end)
     
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.new(1, 0, 1, 0)
@@ -765,8 +675,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     stateLbl.TextXAlignment = Enum.TextXAlignment.Right
     stateLbl.ZIndex = 4
     stateLbl.Parent = btn
-    
-    table.insert(uiElements, {element=btn, type="toggle"})
 
     local state = default
     local function doToggle()
@@ -777,13 +685,6 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         if callback then callback(state) end
     end
     btn.MouseButton1Click:Connect(doToggle)
-    
-    btn.MouseEnter:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency + 0.05 or InitialTransparency + 0.15})
-    end)
-    btn.MouseLeave:Connect(function()
-        tween(btn, 0.15, {BackgroundTransparency = state and InitialTransparency + 0.15 or InitialTransparency + 0.3})
-    end)
 
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
@@ -818,10 +719,19 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         end)
 
         local function assignKeybind(keyCode)
+            -- Eski keybind'i temizle
+            for k, v in pairs(keybindCallbacks) do
+                if v == doToggle then
+                    keybindCallbacks[k] = nil
+                    keybindNames[k] = nil
+                end
+            end
             kbBtn.Text = keyCode.Name
             kbBtn.TextColor3 = CurrentTheme.Text
             keybindCallbacks[keyCode] = doToggle
+            keybindNames[keyCode] = name
             activeKeybindBtn = nil
+            updateKeybindPanel()
         end
 
         if not _G.SOUHUB_KeybindAssigners then _G.SOUHUB_KeybindAssigners = {} end
@@ -887,8 +797,6 @@ local function addSlider(page, name, min, max, default, callback, order)
     fill.ZIndex = 3
     fill.Parent = bg
     Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
-    table.insert(uiElements, {element=fill, type="fill"})
-    table.insert(uiElements, {element=bg, type="bg"})
 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,10,0,10)
@@ -899,7 +807,6 @@ local function addSlider(page, name, min, max, default, callback, order)
     knob.ZIndex = 4
     knob.Parent = bg
     Instance.new("UICorner", knob).CornerRadius = UDim.new(1,0)
-    table.insert(uiElements, {element=knob, type="knob"})
 
     local value = default
     local sliding = false
@@ -962,9 +869,6 @@ local function addCycleButton(page, name, options, default, callback, order)
     valueLbl.ZIndex = 4
     valueLbl.Parent = btn
     
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.15}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.3}) end)
-    
     btn.MouseButton1Click:Connect(function()
         idx = idx % #options + 1
         valueLbl.Text = options[idx]
@@ -989,8 +893,6 @@ local function addSeparator(page, order)
     line.BorderSizePixel = 0
     line.ZIndex = 3
     line.Parent = container
-    
-    table.insert(uiElements, {element=line, type="separatorLine"})
 end
 
 local function addLabel(page, text, order)
@@ -1005,7 +907,6 @@ local function addLabel(page, text, order)
     lbl.LayoutOrder = order or 0
     lbl.ZIndex = 3
     lbl.Parent = page
-    table.insert(uiElements, {element=lbl, type="sectionLabel"})
 end
 
 local function addButton(page, name, callback, order, color)
@@ -1024,9 +925,6 @@ local function addButton(page, name, callback, order, color)
     btn.Parent = page
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
     
-    btn.MouseEnter:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.05}) end)
-    btn.MouseLeave:Connect(function() tween(btn, 0.15, {BackgroundTransparency = InitialTransparency + 0.2}) end)
-    
     btn.MouseButton1Click:Connect(function()
         if callback then callback() end
     end)
@@ -1039,34 +937,123 @@ local function getFOVThemeColor()
 end
 
 -- =============================================
--- TEMA UYGULAMA
+-- KEYBIND FLOATING PANEL (sol alt)
 -- =============================================
-local function applyTheme(themeName)
-    if not Themes[themeName] then return end
-    CurrentTheme = Themes[themeName]
-    
-    MainFrame.BackgroundColor3 = CurrentTheme.Bg
-    mainStroke.Color = CurrentTheme.Button
-    topAccent.BackgroundColor3 = CurrentTheme.Primary
-    tl.TextColor3 = CurrentTheme.Text
-    cl.TextColor3 = CurrentTheme.SubText
-    Sidebar.BackgroundColor3 = CurrentTheme.Panel
-    profileFrame.BackgroundColor3 = CurrentTheme.Button
-    
-    for _, data in ipairs(uiElements) do
-        if data.element and data.element.Parent then
-            if data.type == "toggle" then
-                data.element.TextColor3 = CurrentTheme.Text
-            elseif data.type == "fill" then
-                data.element.BackgroundColor3 = CurrentTheme.Accent
-            elseif data.type == "bg" then
-                data.element.BackgroundColor3 = CurrentTheme.Button
-            end
-        end
+local keybindPanel = Instance.new("Frame")
+keybindPanel.Name = "KeybindPanel"
+keybindPanel.Size = UDim2.new(0, 200, 0, 0)
+keybindPanel.Position = UDim2.new(0, 15, 1, -15)
+keybindPanel.AnchorPoint = Vector2.new(0, 1)
+keybindPanel.BackgroundColor3 = CurrentTheme.Panel
+keybindPanel.BackgroundTransparency = InitialTransparency
+keybindPanel.BorderSizePixel = 0
+keybindPanel.ClipsDescendants = true
+keybindPanel.ZIndex = 550
+keybindPanel.Visible = false
+keybindPanel.Parent = ScreenGui
+Instance.new("UICorner", keybindPanel).CornerRadius = UDim.new(0, 6)
+
+local kpStroke = Instance.new("UIStroke", keybindPanel)
+kpStroke.Color = CurrentTheme.Button
+kpStroke.Thickness = 1
+
+local kpHeader = Instance.new("Frame")
+kpHeader.Size = UDim2.new(1, 0, 0, 26)
+kpHeader.BackgroundColor3 = CurrentTheme.Button
+kpHeader.BackgroundTransparency = 0.3
+kpHeader.BorderSizePixel = 0
+kpHeader.ZIndex = 551
+kpHeader.Parent = keybindPanel
+Instance.new("UICorner", kpHeader).CornerRadius = UDim.new(0, 6)
+
+local kpTitle = Instance.new("TextLabel")
+kpTitle.Size = UDim2.new(1, -30, 1, 0)
+kpTitle.Position = UDim2.new(0, 10, 0, 0)
+kpTitle.BackgroundTransparency = 1
+kpTitle.Text = "KEYBINDS"
+kpTitle.TextColor3 = CurrentTheme.Text
+kpTitle.TextSize = 10
+kpTitle.Font = Enum.Font.GothamBold
+kpTitle.TextXAlignment = Enum.TextXAlignment.Left
+kpTitle.ZIndex = 552
+kpTitle.Parent = kpHeader
+
+local kpClose = Instance.new("TextButton")
+kpClose.Size = UDim2.new(0, 20, 0, 20)
+kpClose.Position = UDim2.new(1, -24, 0, 3)
+kpClose.BackgroundTransparency = 1
+kpClose.Text = "×"
+kpClose.TextColor3 = CurrentTheme.SubText
+kpClose.TextSize = 16
+kpClose.Font = Enum.Font.GothamBold
+kpClose.AutoButtonColor = false
+kpClose.ZIndex = 552
+kpClose.Parent = kpHeader
+kpClose.MouseButton1Click:Connect(function()
+    keybindPanel.Visible = false
+end)
+
+local kpScroll = Instance.new("ScrollingFrame")
+kpScroll.Size = UDim2.new(1, -8, 1, -34)
+kpScroll.Position = UDim2.new(0, 4, 0, 30)
+kpScroll.BackgroundTransparency = 1
+kpScroll.BorderSizePixel = 0
+kpScroll.ScrollBarThickness = 2
+kpScroll.ScrollBarImageColor3 = CurrentTheme.Button
+kpScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+kpScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+kpScroll.ZIndex = 552
+kpScroll.Parent = keybindPanel
+
+local kpLayout = Instance.new("UIListLayout", kpScroll)
+kpLayout.SortOrder = Enum.SortOrder.LayoutOrder
+kpLayout.Padding = UDim.new(0, 2)
+
+function updateKeybindPanel()
+    for _, child in ipairs(kpScroll:GetChildren()) do
+        if child:IsA("TextLabel") then child:Destroy() end
     end
     
-    showToast("Theme Applied", CurrentTheme.Name, "success")
+    local count = 0
+    for keyCode, callback in pairs(keybindCallbacks) do
+        count = count + 1
+        local name = keybindNames[keyCode] or "Toggle"
+        local lbl = Instance.new("TextLabel")
+        lbl.Size = UDim2.new(1, -4, 0, 22)
+        lbl.BackgroundColor3 = CurrentTheme.Button
+        lbl.BackgroundTransparency = 0.4
+        lbl.BorderSizePixel = 0
+        lbl.Text = "  " .. keyCode.Name .. "  →  " .. name
+        lbl.TextColor3 = CurrentTheme.Text
+        lbl.TextSize = 10
+        lbl.Font = Enum.Font.Code
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.TextTruncate = Enum.TextTruncate.AtEnd
+        lbl.LayoutOrder = count
+        lbl.ZIndex = 553
+        lbl.Parent = kpScroll
+        Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 3)
+    end
+    
+    if count == 0 then
+        local empty = Instance.new("TextLabel")
+        empty.Size = UDim2.new(1, -4, 0, 22)
+        empty.BackgroundTransparency = 1
+        empty.Text = "  No keybinds set"
+        empty.TextColor3 = CurrentTheme.SubText
+        empty.TextSize = 10
+        empty.Font = Enum.Font.Gotham
+        empty.LayoutOrder = 1
+        empty.ZIndex = 553
+        empty.Parent = kpScroll
+    end
+    
+    -- Panel boyutunu ayarla
+    local targetHeight = math.min(30 + count * 24 + 8, 250)
+    keybindPanel.Size = UDim2.new(0, 200, 0, targetHeight)
 end
+
+makeDraggable(keybindPanel, kpHeader)
 
 -- =============================================
 -- PAGE 1: AIMLOCK
@@ -1460,6 +1447,22 @@ themeLayout.CellSize = UDim2.new(0.33, -6, 0, 62)
 themeLayout.CellPadding = UDim2.new(0, 6, 0, 6)
 themeLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
+local function applyTheme(themeName)
+    if not Themes[themeName] then return end
+    CurrentTheme = Themes[themeName]
+    MainFrame.BackgroundColor3 = CurrentTheme.Bg
+    mainStroke.Color = CurrentTheme.Button
+    topAccent.BackgroundColor3 = CurrentTheme.Primary
+    tl.TextColor3 = CurrentTheme.Text
+    cl.TextColor3 = CurrentTheme.SubText
+    Sidebar.BackgroundColor3 = CurrentTheme.Panel
+    profileFrame.BackgroundColor3 = CurrentTheme.Button
+    keybindPanel.BackgroundColor3 = CurrentTheme.Panel
+    kpHeader.BackgroundColor3 = CurrentTheme.Button
+    kpTitle.TextColor3 = CurrentTheme.Text
+    showToast("Theme Applied", CurrentTheme.Name, "success")
+end
+
 for name, theme in pairs(Themes) do
     local btn = Instance.new("TextButton")
     btn.Name = "ThemeBtn_" .. name
@@ -1509,9 +1512,6 @@ for name, theme in pairs(Themes) do
     nameLbl.ZIndex = 4
     nameLbl.Parent = btn
     
-    btn:SetAttribute("ThemeName", name)
-    _G.SOUHUB_ThemeButtons[name] = btn
-    
     btn.MouseButton1Click:Connect(function()
         applyTheme(name)
     end)
@@ -1552,48 +1552,19 @@ local getFPSDisplay = addToggle(p8, "FPS Display", true, nil, 6, false)
 local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 7, false)
 
 addSeparator(p8, 8)
-addLabel(p8, "KEYBINDS", 9)
+addLabel(p8, "KEYBIND WINDOW", 9)
 
-local keybindPanelOpen = false
-local keybindPanel = Instance.new("Frame")
-keybindPanel.Size = UDim2.new(1, -8, 0, 0)
-keybindPanel.BackgroundColor3 = CurrentTheme.Button
-keybindPanel.BackgroundTransparency = InitialTransparency + 0.4
-keybindPanel.BorderSizePixel = 0
-keybindPanel.ClipsDescendants = true
-keybindPanel.LayoutOrder = 11
-keybindPanel.ZIndex = 3
-keybindPanel.Parent = p8
-Instance.new("UICorner", keybindPanel).CornerRadius = UDim.new(0, 4)
-
-local keybindToggleBtn = Instance.new("TextButton")
-keybindToggleBtn.Size = UDim2.new(1, -8, 0, 32)
-keybindToggleBtn.BackgroundColor3 = CurrentTheme.Button
-keybindToggleBtn.BackgroundTransparency = InitialTransparency + 0.3
-keybindToggleBtn.BorderSizePixel = 0
-keybindToggleBtn.Text = "Keybind Listesini Goster"
-keybindToggleBtn.TextColor3 = CurrentTheme.Text
-keybindToggleBtn.TextSize = 11
-keybindToggleBtn.Font = Enum.Font.GothamSemibold
-keybindToggleBtn.AutoButtonColor = false
-keybindToggleBtn.LayoutOrder = 10
-keybindToggleBtn.ZIndex = 5
-keybindToggleBtn.Parent = p8
-Instance.new("UICorner", keybindToggleBtn).CornerRadius = UDim.new(0, 4)
-
-keybindToggleBtn.MouseButton1Click:Connect(function()
-    keybindPanelOpen = not keybindPanelOpen
-    if keybindPanelOpen then
-        keybindToggleBtn.Text = "Keybind Listesini Gizle"
-        tween(keybindPanel, 0.3, {Size = UDim2.new(1, -8, 0, 120)}, Enum.EasingStyle.Quint)
+local getKeybindVisible = addToggle(p8, "Show Keybind Panel", false, function(v)
+    if v then
+        updateKeybindPanel()
+        keybindPanel.Visible = true
     else
-        keybindToggleBtn.Text = "Keybind Listesini Goster"
-        tween(keybindPanel, 0.3, {Size = UDim2.new(1, -8, 0, 0)}, Enum.EasingStyle.Quint)
+        keybindPanel.Visible = false
     end
-end)
+end, 10, false)
 
-addSeparator(p8, 12)
-addLabel(p8, "SESSION", 13)
+addSeparator(p8, 11)
+addLabel(p8, "SESSION", 12)
 local statLabel = Instance.new("TextLabel")
 statLabel.Size = UDim2.new(1,-8,0,80)
 statLabel.BackgroundColor3 = CurrentTheme.Button
@@ -1605,7 +1576,7 @@ statLabel.TextSize = 10
 statLabel.Font = Enum.Font.Code
 statLabel.TextXAlignment = Enum.TextXAlignment.Left
 statLabel.TextYAlignment = Enum.TextYAlignment.Top
-statLabel.LayoutOrder = 14
+statLabel.LayoutOrder = 13
 statLabel.ZIndex = 3
 statLabel.Parent = p8
 Instance.new("UICorner", statLabel).CornerRadius = UDim.new(0, 4)
@@ -1855,22 +1826,6 @@ local function addHighlight(player)
     hl.Adornee = player.Character
     hl.Parent = player.Character
     highlightObjects[player.Name] = hl
-
-    if usingDrawing and not espDrawings[player.Name] then
-        local esp = {}
-        esp.name = Drawing.new("Text"); esp.name.Color = Settings.HighlightColor; esp.name.Size = 13
-        esp.name.Center = true; esp.name.Outline = true; esp.name.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.name.Visible = false; esp.name.Font = 2
-        esp.distance = Drawing.new("Text"); esp.distance.Color = Color3.fromRGB(200,200,200); esp.distance.Size = 11
-        esp.distance.Center = true; esp.distance.Outline = true; esp.distance.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.distance.Visible = false; esp.distance.Font = 2
-        esp.healthText = Drawing.new("Text"); esp.healthText.Color = Color3.fromRGB(0,255,0); esp.healthText.Size = 11
-        esp.healthText.Center = true; esp.healthText.Outline = true; esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.healthText.Visible = false; esp.healthText.Font = 2
-        esp.tracer = Drawing.new("Line"); esp.tracer.Color = Settings.HighlightColor
-        esp.tracer.Thickness = 1; esp.tracer.Visible = false; esp.tracer.Transparency = 0.6
-        espDrawings[player.Name] = esp
-    end
 end
 
 function removeHighlight(playerName)
@@ -1881,10 +1836,6 @@ function removeHighlight(playerName)
     end
 end
 
-local function hideDrawings(playerName)
-    if espDrawings[playerName] then for _,obj in pairs(espDrawings[playerName]) do pcall(function() obj.Visible = false end) end end
-end
-
 local function updateESP()
     local espEnabled = getESP()
     for _, player in ipairs(Players:GetPlayers()) do
@@ -1893,42 +1844,12 @@ local function updateESP()
             local shouldShow = espEnabled and selected
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
-                local head = player.Character:FindFirstChild("Head")
-                if humanoid and humanoid.Health > 0 and rootPart then
+                if humanoid and humanoid.Health > 0 then
                     addHighlight(player)
                     if highlightObjects[player.Name] then
                         highlightObjects[player.Name].FillColor = Settings.HighlightColor
                         highlightObjects[player.Name].OutlineColor = Settings.HighlightColor
                         highlightObjects[player.Name].FillTransparency = getFillTransparency()
-                    end
-                    if usingDrawing and espDrawings[player.Name] then
-                        local esp = espDrawings[player.Name]
-                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
-                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
-                        if onScreen then
-                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
-                            local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
-                            local yOff = -16
-                            if getESPNames() then
-                                esp.name.Text = player.DisplayName; esp.name.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
-                                esp.name.Color = Settings.HighlightColor; esp.name.Visible = true; yOff = yOff - 15
-                            else esp.name.Visible = false end
-                            if getESPHealth() then
-                                esp.healthText.Text = hp .. "%"; esp.healthText.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
-                                esp.healthText.Color = Color3.fromRGB(255*(1-hp/100), 255*(hp/100), 0)
-                                esp.healthText.Visible = true; yOff = yOff - 13
-                            else esp.healthText.Visible = false end
-                            if getESPDistance() then
-                                esp.distance.Text = dist .. "m"; esp.distance.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
-                                esp.distance.Visible = true
-                            else esp.distance.Visible = false end
-                            if getESPTracers() then
-                                esp.tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
-                                esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
-                                esp.tracer.Color = Settings.HighlightColor; esp.tracer.Visible = true
-                            else esp.tracer.Visible = false end
-                        else hideDrawings(player.Name) end
                     end
                 else removeHighlight(player.Name) end
             else removeHighlight(player.Name) end
@@ -2068,6 +1989,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     if input.KeyCode == Enum.KeyCode.End then
         MainFrame.Visible = false
         Watermark.Visible = false
+        keybindPanel.Visible = false
         locked = false
         Settings.CurrentTarget = nil
         if fovCircle then pcall(function() fovCircle.Visible = false end) end
@@ -2088,18 +2010,13 @@ RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if not hum then return end
-
-    if getSpeed() then
-        hum.WalkSpeed = getSpeedValue()
-    end
+    if getSpeed() then hum.WalkSpeed = getSpeedValue() end
     if getJumpPower() then
         local jp = getJumpValue()
         hum.JumpPower = jp
         hum.UseJumpPower = true
     end
-    if getGodMode() and hum.Health < hum.MaxHealth then
-        hum.Health = hum.MaxHealth
-    end
+    if getGodMode() and hum.Health < hum.MaxHealth then hum.Health = hum.MaxHealth end
     if getAntiFling() and LocalPlayer.Character then
         local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
         if hrp and hrp.Velocity.Magnitude > 200 then
@@ -2116,7 +2033,6 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Aimlock loop
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
     if menuOpen then return end
@@ -2197,7 +2113,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- World loop
 RunService.Heartbeat:Connect(function()
     if getFullbright() then
         Lighting.Ambient = Color3.fromRGB(255,255,255)
@@ -2213,20 +2128,17 @@ RunService.Heartbeat:Connect(function()
     if getTimeChanger() then Lighting.ClockTime = getTimeValue() else Lighting.ClockTime = OriginalLighting.ClockTime end
 end)
 
--- Anti-AFK
 pcall(function()
     local vu = game:GetService("VirtualUser")
     LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
 end)
 
--- =============================================
--- ESC MENU
--- =============================================
 pcall(function()
     GuiService.MenuOpened:Connect(function()
         menuOpen = true
         MainFrame.Visible = false
         Watermark.Visible = false
+        keybindPanel.Visible = false
         if fovCircle then pcall(function() fovCircle.Visible = false end) end
         locked = false
         Settings.CurrentTarget = nil
@@ -2236,19 +2148,16 @@ pcall(function()
         menuOpen = false
         MainFrame.Visible = true
         Watermark.Visible = getWatermark()
+        if getKeybindVisible() then keybindPanel.Visible = true end
         if fovCircle and getFOVVisible() then pcall(function() fovCircle.Visible = true end) end
     end)
 end)
 
 print("[SOU HUB] Winter Edition yuklendi!")
 
--- Splash sonrasi GUI ac
 task.spawn(function()
     task.wait(2.0)
     MainFrame.Visible = true
-    MainFrame.Size = UDim2.new(0, 700, 0, 480)
-    MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
-    
     task.wait(0.7)
     showToast("SOU HUB", "Winter Edition hazir!", "success")
     showToast("Interface", "Press Right Shift to toggle", "info")
