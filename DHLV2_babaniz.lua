@@ -247,7 +247,7 @@ DragHandle.Text = ""; DragHandle.AutoButtonColor = false; DragHandle.ZIndex = 10
 makeDraggable(MainFrame, DragHandle)
 
 local tl = Instance.new("TextLabel")
-tl.Size = UDim2.new(1, 0, 0, 18); tl.Position = UDim2.new(0, 24, 0, 14)
+tl.Size = UDim2.new(0, 200, 0, 18); tl.Position = UDim2.new(0, 24, 0, 14)
 tl.BackgroundTransparency = 1
 tl.Text = "SOU HUB"
 tl.TextColor3 = CurrentTheme.Text
@@ -281,47 +281,20 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
-local Sidebar = Instance.new("Frame")
-Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0, 145, 1, -80)
-Sidebar.Position = UDim2.new(0, 15, 0, 65)
-Sidebar.BackgroundColor3 = CurrentTheme.Panel
-Sidebar.BackgroundTransparency = InitialTransparency + 0.3
-Sidebar.BorderSizePixel = 0
-Sidebar.ZIndex = 4
-Sidebar.Parent = MainFrame
-Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 6)
-
-local searchSettingBox = Instance.new("TextBox")
-searchSettingBox.Size = UDim2.new(1, -12, 0, 26)
-searchSettingBox.Position = UDim2.new(0, 6, 0, 6)
-searchSettingBox.BackgroundColor3 = CurrentTheme.Button
-searchSettingBox.BackgroundTransparency = InitialTransparency + 0.3
-searchSettingBox.BorderSizePixel = 0
-searchSettingBox.PlaceholderText = "Ayar ara..."
-searchSettingBox.PlaceholderColor3 = CurrentTheme.SubText
-searchSettingBox.Text = ""
-searchSettingBox.TextColor3 = CurrentTheme.Text
-searchSettingBox.TextSize = 10
-searchSettingBox.Font = Enum.Font.Gotham
-searchSettingBox.ClearTextOnFocus = false
-searchSettingBox.ZIndex = 6
-searchSettingBox.Parent = Sidebar
-Instance.new("UICorner", searchSettingBox).CornerRadius = UDim.new(0, 4)
-
+-- PROFILE (üst sağ)
 local profileFrame = Instance.new("Frame")
-profileFrame.Size = UDim2.new(1, -12, 0, 50)
-profileFrame.Position = UDim2.new(0, 6, 0, 38)
+profileFrame.Size = UDim2.new(0, 180, 0, 32)
+profileFrame.Position = UDim2.new(1, -220, 0, 14)
 profileFrame.BackgroundColor3 = CurrentTheme.Button
 profileFrame.BackgroundTransparency = InitialTransparency + 0.4
 profileFrame.BorderSizePixel = 0
 profileFrame.ZIndex = 5
-profileFrame.Parent = Sidebar
+profileFrame.Parent = MainFrame
 Instance.new("UICorner", profileFrame).CornerRadius = UDim.new(0, 4)
 
 local avatarImg = Instance.new("ImageLabel")
-avatarImg.Size = UDim2.new(0, 32, 0, 32)
-avatarImg.Position = UDim2.new(0, 8, 0.5, -16)
+avatarImg.Size = UDim2.new(0, 26, 0, 26)
+avatarImg.Position = UDim2.new(0, 3, 0.5, -13)
 avatarImg.BackgroundTransparency = 1
 avatarImg.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. LocalPlayer.UserId .. "&width=150&height=150&format=png"
 avatarImg.ZIndex = 7
@@ -329,12 +302,12 @@ avatarImg.Parent = profileFrame
 Instance.new("UICorner", avatarImg).CornerRadius = UDim.new(1, 0)
 
 local profileName = Instance.new("TextLabel")
-profileName.Size = UDim2.new(1, -50, 0, 14)
-profileName.Position = UDim2.new(0, 46, 0, 10)
+profileName.Size = UDim2.new(1, -36, 0, 14)
+profileName.Position = UDim2.new(0, 34, 0, 4)
 profileName.BackgroundTransparency = 1
 profileName.Text = LocalPlayer.DisplayName
 profileName.TextColor3 = CurrentTheme.Text
-profileName.TextSize = 11
+profileName.TextSize = 10
 profileName.Font = Enum.Font.GothamBold
 profileName.TextXAlignment = Enum.TextXAlignment.Left
 profileName.TextTruncate = Enum.TextTruncate.AtEnd
@@ -342,37 +315,45 @@ profileName.ZIndex = 6
 profileName.Parent = profileFrame
 
 local profileStatus = Instance.new("TextLabel")
-profileStatus.Size = UDim2.new(1, -50, 0, 12)
-profileStatus.Position = UDim2.new(0, 46, 0, 24)
+profileStatus.Size = UDim2.new(1, -36, 0, 10)
+profileStatus.Position = UDim2.new(0, 34, 0, 18)
 profileStatus.BackgroundTransparency = 1
 profileStatus.Text = "CONNECTED"
 profileStatus.TextColor3 = CurrentTheme.SubText
-profileStatus.TextSize = 8
+profileStatus.TextSize = 7
 profileStatus.Font = Enum.Font.GothamSemibold
 profileStatus.TextXAlignment = Enum.TextXAlignment.Left
 profileStatus.ZIndex = 6
 profileStatus.Parent = profileFrame
 
-local SideScroll = Instance.new("ScrollingFrame")
-SideScroll.Size = UDim2.new(1, -12, 1, -100)
-SideScroll.Position = UDim2.new(0, 6, 0, 94)
-SideScroll.BackgroundTransparency = 1
-SideScroll.BorderSizePixel = 0
-SideScroll.ScrollBarThickness = 2
-SideScroll.ScrollBarImageColor3 = CurrentTheme.Button
-SideScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-SideScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-SideScroll.ZIndex = 5
-SideScroll.Parent = Sidebar
+-- TAB BAR (yatay, üstte)
+local TabBar = Instance.new("Frame")
+TabBar.Name = "TabBar"
+TabBar.Size = UDim2.new(1, -30, 0, 34)
+TabBar.Position = UDim2.new(0, 15, 0, 58)
+TabBar.BackgroundColor3 = CurrentTheme.Panel
+TabBar.BackgroundTransparency = InitialTransparency + 0.3
+TabBar.BorderSizePixel = 0
+TabBar.ZIndex = 4
+TabBar.Parent = MainFrame
+Instance.new("UICorner", TabBar).CornerRadius = UDim.new(0, 6)
 
-local sideLayout = Instance.new("UIListLayout", SideScroll)
-sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-sideLayout.Padding = UDim.new(0, 2)
+local tabBarLayout = Instance.new("UIListLayout", TabBar)
+tabBarLayout.FillDirection = Enum.FillDirection.Horizontal
+tabBarLayout.SortOrder = Enum.SortOrder.LayoutOrder
+tabBarLayout.Padding = UDim.new(0, 4)
+tabBarLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+tabBarLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 
+local tabBarPadding = Instance.new("UIPadding", TabBar)
+tabBarPadding.PaddingLeft = UDim.new(0, 6)
+tabBarPadding.PaddingRight = UDim.new(0, 6)
+
+-- CONTENT AREA
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
-ContentArea.Size = UDim2.new(1, -175, 1, -80)
-ContentArea.Position = UDim2.new(0, 165, 0, 65)
+ContentArea.Size = UDim2.new(1, -30, 1, -110)
+ContentArea.Position = UDim2.new(0, 15, 0, 100)
 ContentArea.BackgroundTransparency = 1
 ContentArea.ClipsDescendants = true
 ContentArea.ZIndex = 3
@@ -395,55 +376,22 @@ local keybindNames = {}
 
 for i, config in ipairs(tabConfig) do
     local name = config.Name
-    local sub = config.Sub
 
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
-    btn.Size = UDim2.new(1, 0, 0, 36)
+    btn.Size = UDim2.new(0, 110, 0, 24)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Button or Color3.fromRGB(0,0,0)
-    btn.BackgroundTransparency = i==1 and InitialTransparency or 1
+    btn.BackgroundTransparency = i==1 and 0.2 or 1
     btn.BorderSizePixel = 0
-    btn.Text = ""
+    btn.Text = name
+    btn.TextColor3 = i==1 and CurrentTheme.Text or CurrentTheme.SubText
+    btn.TextSize = 10
+    btn.Font = Enum.Font.GothamBold
     btn.AutoButtonColor = false
     btn.LayoutOrder = i
     btn.ZIndex = 5
-    btn.Parent = SideScroll
+    btn.Parent = TabBar
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-
-    local indicator = Instance.new("Frame")
-    indicator.Name = "Indicator"
-    indicator.Size = UDim2.new(0, 2, 0.6, 0)
-    indicator.Position = UDim2.new(0, 0, 0.5, 0)
-    indicator.AnchorPoint = Vector2.new(0, 0.5)
-    indicator.BackgroundColor3 = CurrentTheme.Primary
-    indicator.BorderSizePixel = 0
-    indicator.Visible = (i == 1)
-    indicator.ZIndex = 7
-    indicator.Parent = btn
-
-    local nameLbl = Instance.new("TextLabel")
-    nameLbl.Size = UDim2.new(1, -20, 0, 14)
-    nameLbl.Position = UDim2.new(0, 14, 0, 4)
-    nameLbl.BackgroundTransparency = 1
-    nameLbl.Text = name
-    nameLbl.TextColor3 = i==1 and CurrentTheme.Text or CurrentTheme.SubText
-    nameLbl.TextSize = 10
-    nameLbl.Font = Enum.Font.GothamBold
-    nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-    nameLbl.ZIndex = 6
-    nameLbl.Parent = btn
-
-    local subLbl = Instance.new("TextLabel")
-    subLbl.Size = UDim2.new(1, -20, 0, 12)
-    subLbl.Position = UDim2.new(0, 14, 0, 19)
-    subLbl.BackgroundTransparency = 1
-    subLbl.Text = sub
-    subLbl.TextColor3 = CurrentTheme.SubText
-    subLbl.TextSize = 8
-    subLbl.Font = Enum.Font.Gotham
-    subLbl.TextXAlignment = Enum.TextXAlignment.Left
-    subLbl.ZIndex = 6
-    subLbl.Parent = btn
 
     tabButtons[name] = btn
 
@@ -479,12 +427,9 @@ for i, config in ipairs(tabConfig) do
             local isActive = (n == name)
             tween(b, 0.2, {
                 BackgroundColor3 = isActive and CurrentTheme.Button or Color3.fromRGB(0,0,0),
-                BackgroundTransparency = isActive and InitialTransparency or 1
+                BackgroundTransparency = isActive and 0.2 or 1,
+                TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText
             })
-            local ind = b:FindFirstChild("Indicator")
-            if ind then ind.Visible = isActive end
-            local nl = b:FindFirstChildOfClass("TextLabel")
-            if nl then tween(nl, 0.15, {TextColor3 = isActive and CurrentTheme.Text or CurrentTheme.SubText}) end
         end
 
         tabPages[oldTab].Visible = false
@@ -1092,9 +1037,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- =============================================
--- ESP (herkese göster)
--- =============================================
 local usingDrawing = pcall(function() 
     local test = Drawing.new("Line"); test:Remove() 
 end)
@@ -1376,12 +1318,6 @@ RunService.Heartbeat:Connect(function()
         hum.JumpPower = jp
         hum.UseJumpPower = true
     end
-    if getAntiFling() and LocalPlayer.Character then
-        local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if hrp and hrp.Velocity.Magnitude > 200 then
-            hrp.Velocity = Vector3.new(0, hrp.Velocity.Y, 0)
-        end
-    end
 end)
 
 RunService.Heartbeat:Connect(function()
@@ -1559,14 +1495,6 @@ RunService.RenderStepped:Connect(function()
                 else locked = false; Settings.CurrentTarget = nil end
             end
         end
-    end
-end)
-
-RunService.Heartbeat:Connect(function()
-    if getFullbright() then
-        Lighting.Ambient = Color3.fromRGB(255,255,255)
-        Lighting.OutdoorAmbient = Color3.fromRGB(255,255,255)
-        Lighting.Brightness = 2
     end
 end)
 
