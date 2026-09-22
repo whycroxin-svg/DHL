@@ -394,7 +394,11 @@ tl.Font = Enum.Font.GothamBold
 tl.TextXAlignment = Enum.TextXAlignment.Left
 tl.ZIndex = 5
 tl.Parent = MainFrame
-
+local titleHue = 0
+RunService.RenderStepped:Connect(function(dt)
+    titleHue = (titleHue + dt * 0.3) % 1
+    tl.TextColor3 = Color3.fromHSV(titleHue, 1, 1)
+end)
 local cl = Instance.new("TextLabel")
 cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 32)
 cl.BackgroundTransparency = 1
@@ -1899,19 +1903,77 @@ end
 LocalPlayer.CharacterAdded:Connect(onLocalCharacter)
 
 -- =============================================
--- FOV CIRCLE
+-- FOV CIRCLE (Frame tabanlı, animasyonlu, çentikli, RGB)
 -- =============================================
-local fovCircle, usingDrawing = nil, false
-pcall(function()
-    fovCircle = Drawing.new("Circle")
-    fovCircle.Color = CurrentTheme.Accent
-    fovCircle.Thickness = 1
-    fovCircle.NumSides = 64
-    fovCircle.Radius = 150
-    fovCircle.Filled = false
-    fovCircle.Visible = true
-    fovCircle.Transparency = 0.7
-    usingDrawing = true
+local fovFrame = Instance.new("Frame")
+fovFrame.Name = "FOVCircle"
+fovFrame.Size = UDim2.new(0, 300, 0, 300)
+fovFrame.Position = UDim2.new(0.5, -150, 0.5, -150)
+fovFrame.BackgroundTransparency = 1
+fovFrame.BorderSizePixel = 0
+fovFrame.ZIndex = 999
+fovFrame.Visible = false
+fovFrame.Parent = ScreenGui
+
+-- Çentikleri oluştur (36 çentik, 10 derece aralıklı)
+local fovTicks = {}
+local tickCount = 36
+for i = 1, tickCount do
+    local angle = (i / tickCount) * math.pi * 2
+    local tick = Instance.new("Frame")
+    tick.Name = "Tick_" .. i
+    tick.Size = UDim2.new(0, 2, 0, 8)
+    tick.AnchorPoint = Vector2.new(0.5, 0.5)
+    tick.Position = UDim2.new(
+        0.5 + math.cos(angle) * 0.5,
+        0,
+        0.5 + math.sin(angle) * 0.5,
+        0
+    )
+    tick.Rotation = math.deg(angle) + 90
+    tick.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    tick.BackgroundTransparency = 0.3
+    tick.BorderSizePixel = 0
+    tick.ZIndex = 1000
+    tick.Parent = fovFrame
+    Instance.new("UICorner", tick).CornerRadius = UDim.new(1, 0)
+    table.insert(fovTicks, tick)
+end
+
+-- RGB renk döngüsü ve animasyon
+local fovHue = 0
+local fovPulse = 0
+RunService.RenderStepped:Connect(function(dt)
+    if not getFOVVisible() then
+        fovFrame.Visible = false
+        return
+    end
+    
+    fovFrame.Visible = true
+    
+    -- Boyut güncelle
+    local radius = getFOVRadius()
+    local size = radius * 2
+    fovFrame.Size = UDim2.new(0, size, 0, size)
+    fovFrame.Position = UDim2.new(0.5, -radius, 0.5, -radius)
+    
+    -- Mouse pozisyonunu takip et
+    fovFrame.Position = UDim2.new(0, Mouse.X - radius, 0, Mouse.Y - radius)
+    
+    -- RGB renk döngüsü
+    fovHue = (fovHue + dt * 0.5) % 1
+    local rgbColor = Color3.fromHSV(fovHue, 1, 1)
+    
+    -- Pulse animasyonu (nabız gibi büyüyüp küçülür)
+    fovPulse = fovPulse + dt * 3
+    local pulseScale = 1 + math.sin(fovPulse) * 0.15
+    local tickSize = 8 * pulseScale
+    
+    -- Her çentiğe rengi ve boyutu uygula
+    for i, tick in ipairs(fovTicks) do
+        tick.BackgroundColor3 = rgbColor
+        tick.Size = UDim2.new(0, 2, 0, tickSize)
+    end
 end)
 
 -- =============================================
@@ -1987,8 +2049,7 @@ local function updateESP()
     local espEnabled = getESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            local selected = Settings.SelectedPlayers[player.Name] ~= nil
-            local shouldShow = espEnabled and selected
+            local shouldShow = espEnabled -- Herkese göster
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
                 local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
