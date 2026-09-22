@@ -1044,6 +1044,18 @@ end)
 local espDrawings = {}
 
 local function updateESP()
+    -- Ölü/çıkmış oyuncuların ESP'lerini temizle
+    for name, esp in pairs(espDrawings) do
+        local plr = Players:FindFirstChild(name)
+        if not plr or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
+            for _, obj in pairs(esp) do
+                pcall(function() obj:Remove() end)
+            end
+            espDrawings[name] = nil
+        end
+    end
+    
+    local espEnabled = getESP()
     local espEnabled = getESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -1523,7 +1535,14 @@ pcall(function()
         if getKeybindVisible() then keybindPanel.Visible = true end
     end)
 end)
-
+Players.PlayerRemoving:Connect(function(player)
+    if espDrawings[player.Name] then
+        for _, obj in pairs(espDrawings[player.Name]) do
+            pcall(function() obj:Remove() end)
+        end
+        espDrawings[player.Name] = nil
+    end
+end)
 print("[SOU HUB] Yuklendi!")
 
 task.spawn(function()
