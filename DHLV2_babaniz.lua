@@ -2,7 +2,7 @@
     SOU HUB - CLEAN PRO EDITION (Da Hood)
 ]]
 
-print("[SOU HUB] Winter Edition yukleniyor...")
+print("[SOU HUB] Yukleniyor...")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -17,9 +17,6 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
--- =============================================
--- GUI PARENT
--- =============================================
 local function getGuiParent()
     if gethui then return gethui() end
     if syn and syn.protect_gui then
@@ -35,14 +32,11 @@ local function getGuiParent()
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- =============================================
--- THEMES
--- =============================================
 local Themes = {
-    Winter   = {Name="Winter",   Category="Special", Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195)},
-    Obsidian = {Name="Obsidian", Category="Classic", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140)},
-    Crimson  = {Name="Crimson",  Category="Classic", Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120)},
-    Cyberpunk= {Name="Cyberpunk",Category="Special", Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220)},
+    Winter   = {Name="Winter",   Primary=Color3.fromRGB(140,168,200), Accent=Color3.fromRGB(232,244,255), Bg=Color3.fromRGB(10,18,32),  Panel=Color3.fromRGB(16,28,46),  Button=Color3.fromRGB(26,42,66),  Text=Color3.fromRGB(220,235,250), SubText=Color3.fromRGB(140,165,195)},
+    Obsidian = {Name="Obsidian", Primary=Color3.fromRGB(100,110,130), Accent=Color3.fromRGB(160,180,210), Bg=Color3.fromRGB(12,13,16),  Panel=Color3.fromRGB(18,19,23),  Button=Color3.fromRGB(26,28,34),  Text=Color3.fromRGB(200,210,220), SubText=Color3.fromRGB(120,130,140)},
+    Crimson  = {Name="Crimson",  Primary=Color3.fromRGB(140,30,50),   Accent=Color3.fromRGB(230,90,110),  Bg=Color3.fromRGB(14,8,12),   Panel=Color3.fromRGB(22,14,18),  Button=Color3.fromRGB(34,20,26),  Text=Color3.fromRGB(230,200,205), SubText=Color3.fromRGB(150,110,120)},
+    Cyberpunk= {Name="Cyberpunk",Primary=Color3.fromRGB(255,0,170),   Accent=Color3.fromRGB(0,255,255),   Bg=Color3.fromRGB(10,0,20),   Panel=Color3.fromRGB(21,0,37),   Button=Color3.fromRGB(31,0,53),   Text=Color3.fromRGB(240,220,255), SubText=Color3.fromRGB(180,140,220)},
 }
 local CurrentTheme = Themes.Winter
 
@@ -55,9 +49,6 @@ local OriginalLighting = {
     ClockTime = Lighting.ClockTime,
 }
 
--- =============================================
--- SETTINGS
--- =============================================
 local Settings = {
     WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
     TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
@@ -73,9 +64,6 @@ local Settings = {
     AutoAttack = false, AutoAttackRange = 8,
 }
 
--- =============================================
--- CLEANUP
--- =============================================
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
     pcall(function() 
         local o = loc:FindFirstChild("SOUHUB_Winter"); if o then o:Destroy() end
@@ -87,9 +75,6 @@ pcall(function()
     end 
 end)
 
--- =============================================
--- TWEEN HELPER
--- =============================================
 local function tween(obj, time, props, style, dir)
     local info = TweenInfo.new(time or 0.2, style or Enum.EasingStyle.Quint, dir or Enum.EasingDirection.Out)
     local t = TweenService:Create(obj, info, props)
@@ -97,9 +82,6 @@ local function tween(obj, time, props, style, dir)
     return t
 end
 
--- =============================================
--- SILENT AIM
--- =============================================
 local silentAimEnabled = false
 local silentAimTargetPart = "Head"
 
@@ -121,9 +103,6 @@ pcall(function()
     end)
 end)
 
--- =============================================
--- GUI
--- =============================================
 local guiParent = getGuiParent()
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SOUHUB_Winter"
@@ -135,9 +114,6 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SOUHUB_Winter"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
--- =============================================
--- TOAST
--- =============================================
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
 toastContainer.Size = UDim2.new(0, 320, 1, -20)
@@ -218,9 +194,6 @@ local function showToast(title, message, toastType)
     end)
 end
 
--- =============================================
--- DRAGGABLE
--- =============================================
 local function makeDraggable(frame, handle)
     local dragging, dragInput, dragStart, startPos
     handle = handle or frame
@@ -241,9 +214,6 @@ local function makeDraggable(frame, handle)
     end)
 end
 
--- =============================================
--- MAIN FRAME
--- =============================================
 local InitialTransparency = 1 - (Settings.GuiTransparency / 500)
 
 local MainFrame = Instance.new("Frame")
@@ -263,9 +233,6 @@ mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
 mainStroke.Transparency = InitialTransparency + 0.2
 
--- =============================================
--- TOP ACCENT + TITLE
--- =============================================
 local topAccent = Instance.new("Frame")
 topAccent.Size = UDim2.new(0, 120, 0, 1)
 topAccent.Position = UDim2.new(0, 24, 0, 1)
@@ -290,23 +257,11 @@ tl.TextXAlignment = Enum.TextXAlignment.Left
 tl.ZIndex = 5
 tl.Parent = MainFrame
 
--- SOU HUB yazısını RGB döngüsüne sok
 local titleHue = 0
 RunService.RenderStepped:Connect(function(dt)
     titleHue = (titleHue + dt * 0.3) % 1
     tl.TextColor3 = Color3.fromHSV(titleHue, 1, 1)
 end)
-
-local cl = Instance.new("TextLabel")
-cl.Size = UDim2.new(1, 0, 0, 14); cl.Position = UDim2.new(0, 24, 0, 30)
-cl.BackgroundTransparency = 1
-cl.Text = "WINTER EDITION"
-cl.TextColor3 = CurrentTheme.SubText
-cl.TextSize = 9
-cl.Font = Enum.Font.GothamSemibold
-cl.TextXAlignment = Enum.TextXAlignment.Left
-cl.ZIndex = 5
-cl.Parent = MainFrame
 
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
@@ -326,13 +281,10 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- =============================================
--- SIDEBAR
--- =============================================
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0, 145, 1, -100)
-Sidebar.Position = UDim2.new(0, 15, 0, 85)
+Sidebar.Size = UDim2.new(0, 145, 1, -80)
+Sidebar.Position = UDim2.new(0, 15, 0, 65)
 Sidebar.BackgroundColor3 = CurrentTheme.Panel
 Sidebar.BackgroundTransparency = InitialTransparency + 0.3
 Sidebar.BorderSizePixel = 0
@@ -417,21 +369,15 @@ local sideLayout = Instance.new("UIListLayout", SideScroll)
 sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
 sideLayout.Padding = UDim.new(0, 2)
 
--- =============================================
--- CONTENT AREA
--- =============================================
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
-ContentArea.Size = UDim2.new(1, -175, 1, -100)
-ContentArea.Position = UDim2.new(0, 165, 0, 85)
+ContentArea.Size = UDim2.new(1, -175, 1, -80)
+ContentArea.Position = UDim2.new(0, 165, 0, 65)
 ContentArea.BackgroundTransparency = 1
 ContentArea.ClipsDescendants = true
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
--- =============================================
--- TAB SYSTEM (4 sekme)
--- =============================================
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting"},
     {Name = "ESP",       Sub = "Visual"},
@@ -546,9 +492,6 @@ for i, config in ipairs(tabConfig) do
     end)
 end
 
--- =============================================
--- UI BUILDERS
--- =============================================
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -8, 0, 32)
@@ -842,9 +785,6 @@ local function getFOVThemeColor()
     return Color3.fromRGB(200,80,80)
 end
 
--- =============================================
--- KEYBIND FLOATING PANEL
--- =============================================
 local keybindPanel = Instance.new("Frame")
 keybindPanel.Name = "KeybindPanel"
 keybindPanel.Size = UDim2.new(0, 200, 0, 0)
@@ -957,9 +897,6 @@ end
 
 makeDraggable(keybindPanel, kpHeader)
 
--- =============================================
--- PAGE 1: AIMLOCK
--- =============================================
 local p1 = tabPages["AIMLOCK"]
 addLabel(p1, "CAMLOCK", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
@@ -990,9 +927,6 @@ addLabel(p1, "SILENT AIM", 22)
 local getSilentAim = addToggle(p1, "Silent Aim", false, function(v) silentAimEnabled = v end, 23, true)
 local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 24)
 
--- =============================================
--- PAGE 2: ESP
--- =============================================
 local p2 = tabPages["ESP"]
 addLabel(p2, "BOX ESP", 1)
 local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
@@ -1009,9 +943,6 @@ local getESPNames = addToggle(p2, "Name Tags", true, nil, 6, true)
 local getESPHealth = addToggle(p2, "Health Display", true, nil, 7, false)
 local getESPDistance = addToggle(p2, "Distance Display", true, nil, 8, false)
 
--- =============================================
--- PAGE 3: MOVEMENT
--- =============================================
 local p3 = tabPages["MOVEMENT"]
 addLabel(p3, "SPEED", 1)
 local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
@@ -1033,9 +964,6 @@ addSeparator(p3, 14)
 addLabel(p3, "NOCLIP", 15)
 local getNoclip = addToggle(p3, "Noclip", false, nil, 16, true)
 
--- =============================================
--- PAGE 4: COMBAT
--- =============================================
 local pCombat = tabPages["COMBAT"]
 addLabel(pCombat, "KILL AURA", 1)
 local getKillAura = addToggle(pCombat, "Kill Aura", false, nil, 2, true)
@@ -1053,9 +981,6 @@ addLabel(pCombat, "AUTO ATTACK", 11)
 local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 12, true)
 local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 13)
 
--- =============================================
--- PAGE 5: SETTINGS
--- =============================================
 local p8 = tabPages["SETTINGS"]
 
 addLabel(p8, "INTERFACE", 1)
@@ -1071,7 +996,6 @@ local getPingDisplay = addToggle(p8, "Ping Display", true, nil, 6, false)
 
 addSeparator(p8, 7)
 addLabel(p8, "KEYBIND WINDOW", 8)
-
 local getKeybindVisible = addToggle(p8, "Show Keybind Panel", false, function(v)
     if v then
         updateKeybindPanel()
@@ -1081,9 +1005,16 @@ local getKeybindVisible = addToggle(p8, "Show Keybind Panel", false, function(v)
     end
 end, 9, false)
 
--- =============================================
--- FOV CIRCLE (Frame tabanlı, animasyonlu, çentikli, RGB)
--- =============================================
+addSeparator(p8, 10)
+addLabel(p8, "SERVER", 11)
+addButton(p8, "Server Rejoin", function()
+    showToast("Server", "Reconnecting...", "info")
+    task.wait(0.5)
+    pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
+end, 12, CurrentTheme.Button)
+
 local fovFrame = Instance.new("Frame")
 fovFrame.Name = "FOVCircle"
 fovFrame.Size = UDim2.new(0, 300, 0, 300)
@@ -1132,9 +1063,6 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- =============================================
--- FPS/PING DISPLAY (sol üst köşe)
--- =============================================
 local fpsFrame = Instance.new("Frame")
 fpsFrame.Size = UDim2.new(0, 100, 0, 20)
 fpsFrame.Position = UDim2.new(0, 15, 0, 15)
@@ -1170,6 +1098,13 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- =============================================
+-- ESP (herkese göster)
+-- =============================================
+local usingDrawing = pcall(function() 
+    local test = Drawing.new("Line"); test:Remove() 
+end)
+local espDrawings = {}
 
 local function updateESP()
     local espEnabled = getESP()
@@ -1181,15 +1116,12 @@ local function updateESP()
                 local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
                 local head = player.Character:FindFirstChild("Head")
                 if humanoid and humanoid.Health > 0 and rootPart then
-                    -- Box ESP oluştur
                     if usingDrawing and not espDrawings[player.Name] then
                         local esp = {}
-                        -- Box (4 çizgi)
                         esp.boxTop = Drawing.new("Line")
                         esp.boxBottom = Drawing.new("Line")
                         esp.boxLeft = Drawing.new("Line")
                         esp.boxRight = Drawing.new("Line")
-                        -- Name
                         esp.name = Drawing.new("Text")
                         esp.name.Size = 13
                         esp.name.Center = true
@@ -1197,7 +1129,6 @@ local function updateESP()
                         esp.name.OutlineColor = Color3.fromRGB(0,0,0)
                         esp.name.Visible = false
                         esp.name.Font = 2
-                        -- HP
                         esp.healthText = Drawing.new("Text")
                         esp.healthText.Size = 11
                         esp.healthText.Center = true
@@ -1205,7 +1136,6 @@ local function updateESP()
                         esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
                         esp.healthText.Visible = false
                         esp.healthText.Font = 2
-                        -- Distance
                         esp.distance = Drawing.new("Text")
                         esp.distance.Size = 11
                         esp.distance.Center = true
@@ -1230,7 +1160,6 @@ local function updateESP()
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
                             
-                            -- Box çizgileri
                             esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
                             esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
                             esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
@@ -1253,7 +1182,6 @@ local function updateESP()
                             esp.boxLeft.Visible = true
                             esp.boxRight.Visible = true
                             
-                            -- Name tags
                             local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
                             local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
                             local yOff = topY - 20
@@ -1287,7 +1215,6 @@ local function updateESP()
                                 esp.distance.Visible = false
                             end
                         else
-                            -- Ekranda değilse gizle
                             if espDrawings[player.Name] then
                                 for _, obj in pairs(espDrawings[player.Name]) do
                                     pcall(function() obj.Visible = false end)
@@ -1297,7 +1224,6 @@ local function updateESP()
                     end
                 end
             else
-                -- ESP kapalıysa temizle
                 if espDrawings[player.Name] then
                     for _, obj in pairs(espDrawings[player.Name]) do
                         pcall(function() obj:Remove() end)
@@ -1309,9 +1235,6 @@ local function updateESP()
     end
 end
 
--- =============================================
--- WALL CHECK + DOWNED
--- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
     if not targetPart or not targetPart.Parent then return false end
@@ -1376,9 +1299,6 @@ local function getClosestFromSelected()
     return closest
 end
 
--- =============================================
--- INPUT
--- =============================================
 local locked = false
 local menuOpen = false
 
@@ -1423,7 +1343,8 @@ UserInputService.InputBegan:Connect(function(input, gpe)
         if getCamlock() then
             if locked then locked = false; Settings.CurrentTarget = nil
             else Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
-        end    end
+        end
+    end
     if input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
     end
@@ -1451,9 +1372,6 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- =============================================
--- FEATURE LOOPS
--- =============================================
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -1491,9 +1409,6 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- =============================================
--- KILL AURA + ORBIT SPINBOT + AUTO ATTACK
--- =============================================
 local lastAuraAttack = 0
 local lastAutoAttack = 0
 local orbitAngle = 0
@@ -1503,7 +1418,6 @@ RunService.Heartbeat:Connect(function()
     local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    -- ORBIT SPINBOT
     if getSpinbot() then
         local target = nil
         local shortest = getKillAuraRange()
@@ -1532,7 +1446,6 @@ RunService.Heartbeat:Connect(function()
         end
     end
 
-    -- KILL AURA
     if getKillAura() then
         local now = tick()
         local delay = getKillAuraDelay() / 1000
@@ -1557,7 +1470,6 @@ RunService.Heartbeat:Connect(function()
         end
     end
 
-    -- AUTO ATTACK NEAREST
     if getAutoAttack() then
         local now = tick()
         if now - lastAutoAttack >= 0.15 then
@@ -1587,9 +1499,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--- =============================================
--- AIMLOCK LOOP
--- =============================================
 local flyBV = nil
 RunService.RenderStepped:Connect(function()
     if menuOpen then return end
@@ -1691,12 +1600,12 @@ pcall(function()
     end)
 end)
 
-print("[SOU HUB] Winter Edition yuklendi!")
+print("[SOU HUB] Yuklendi!")
 
 task.spawn(function()
     task.wait(1.5)
     MainFrame.Visible = true
     task.wait(0.5)
-    showToast("SOU HUB", "Winter Edition hazir!", "success")
-    showToast("Interface", "Press Right Shift to toggle", "info")
+    showToast("SOU HUB", "Hazir!", "success")
+    showToast("Interface", "Right Shift to toggle", "info")
 end)
