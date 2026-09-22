@@ -1149,7 +1149,7 @@ local function updateESP()
                         
                         if onScreen and topPos and bottomPos then
                             local color = Color3.fromRGB(255, 255, 255) 
-                            local boxWidth = 16
+                            local boxWidth = 20
                             local topY = topPos.Y
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
