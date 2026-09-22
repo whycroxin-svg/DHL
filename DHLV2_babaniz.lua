@@ -954,6 +954,9 @@ addButton(p8, "Server Rejoin", function()
     end)
 end, 12, CurrentTheme.Button)
 
+-- =============================================
+-- FOV CIRCLE (siyah-beyaz, sade)
+-- =============================================
 local fovFrame = Instance.new("Frame")
 fovFrame.Name = "FOVCircle"
 fovFrame.Size = UDim2.new(0, 300, 0, 300)
@@ -963,26 +966,38 @@ fovFrame.ZIndex = 999
 fovFrame.Visible = false
 fovFrame.Parent = ScreenGui
 
-local fovTicks = {}
-local tickCount = 36
-for i = 1, tickCount do
-    local angle = (i / tickCount) * math.pi * 2
-    local tick = Instance.new("Frame")
-    tick.Size = UDim2.new(0, 2, 0, 8)
-    tick.AnchorPoint = Vector2.new(0.5, 0.5)
-    tick.Position = UDim2.new(0.5 + math.cos(angle) * 0.5, 0, 0.5 + math.sin(angle) * 0.5, 0)
-    tick.Rotation = math.deg(angle) + 90
-    tick.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    tick.BackgroundTransparency = 0.3
-    tick.BorderSizePixel = 0
-    tick.ZIndex = 1000
-    tick.Parent = fovFrame
-    Instance.new("UICorner", tick).CornerRadius = UDim.new(1, 0)
-    table.insert(fovTicks, tick)
-end
+-- İç çember (beyaz)
+local fovCircle = Instance.new("Frame")
+fovCircle.Name = "Circle"
+fovCircle.Size = UDim2.new(1, 0, 1, 0)
+fovCircle.Position = UDim2.new(0, 0, 0, 0)
+fovCircle.BackgroundTransparency = 1
+fovCircle.BorderSizePixel = 0
+fovCircle.ZIndex = 1000
+fovCircle.Parent = fovFrame
+Instance.new("UICorner", fovCircle).CornerRadius = UDim.new(1, 0)
 
-local fovHue = 0
-local fovPulse = 0
+local fovStroke = Instance.new("UIStroke", fovCircle)
+fovStroke.Color = Color3.fromRGB(255, 255, 255)
+fovStroke.Thickness = 1.5
+fovStroke.Transparency = 0.2
+
+-- Dış çember (siyah outline)
+local fovCircleOuter = Instance.new("Frame")
+fovCircleOuter.Name = "CircleOuter"
+fovCircleOuter.Size = UDim2.new(1, 2, 1, 2)
+fovCircleOuter.Position = UDim2.new(0, -1, 0, -1)
+fovCircleOuter.BackgroundTransparency = 1
+fovCircleOuter.BorderSizePixel = 0
+fovCircleOuter.ZIndex = 999
+fovCircleOuter.Parent = fovFrame
+Instance.new("UICorner", fovCircleOuter).CornerRadius = UDim.new(1, 0)
+
+local fovStrokeOuter = Instance.new("UIStroke", fovCircleOuter)
+fovStrokeOuter.Color = Color3.fromRGB(0, 0, 0)
+fovStrokeOuter.Thickness = 1
+fovStrokeOuter.Transparency = 0.5
+
 RunService.RenderStepped:Connect(function(dt)
     if not getFOVVisible() then
         fovFrame.Visible = false
@@ -992,14 +1007,6 @@ RunService.RenderStepped:Connect(function(dt)
     local radius = getFOVRadius()
     fovFrame.Size = UDim2.new(0, radius*2, 0, radius*2)
     fovFrame.Position = UDim2.new(0, Mouse.X - radius, 0, Mouse.Y - radius)
-    fovHue = (fovHue + dt * 0.5) % 1
-    local rgbColor = Color3.fromHSV(fovHue, 1, 1)
-    fovPulse = fovPulse + dt * 3
-    local pulseScale = 1 + math.sin(fovPulse) * 0.15
-    for i, tick in ipairs(fovTicks) do
-        tick.BackgroundColor3 = rgbColor
-        tick.Size = UDim2.new(0, 2, 0, 8 * pulseScale)
-    end
 end)
 
 local fpsFrame = Instance.new("Frame")
