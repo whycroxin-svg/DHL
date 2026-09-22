@@ -52,6 +52,7 @@ local Settings = {
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
     LockMode = "Normal",
+    ESPMode = "All",
     SelectedPlayers = {},
 }
 
@@ -1033,6 +1034,12 @@ end)
 refreshPlayerList()
 
 local p2 = tabPages["ESP"]
+addLabel(p2, "ESP MODE", 0)
+local getESPMode = addCycleButton(p2, "ESP Mode", {"All", "Selected"}, "All", function(v) 
+    Settings.ESPMode = v 
+end, 0.5)
+
+addSeparator(p2, 0.6)
 addLabel(p2, "BOX ESP", 1)
 local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
 
@@ -1218,6 +1225,9 @@ local function updateESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             local shouldShow = espEnabled
+            if Settings.ESPMode == "Selected" then
+                shouldShow = shouldShow and (Settings.SelectedPlayers[player.Name] ~= nil)
+            end
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
                 local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
