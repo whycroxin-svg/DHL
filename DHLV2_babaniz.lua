@@ -257,12 +257,6 @@ tl.TextXAlignment = Enum.TextXAlignment.Left
 tl.ZIndex = 5
 tl.Parent = MainFrame
 
-local titleHue = 0
-RunService.RenderStepped:Connect(function(dt)
-    titleHue = (titleHue + dt * 0.3) % 1
-    tl.TextColor3 = Color3.fromHSV(titleHue, 1, 1)
-end)
-
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -38, 0, 12)
