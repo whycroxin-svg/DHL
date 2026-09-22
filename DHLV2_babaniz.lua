@@ -1000,7 +1000,7 @@ RunService.RenderStepped:Connect(function(dt)
     fovFrame.Visible = true
     local radius = getFOVRadius()
     fovFrame.Size = UDim2.new(0, radius*2, 0, radius*2)
-    fovFrame.Position = UDim2.new(0, Mouse.X - radius, 0, Mouse.Y - radius)
+    fovFrame.Position = UDim2.new(0.5, -radius, 0.5, -radius)
 end)
 
 local fpsFrame = Instance.new("Frame")
