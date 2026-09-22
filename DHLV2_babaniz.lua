@@ -930,12 +930,6 @@ local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPa
 local p2 = tabPages["ESP"]
 addLabel(p2, "BOX ESP", 1)
 local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
-local getHighlightColor = addCycleButton(p2, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink","Gold"}, "Cyan", function(v)
-    local colors = {Red=Color3.fromRGB(255,80,80), Cyan=Color3.fromRGB(100,180,220), Green=Color3.fromRGB(100,220,140),
-        Yellow=Color3.fromRGB(240,220,100), Purple=Color3.fromRGB(180,120,240), White=Color3.fromRGB(255,255,255),
-        Orange=Color3.fromRGB(240,160,80), Pink=Color3.fromRGB(240,140,180), Gold=Color3.fromRGB(230,200,100)}
-    Settings.HighlightColor = colors[v] or Color3.fromRGB(100,180,220)
-end, 3)
 
 addSeparator(p2, 4)
 addLabel(p2, "INFO OVERLAY", 5)
@@ -1154,8 +1148,8 @@ local function updateESP()
                         local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
                         
                         if onScreen and topPos and bottomPos then
-                            local color = Settings.HighlightColor
-                            local boxWidth = 30
+                            local color = Color3.fromRGB(255, 255, 255) 
+                            local boxWidth = 16
                             local topY = topPos.Y
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
