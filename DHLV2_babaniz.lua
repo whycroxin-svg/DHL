@@ -40,31 +40,19 @@ local Themes = {
 }
 local CurrentTheme = Themes.Winter
 
-local OriginalLighting = {
-    Ambient = Lighting.Ambient,
-    OutdoorAmbient = Lighting.OutdoorAmbient,
-    Brightness = Lighting.Brightness,
-    FogEnd = Lighting.FogEnd,
-    GlobalShadows = Lighting.GlobalShadows,
-    ClockTime = Lighting.ClockTime,
-}
-
 local Settings = {
     WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
     TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
     SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
-    FOVRadius = 150, FOVUseTheme = true,
-    HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,168,200),
+    FOVRadius = 150,
+    HighlightColor = Color3.fromRGB(255, 255, 255),
     GuiTransparency = 500,
-    FollowPlayer = false, FollowTarget = nil,
-    Kills = 0, SessionStart = tick(),
     CurrentTarget = nil,
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
-    LockMode = "Normal", -- "Normal" veya "Selected"
+    LockMode = "Normal",
     SelectedPlayers = {},
-}
 }
 
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
@@ -224,7 +212,7 @@ MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 640, 0, 440)
 MainFrame.Position = UDim2.new(0.5, -320, 0.5, -220)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
-MainFrame.BackgroundTransparency = InitialTransparency
+MainFrame.BackgroundTransparency = 1
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
@@ -234,7 +222,7 @@ Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local mainStroke = Instance.new("UIStroke", MainFrame)
 mainStroke.Color = CurrentTheme.Button
 mainStroke.Thickness = 1
-mainStroke.Transparency = InitialTransparency + 0.2
+mainStroke.Transparency = 0.5
 
 local topAccent = Instance.new("Frame")
 topAccent.Size = UDim2.new(0, 120, 0, 1)
@@ -253,7 +241,7 @@ local tl = Instance.new("TextLabel")
 tl.Size = UDim2.new(0, 200, 0, 18); tl.Position = UDim2.new(0, 24, 0, 14)
 tl.BackgroundTransparency = 1
 tl.Text = "SOU HUB"
-tl.TextColor3 = CurrentTheme.Text
+tl.TextColor3 = Color3.fromRGB(255, 255, 255)
 tl.TextSize = 15
 tl.Font = Enum.Font.GothamBold
 tl.TextXAlignment = Enum.TextXAlignment.Left
@@ -264,7 +252,7 @@ local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -38, 0, 12)
 closeBtn.BackgroundColor3 = CurrentTheme.Button
-closeBtn.BackgroundTransparency = InitialTransparency + 0.2
+closeBtn.BackgroundTransparency = 0.5
 closeBtn.BorderSizePixel = 0
 closeBtn.Text = "×"
 closeBtn.TextColor3 = CurrentTheme.SubText
@@ -278,12 +266,11 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- PROFILE (üst sağ)
 local profileFrame = Instance.new("Frame")
 profileFrame.Size = UDim2.new(0, 180, 0, 32)
 profileFrame.Position = UDim2.new(1, -220, 0, 14)
 profileFrame.BackgroundColor3 = CurrentTheme.Button
-profileFrame.BackgroundTransparency = InitialTransparency + 0.4
+profileFrame.BackgroundTransparency = 0.5
 profileFrame.BorderSizePixel = 0
 profileFrame.ZIndex = 5
 profileFrame.Parent = MainFrame
@@ -323,13 +310,12 @@ profileStatus.TextXAlignment = Enum.TextXAlignment.Left
 profileStatus.ZIndex = 6
 profileStatus.Parent = profileFrame
 
--- TAB BAR (yatay, üstte)
 local TabBar = Instance.new("Frame")
 TabBar.Name = "TabBar"
 TabBar.Size = UDim2.new(1, -30, 0, 34)
 TabBar.Position = UDim2.new(0, 15, 0, 58)
 TabBar.BackgroundColor3 = CurrentTheme.Panel
-TabBar.BackgroundTransparency = InitialTransparency + 0.3
+TabBar.BackgroundTransparency = 0.5
 TabBar.BorderSizePixel = 0
 TabBar.ZIndex = 4
 TabBar.Parent = MainFrame
@@ -346,7 +332,6 @@ local tabBarPadding = Instance.new("UIPadding", TabBar)
 tabBarPadding.PaddingLeft = UDim.new(0, 6)
 tabBarPadding.PaddingRight = UDim.new(0, 6)
 
--- CONTENT AREA
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
 ContentArea.Size = UDim2.new(1, -30, 1, -110)
@@ -377,7 +362,7 @@ for i, config in ipairs(tabConfig) do
 
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
-    btn.Size = UDim2.new(0, 90, 0, 24)
+    btn.Size = UDim2.new(0, 92, 0, 24)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Button or Color3.fromRGB(0,0,0)
     btn.BackgroundTransparency = i==1 and 0.2 or 1
     btn.BorderSizePixel = 0
@@ -723,18 +708,13 @@ local function addButton(page, name, callback, order, color)
     return btn
 end
 
-local function getFOVThemeColor()
-    if Settings.FOVUseTheme then return CurrentTheme.Accent end
-    return Color3.fromRGB(200,80,80)
-end
-
 local keybindPanel = Instance.new("Frame")
 keybindPanel.Name = "KeybindPanel"
 keybindPanel.Size = UDim2.new(0, 200, 0, 0)
 keybindPanel.Position = UDim2.new(0, 15, 1, -15)
 keybindPanel.AnchorPoint = Vector2.new(0, 1)
 keybindPanel.BackgroundColor3 = CurrentTheme.Panel
-keybindPanel.BackgroundTransparency = InitialTransparency
+keybindPanel.BackgroundTransparency = 0.1
 keybindPanel.BorderSizePixel = 0
 keybindPanel.ClipsDescendants = true
 keybindPanel.ZIndex = 550
@@ -845,85 +825,33 @@ addLabel(p1, "LOCK MODE", 0)
 local getLockMode = addCycleButton(p1, "Lock Mode", {"Normal", "Selected"}, "Normal", function(v) 
     Settings.LockMode = v 
 end, 0.5)
-addLabel(p1, "CAMLOCK", 1)
-local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
-local getWallCheck = addToggle(p1, "Wall Check", false, function(v) Settings.WallCheck = v end, 3, true)
-local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 4, true)
-local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 5, false)
-local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 6, true)
-local getAlwaysOn = addToggle(p1, "Always On", false, nil, 7, true)
 
-addSeparator(p1, 8)
-addLabel(p1, "PARAMETERS", 9)
-local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v) Settings.Mode = v:gsub(" ", "") end, 10)
-local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 11)
-local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 12)
-local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 13)
+addSeparator(p1, 1)
+addLabel(p1, "CAMLOCK", 2)
+local getCamlock = addToggle(p1, "Camlock System", true, nil, 3, true)
+local getWallCheck = addToggle(p1, "Wall Check", false, function(v) Settings.WallCheck = v end, 4, true)
+local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 5, true)
+local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 6, false)
+local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 7, true)
+local getAlwaysOn = addToggle(p1, "Always On", false, nil, 8, true)
 
-addSeparator(p1, 14)
-addLabel(p1, "TRIGGER", 15)
-local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 16, true)
+addSeparator(p1, 9)
+addLabel(p1, "PARAMETERS", 10)
+local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v) Settings.Mode = v:gsub(" ", "") end, 11)
+local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 12)
+local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 13)
+local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 14)
 
-addSeparator(p1, 17)
-addLabel(p1, "FOV", 18)
-local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 19, true)
-local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 20)
+addSeparator(p1, 15)
+addLabel(p1, "FOV", 16)
+local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 17, true)
+local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 18)
 
-addSeparator(p1, 21)
-addLabel(p1, "SILENT AIM", 22)
-local getSilentAim = addToggle(p1, "Silent Aim", false, function(v) silentAimEnabled = v end, 23, true)
-local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 24)
+addSeparator(p1, 19)
+addLabel(p1, "SILENT AIM", 20)
+local getSilentAim = addToggle(p1, "Silent Aim", false, function(v) silentAimEnabled = v end, 21, true)
+local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 22)
 
-local p2 = tabPages["ESP"]
-addLabel(p2, "BOX ESP", 1)
-local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
-
-addSeparator(p2, 4)
-addLabel(p2, "INFO OVERLAY", 5)
-local getESPNames = addToggle(p2, "Name Tags", true, nil, 6, true)
-local getESPHealth = addToggle(p2, "Health Display", true, nil, 7, false)
-local getESPDistance = addToggle(p2, "Distance Display", true, nil, 8, false)
-
-local p3 = tabPages["MOVEMENT"]
-addLabel(p3, "SPEED", 1)
-local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
-local getSpeedValue = addSlider(p3, "Walk Speed", 16, 500, 16, nil, 3)
-
-addSeparator(p3, 4)
-addLabel(p3, "JUMP", 5)
-local getJumpPower = addToggle(p3, "Jump Power", false, nil, 6, true)
-local getJumpValue = addSlider(p3, "Jump Value", 50, 500, 50, nil, 7)
-local getInfJump = addToggle(p3, "Infinite Jump", false, nil, 8, true)
-
-addSeparator(p3, 9)
-addLabel(p3, "FLIGHT", 10)
-local getFly = addToggle(p3, "Fly", false, nil, 11, true)
-local getFlySpeed = addSlider(p3, "Fly Speed", 10, 500, 50, nil, 12)
-local getNoclipFly = addToggle(p3, "Noclip Fly", false, nil, 13, true)
-
-addSeparator(p3, 14)
-addLabel(p3, "NOCLIP", 15)
-local getNoclip = addToggle(p3, "Noclip", false, nil, 16, true)
-
-local pCombat = tabPages["COMBAT"]
-addLabel(pCombat, "KILL AURA", 1)
-local getKillAura = addToggle(pCombat, "Kill Aura", false, nil, 2, true)
-local getKillAuraRange = addSlider(pCombat, "Aura Range", 5, 30, 12, nil, 3)
-local getKillAuraDelay = addSlider(pCombat, "Aura Delay (ms)", 10, 500, 100, nil, 4)
-
-addSeparator(pCombat, 5)
-addLabel(pCombat, "ORBIT SPINBOT", 6)
-local getSpinbot = addToggle(pCombat, "Orbit Spinbot", false, nil, 7, true)
-local getSpinbotSpeed = addSlider(pCombat, "Orbit Speed", 5, 60, 30, nil, 8)
-local getSpinbotRadius = addSlider(pCombat, "Orbit Radius", 1, 10, 3, nil, 9)
-
-addSeparator(pCombat, 10)
-addLabel(pCombat, "AUTO ATTACK", 11)
-local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 12, true)
-local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 13)
--- =============================================
--- PLAYERS SEKMESİ
--- =============================================
 local pPlayers = tabPages["PLAYERS"]
 
 local selectCountLabel = Instance.new("TextLabel")
@@ -1103,6 +1031,55 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 
 refreshPlayerList()
+
+local p2 = tabPages["ESP"]
+addLabel(p2, "BOX ESP", 1)
+local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
+
+addSeparator(p2, 4)
+addLabel(p2, "INFO OVERLAY", 5)
+local getESPNames = addToggle(p2, "Name Tags", true, nil, 6, true)
+local getESPHealth = addToggle(p2, "Health Display", true, nil, 7, false)
+local getESPDistance = addToggle(p2, "Distance Display", true, nil, 8, false)
+
+local p3 = tabPages["MOVEMENT"]
+addLabel(p3, "SPEED", 1)
+local getSpeed = addToggle(p3, "Speed Hack", false, nil, 2, true)
+local getSpeedValue = addSlider(p3, "Walk Speed", 16, 500, 16, nil, 3)
+
+addSeparator(p3, 4)
+addLabel(p3, "JUMP", 5)
+local getJumpPower = addToggle(p3, "Jump Power", false, nil, 6, true)
+local getJumpValue = addSlider(p3, "Jump Value", 50, 500, 50, nil, 7)
+local getInfJump = addToggle(p3, "Infinite Jump", false, nil, 8, true)
+
+addSeparator(p3, 9)
+addLabel(p3, "FLIGHT", 10)
+local getFly = addToggle(p3, "Fly", false, nil, 11, true)
+local getFlySpeed = addSlider(p3, "Fly Speed", 10, 500, 50, nil, 12)
+local getNoclipFly = addToggle(p3, "Noclip Fly", false, nil, 13, true)
+
+addSeparator(p3, 14)
+addLabel(p3, "NOCLIP", 15)
+local getNoclip = addToggle(p3, "Noclip", false, nil, 16, true)
+
+local pCombat = tabPages["COMBAT"]
+addLabel(pCombat, "KILL AURA", 1)
+local getKillAura = addToggle(pCombat, "Kill Aura", false, nil, 2, true)
+local getKillAuraRange = addSlider(pCombat, "Aura Range", 5, 30, 12, nil, 3)
+local getKillAuraDelay = addSlider(pCombat, "Aura Delay (ms)", 10, 500, 100, nil, 4)
+
+addSeparator(pCombat, 5)
+addLabel(pCombat, "ORBIT SPINBOT", 6)
+local getSpinbot = addToggle(pCombat, "Orbit Spinbot", false, nil, 7, true)
+local getSpinbotSpeed = addSlider(pCombat, "Orbit Speed", 5, 60, 30, nil, 8)
+local getSpinbotRadius = addSlider(pCombat, "Orbit Radius", 1, 10, 3, nil, 9)
+
+addSeparator(pCombat, 10)
+addLabel(pCombat, "AUTO ATTACK", 11)
+local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 12, true)
+local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 13)
+
 local p8 = tabPages["SETTINGS"]
 
 addLabel(p8, "INTERFACE", 1)
@@ -1137,9 +1114,6 @@ addButton(p8, "Server Rejoin", function()
     end)
 end, 12, CurrentTheme.Button)
 
--- =============================================
--- FOV CIRCLE (siyah-beyaz, sade)
--- =============================================
 local fovFrame = Instance.new("Frame")
 fovFrame.Name = "FOVCircle"
 fovFrame.Size = UDim2.new(0, 300, 0, 300)
@@ -1149,11 +1123,9 @@ fovFrame.ZIndex = 999
 fovFrame.Visible = false
 fovFrame.Parent = ScreenGui
 
--- İç çember (beyaz)
 local fovCircle = Instance.new("Frame")
 fovCircle.Name = "Circle"
 fovCircle.Size = UDim2.new(1, 0, 1, 0)
-fovCircle.Position = UDim2.new(0, 0, 0, 0)
 fovCircle.BackgroundTransparency = 1
 fovCircle.BorderSizePixel = 0
 fovCircle.ZIndex = 1000
@@ -1165,7 +1137,6 @@ fovStroke.Color = Color3.fromRGB(255, 255, 255)
 fovStroke.Thickness = 1.5
 fovStroke.Transparency = 0.2
 
--- Dış çember (siyah outline)
 local fovCircleOuter = Instance.new("Frame")
 fovCircleOuter.Name = "CircleOuter"
 fovCircleOuter.Size = UDim2.new(1, 2, 1, 2)
@@ -1233,7 +1204,6 @@ end)
 local espDrawings = {}
 
 local function updateESP()
-    -- Ölü/çıkmış oyuncuların ESP'lerini temizle
     for name, esp in pairs(espDrawings) do
         local plr = Players:FindFirstChild(name)
         if not plr or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
@@ -1244,7 +1214,6 @@ local function updateESP()
         end
     end
     
-    local espEnabled = getESP()
     local espEnabled = getESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
@@ -1321,7 +1290,6 @@ local function updateESP()
                             esp.boxLeft.Visible = true
                             esp.boxRight.Visible = true
                             
-                        
                             local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
                             local yOff = topY - 20
                             
@@ -1417,19 +1385,15 @@ local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
     
-    -- Mod'a göre oyuncu listesi seç
     local playersToCheck = {}
     if Settings.LockMode == "Selected" then
-        -- Sadece seçili oyuncular
         for name, plr in pairs(Settings.SelectedPlayers) do
             if plr and plr.Parent and plr.Character then
                 table.insert(playersToCheck, plr)
             end
         end
-        -- Seçili yoksa hiç kimseye kilitlenme
         if #playersToCheck == 0 then return nil end
     else
-        -- Tüm oyuncular (Normal mod)
         playersToCheck = Players:GetPlayers()
     end
     
@@ -1441,7 +1405,7 @@ local function getClosestFromSelected()
                 if getSkipDowned() and isDowned(player.Character) then continue end
                 local sp, onScreen = Camera:WorldToScreenPoint(part.Position)
                 if onScreen then
-                    local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+                    local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
                     if d < fov and d < shortest then
                         if isVisible(part) then
                             shortest = d
@@ -1741,14 +1705,7 @@ pcall(function()
         if getKeybindVisible() then keybindPanel.Visible = true end
     end)
 end)
-Players.PlayerRemoving:Connect(function(player)
-    if espDrawings[player.Name] then
-        for _, obj in pairs(espDrawings[player.Name]) do
-            pcall(function() obj:Remove() end)
-        end
-        espDrawings[player.Name] = nil
-    end
-end)
+
 print("[SOU HUB] Yuklendi!")
 
 task.spawn(function()
