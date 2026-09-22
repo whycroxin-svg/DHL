@@ -994,25 +994,20 @@ local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPa
 -- PAGE 2: ESP
 -- =============================================
 local p2 = tabPages["ESP"]
-addLabel(p2, "HIGHLIGHT", 1)
-local getESP = addToggle(p2, "ESP Enabled", true, nil, 2, true)
+addLabel(p2, "BOX ESP", 1)
+local getESP = addToggle(p2, "Box ESP Enabled", true, nil, 2, true)
 local getHighlightColor = addCycleButton(p2, "Color", {"Red","Cyan","Green","Yellow","Purple","White","Orange","Pink","Gold"}, "Cyan", function(v)
     local colors = {Red=Color3.fromRGB(255,80,80), Cyan=Color3.fromRGB(100,180,220), Green=Color3.fromRGB(100,220,140),
         Yellow=Color3.fromRGB(240,220,100), Purple=Color3.fromRGB(180,120,240), White=Color3.fromRGB(255,255,255),
         Orange=Color3.fromRGB(240,160,80), Pink=Color3.fromRGB(240,140,180), Gold=Color3.fromRGB(230,200,100)}
     Settings.HighlightColor = colors[v] or Color3.fromRGB(100,180,220)
 end, 3)
-local getFillTransparency = addSlider(p2, "Fill Transparency", 0, 1, 0.35, nil, 4)
 
-addSeparator(p2, 5)
-addLabel(p2, "INFO OVERLAY", 6)
-local getESPNames = addToggle(p2, "Name Tags", true, nil, 7, true)
-local getESPHealth = addToggle(p2, "Health Display", true, nil, 8, false)
-local getESPDistance = addToggle(p2, "Distance Display", true, nil, 9, false)
-
-addSeparator(p2, 10)
-addLabel(p2, "TRACERS", 11)
-local getESPTracers = addToggle(p2, "Tracers", true, nil, 12, true)
+addSeparator(p2, 4)
+addLabel(p2, "INFO OVERLAY", 5)
+local getESPNames = addToggle(p2, "Name Tags", true, nil, 6, true)
+local getESPHealth = addToggle(p2, "Health Display", true, nil, 7, false)
+local getESPDistance = addToggle(p2, "Distance Display", true, nil, 8, false)
 
 -- =============================================
 -- PAGE 3: MOVEMENT
@@ -1175,122 +1170,124 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- =============================================
--- ESP (herkese göster)
--- =============================================
-highlightObjects = {}
-local espDrawings = {}
-
-local function addHighlight(player)
-    if not player or not player.Character then return end
-    if highlightObjects[player.Name] and highlightObjects[player.Name].Parent == player.Character then
-    else
-        if highlightObjects[player.Name] then highlightObjects[player.Name]:Destroy() end
-        local hl = Instance.new("Highlight")
-        hl.Name = "SOUHUB_Highlight"
-        hl.FillColor = Settings.HighlightColor
-        hl.OutlineColor = Settings.HighlightColor
-        hl.FillTransparency = Settings.HighlightFillTransparency
-        hl.OutlineTransparency = 0.3
-        hl.Adornee = player.Character
-        hl.Parent = player.Character
-        highlightObjects[player.Name] = hl
-    end
-
-    if usingDrawing and not espDrawings[player.Name] then
-        local esp = {}
-        esp.name = Drawing.new("Text")
-        esp.name.Color = Settings.HighlightColor
-        esp.name.Size = 14
-        esp.name.Center = true
-        esp.name.Outline = true
-        esp.name.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.name.Visible = false
-        esp.name.Font = 2
-        esp.distance = Drawing.new("Text")
-        esp.distance.Color = Color3.fromRGB(200,200,200)
-        esp.distance.Size = 12
-        esp.distance.Center = true
-        esp.distance.Outline = true
-        esp.distance.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.distance.Visible = false
-        esp.distance.Font = 2
-        esp.healthText = Drawing.new("Text")
-        esp.healthText.Color = Color3.fromRGB(0,255,0)
-        esp.healthText.Size = 12
-        esp.healthText.Center = true
-        esp.healthText.Outline = true
-        esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
-        esp.healthText.Visible = false
-        esp.healthText.Font = 2
-        esp.tracer = Drawing.new("Line")
-        esp.tracer.Color = Settings.HighlightColor
-        esp.tracer.Thickness = 1
-        esp.tracer.Visible = false
-        esp.tracer.Transparency = 0.6
-        espDrawings[player.Name] = esp
-    end
-end
-
-function removeHighlight(playerName)
-    if highlightObjects[playerName] then pcall(function() highlightObjects[playerName]:Destroy() end); highlightObjects[playerName] = nil end
-    if espDrawings[playerName] then
-        for _,obj in pairs(espDrawings[playerName]) do pcall(function() obj:Remove() end) end
-        espDrawings[playerName] = nil
-    end
-end
 
 local function updateESP()
     local espEnabled = getESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            local shouldShow = espEnabled -- Herkese göster
+            local shouldShow = espEnabled
             if shouldShow and player.Character then
                 local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
                 local rootPart = player.Character:FindFirstChild("HumanoidRootPart")
                 local head = player.Character:FindFirstChild("Head")
                 if humanoid and humanoid.Health > 0 and rootPart then
-                    addHighlight(player)
-                    if highlightObjects[player.Name] then
-                        highlightObjects[player.Name].FillColor = Settings.HighlightColor
-                        highlightObjects[player.Name].OutlineColor = Settings.HighlightColor
-                        highlightObjects[player.Name].FillTransparency = getFillTransparency()
+                    -- Box ESP oluştur
+                    if usingDrawing and not espDrawings[player.Name] then
+                        local esp = {}
+                        -- Box (4 çizgi)
+                        esp.boxTop = Drawing.new("Line")
+                        esp.boxBottom = Drawing.new("Line")
+                        esp.boxLeft = Drawing.new("Line")
+                        esp.boxRight = Drawing.new("Line")
+                        -- Name
+                        esp.name = Drawing.new("Text")
+                        esp.name.Size = 13
+                        esp.name.Center = true
+                        esp.name.Outline = true
+                        esp.name.OutlineColor = Color3.fromRGB(0,0,0)
+                        esp.name.Visible = false
+                        esp.name.Font = 2
+                        -- HP
+                        esp.healthText = Drawing.new("Text")
+                        esp.healthText.Size = 11
+                        esp.healthText.Center = true
+                        esp.healthText.Outline = true
+                        esp.healthText.OutlineColor = Color3.fromRGB(0,0,0)
+                        esp.healthText.Visible = false
+                        esp.healthText.Font = 2
+                        -- Distance
+                        esp.distance = Drawing.new("Text")
+                        esp.distance.Size = 11
+                        esp.distance.Center = true
+                        esp.distance.Outline = true
+                        esp.distance.OutlineColor = Color3.fromRGB(0,0,0)
+                        esp.distance.Visible = false
+                        esp.distance.Font = 2
+                        espDrawings[player.Name] = esp
                     end
 
                     if usingDrawing and espDrawings[player.Name] then
                         local esp = espDrawings[player.Name]
                         local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
                         local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
-                        if onScreen then
+                        local topPos = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
+                        local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
+                        
+                        if onScreen and topPos and bottomPos then
+                            local color = Settings.HighlightColor
+                            local boxWidth = 30
+                            local topY = topPos.Y
+                            local bottomY = bottomPos.Y
+                            local centerX = topPos.X
+                            
+                            -- Box çizgileri
+                            esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
+                            esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
+                            esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
+                            esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
+                            esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
+                            esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
+                            esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
+                            esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
+                            
+                            esp.boxTop.Color = color
+                            esp.boxBottom.Color = color
+                            esp.boxLeft.Color = color
+                            esp.boxRight.Color = color
+                            esp.boxTop.Thickness = 1
+                            esp.boxBottom.Thickness = 1
+                            esp.boxLeft.Thickness = 1
+                            esp.boxRight.Thickness = 1
+                            esp.boxTop.Visible = true
+                            esp.boxBottom.Visible = true
+                            esp.boxLeft.Visible = true
+                            esp.boxRight.Visible = true
+                            
+                            -- Name tags
                             local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
                             local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
-                            local yOff = -20
+                            local yOff = topY - 20
+                            
                             if getESPNames() then
                                 esp.name.Text = player.DisplayName
-                                esp.name.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
-                                esp.name.Color = Settings.HighlightColor
+                                esp.name.Position = Vector2.new(centerX, yOff)
+                                esp.name.Color = color
                                 esp.name.Visible = true
-                                yOff = yOff - 16
-                            else esp.name.Visible = false end
+                                yOff = yOff - 14
+                            else
+                                esp.name.Visible = false
+                            end
+                            
                             if getESPHealth() then
                                 esp.healthText.Text = hp .. "%"
-                                esp.healthText.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.healthText.Position = Vector2.new(centerX, yOff)
                                 esp.healthText.Color = Color3.fromRGB(255*(1-hp/100), 255*(hp/100), 0)
                                 esp.healthText.Visible = true
-                                yOff = yOff - 14
-                            else esp.healthText.Visible = false end
+                                yOff = yOff - 13
+                            else
+                                esp.healthText.Visible = false
+                            end
+                            
                             if getESPDistance() then
                                 esp.distance.Text = dist .. "m"
-                                esp.distance.Position = Vector2.new(screenPos.X, screenPos.Y + yOff)
+                                esp.distance.Position = Vector2.new(centerX, yOff)
+                                esp.distance.Color = Color3.fromRGB(200,200,200)
                                 esp.distance.Visible = true
-                            else esp.distance.Visible = false end
-                            if getESPTracers() then
-                                esp.tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
-                                esp.tracer.To = Vector2.new(screenPos.X, screenPos.Y)
-                                esp.tracer.Color = Settings.HighlightColor
-                                esp.tracer.Visible = true
-                            else esp.tracer.Visible = false end
+                            else
+                                esp.distance.Visible = false
+                            end
                         else
+                            -- Ekranda değilse gizle
                             if espDrawings[player.Name] then
                                 for _, obj in pairs(espDrawings[player.Name]) do
                                     pcall(function() obj.Visible = false end)
@@ -1298,8 +1295,16 @@ local function updateESP()
                             end
                         end
                     end
-                else removeHighlight(player.Name) end
-            else removeHighlight(player.Name) end
+                end
+            else
+                -- ESP kapalıysa temizle
+                if espDrawings[player.Name] then
+                    for _, obj in pairs(espDrawings[player.Name]) do
+                        pcall(function() obj:Remove() end)
+                    end
+                    espDrawings[player.Name] = nil
+                end
+            end
         end
     end
 end
