@@ -1092,7 +1092,8 @@ local function updateESP()
                         
                         if onScreen and topPos and bottomPos then
                             local color = Color3.fromRGB(255, 255, 255) 
-                            local boxWidth = 20
+                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                            local boxWidth = math.clamp(200 / math.max(dist, 1), 8, 40)
                             local topY = topPos.Y
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
@@ -1119,7 +1120,7 @@ local function updateESP()
                             esp.boxLeft.Visible = true
                             esp.boxRight.Visible = true
                             
-                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                        
                             local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
                             local yOff = topY - 20
                             
