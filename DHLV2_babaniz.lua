@@ -55,7 +55,7 @@ local Settings = {
     SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
     FOVRadius = 150, FOVUseTheme = true,
     HighlightFillTransparency = 0.35, HighlightColor = Color3.fromRGB(140,168,200),
-    GuiTransparency = 100,
+    GuiTransparency = 500,
     FollowPlayer = false, FollowTarget = nil,
     Kills = 0, SessionStart = tick(),
     CurrentTarget = nil,
