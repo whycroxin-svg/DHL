@@ -62,6 +62,9 @@ local Settings = {
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
     AutoAttack = false, AutoAttackRange = 8,
+    LockMode = "Normal", -- "Normal" veya "Selected"
+    SelectedPlayers = {},
+}
 }
 
 for _, loc in ipairs({game:GetService("CoreGui"), LocalPlayer:FindFirstChild("PlayerGui")}) do
@@ -355,6 +358,7 @@ ContentArea.Parent = MainFrame
 
 local tabConfig = {
     {Name = "AIMLOCK",   Sub = "Targeting"},
+    {Name = "PLAYERS",   Sub = "Select"},
     {Name = "ESP",       Sub = "Visual"},
     {Name = "MOVEMENT",  Sub = "Speed"},
     {Name = "COMBAT",    Sub = "Kill Aura"},
@@ -373,7 +377,7 @@ for i, config in ipairs(tabConfig) do
 
     local btn = Instance.new("TextButton")
     btn.Name = "Tab_" .. name
-    btn.Size = UDim2.new(0, 110, 0, 24)
+    btn.Size = UDim2.new(0, 90, 0, 24)
     btn.BackgroundColor3 = i==1 and CurrentTheme.Button or Color3.fromRGB(0,0,0)
     btn.BackgroundTransparency = i==1 and 0.2 or 1
     btn.BorderSizePixel = 0
@@ -837,6 +841,10 @@ end
 makeDraggable(keybindPanel, kpHeader)
 
 local p1 = tabPages["AIMLOCK"]
+addLabel(p1, "LOCK MODE", 0)
+local getLockMode = addCycleButton(p1, "Lock Mode", {"Normal", "Selected"}, "Normal", function(v) 
+    Settings.LockMode = v 
+end, 0.5)
 addLabel(p1, "CAMLOCK", 1)
 local getCamlock = addToggle(p1, "Camlock System", true, nil, 2, true)
 local getWallCheck = addToggle(p1, "Wall Check", false, function(v) Settings.WallCheck = v end, 3, true)
@@ -913,7 +921,188 @@ addSeparator(pCombat, 10)
 addLabel(pCombat, "AUTO ATTACK", 11)
 local getAutoAttack = addToggle(pCombat, "Auto Attack Nearest", false, nil, 12, true)
 local getAutoAttackRange = addSlider(pCombat, "Auto Attack Range", 3, 20, 8, nil, 13)
+-- =============================================
+-- PLAYERS SEKMESİ
+-- =============================================
+local pPlayers = tabPages["PLAYERS"]
 
+local selectCountLabel = Instance.new("TextLabel")
+selectCountLabel.Size = UDim2.new(1, -8, 0, 20)
+selectCountLabel.BackgroundTransparency = 1
+selectCountLabel.Text = "0 players selected"
+selectCountLabel.TextColor3 = CurrentTheme.SubText
+selectCountLabel.TextSize = 10
+selectCountLabel.Font = Enum.Font.Gotham
+selectCountLabel.TextXAlignment = Enum.TextXAlignment.Left
+selectCountLabel.LayoutOrder = 1
+selectCountLabel.ZIndex = 3
+selectCountLabel.Parent = pPlayers
+
+local btnRow = Instance.new("Frame")
+btnRow.Size = UDim2.new(1, -8, 0, 28)
+btnRow.BackgroundTransparency = 1
+btnRow.LayoutOrder = 2
+btnRow.ZIndex = 3
+btnRow.Parent = pPlayers
+
+local selectAllBtn = Instance.new("TextButton")
+selectAllBtn.Size = UDim2.new(0.48, 0, 1, 0)
+selectAllBtn.BackgroundColor3 = CurrentTheme.Button
+selectAllBtn.BackgroundTransparency = InitialTransparency + 0.3
+selectAllBtn.BorderSizePixel = 0
+selectAllBtn.Text = "Select All"
+selectAllBtn.TextColor3 = CurrentTheme.Text
+selectAllBtn.TextSize = 10
+selectAllBtn.Font = Enum.Font.GothamSemibold
+selectAllBtn.AutoButtonColor = false
+selectAllBtn.ZIndex = 3
+selectAllBtn.Parent = btnRow
+Instance.new("UICorner", selectAllBtn).CornerRadius = UDim.new(0, 4)
+
+local clearAllBtn = Instance.new("TextButton")
+clearAllBtn.Size = UDim2.new(0.48, 0, 1, 0)
+clearAllBtn.Position = UDim2.new(0.52, 0, 0, 0)
+clearAllBtn.BackgroundColor3 = CurrentTheme.Button
+clearAllBtn.BackgroundTransparency = InitialTransparency + 0.3
+clearAllBtn.BorderSizePixel = 0
+clearAllBtn.Text = "Clear"
+clearAllBtn.TextColor3 = CurrentTheme.Text
+clearAllBtn.TextSize = 10
+clearAllBtn.Font = Enum.Font.GothamSemibold
+clearAllBtn.AutoButtonColor = false
+clearAllBtn.ZIndex = 3
+clearAllBtn.Parent = btnRow
+Instance.new("UICorner", clearAllBtn).CornerRadius = UDim.new(0, 4)
+
+local searchBox = Instance.new("TextBox")
+searchBox.Size = UDim2.new(1, -8, 0, 30)
+searchBox.BackgroundColor3 = CurrentTheme.Button
+searchBox.BackgroundTransparency = InitialTransparency + 0.3
+searchBox.BorderSizePixel = 0
+searchBox.PlaceholderText = "Search players..."
+searchBox.PlaceholderColor3 = CurrentTheme.SubText
+searchBox.Text = ""
+searchBox.TextColor3 = CurrentTheme.Text
+searchBox.TextSize = 10
+searchBox.Font = Enum.Font.Gotham
+searchBox.ClearTextOnFocus = false
+searchBox.LayoutOrder = 3
+searchBox.ZIndex = 3
+searchBox.Parent = pPlayers
+Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 4)
+
+local playerScroll = Instance.new("ScrollingFrame")
+playerScroll.Size = UDim2.new(1, -8, 0, 220)
+playerScroll.BackgroundTransparency = 1
+playerScroll.BorderSizePixel = 0
+playerScroll.ScrollBarThickness = 3
+playerScroll.ScrollBarImageColor3 = CurrentTheme.Button
+playerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+playerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+playerScroll.LayoutOrder = 4
+playerScroll.ZIndex = 3
+playerScroll.Active = true
+playerScroll.Parent = pPlayers
+
+local playerListLayout = Instance.new("UIListLayout", playerScroll)
+playerListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+playerListLayout.Padding = UDim.new(0, 3)
+
+local playerButtons = {}
+
+local function updateSelectCount()
+    local c = 0
+    for _ in pairs(Settings.SelectedPlayers) do c = c + 1 end
+    selectCountLabel.Text = c .. " players selected"
+end
+
+local function isSelected(player)
+    return Settings.SelectedPlayers[player.Name] ~= nil
+end
+
+local function toggleSelect(player, btn)
+    if isSelected(player) then
+        Settings.SelectedPlayers[player.Name] = nil
+        tween(btn, 0.2, {BackgroundTransparency = InitialTransparency + 0.3})
+        btn.TextColor3 = CurrentTheme.SubText
+    else
+        Settings.SelectedPlayers[player.Name] = player
+        tween(btn, 0.2, {BackgroundTransparency = InitialTransparency + 0.15})
+        btn.TextColor3 = CurrentTheme.Text
+    end
+    updateSelectCount()
+end
+
+local function createPlayerButton(player)
+    if player == LocalPlayer then return end
+    local sel = isSelected(player)
+    local btn = Instance.new("TextButton")
+    btn.Name = "PLR_" .. player.Name
+    btn.Size = UDim2.new(1, -4, 0, 28)
+    btn.BackgroundColor3 = CurrentTheme.Button
+    btn.BackgroundTransparency = sel and (InitialTransparency + 0.15) or (InitialTransparency + 0.3)
+    btn.BorderSizePixel = 0
+    btn.Text = player.DisplayName
+    btn.TextColor3 = sel and CurrentTheme.Text or CurrentTheme.SubText
+    btn.TextSize = 10
+    btn.Font = Enum.Font.Gotham
+    btn.TextXAlignment = Enum.TextXAlignment.Left
+    btn.AutoButtonColor = false
+    btn.ZIndex = 3
+    btn.Parent = playerScroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    
+    local textPad = Instance.new("UIPadding", btn)
+    textPad.PaddingLeft = UDim.new(0, 12)
+    
+    btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
+    playerButtons[player.Name] = btn
+end
+
+local function refreshPlayerList()
+    for _, b in pairs(playerButtons) do 
+        if b and b.Parent then b:Destroy() end 
+    end
+    playerButtons = {}
+    local search = searchBox.Text:lower()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            if search == "" or p.DisplayName:lower():find(search, 1, true) or p.Name:lower():find(search, 1, true) then
+                createPlayerButton(p)
+            end
+        end
+    end
+    updateSelectCount()
+end
+
+selectAllBtn.MouseButton1Click:Connect(function()
+    for _, p in ipairs(Players:GetPlayers()) do 
+        if p ~= LocalPlayer then 
+            Settings.SelectedPlayers[p.Name] = p 
+        end 
+    end
+    refreshPlayerList()
+end)
+
+clearAllBtn.MouseButton1Click:Connect(function()
+    Settings.SelectedPlayers = {}
+    refreshPlayerList()
+end)
+
+searchBox:GetPropertyChangedSignal("Text"):Connect(refreshPlayerList)
+
+Players.PlayerAdded:Connect(function() 
+    task.wait(0.5) 
+    refreshPlayerList() 
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    Settings.SelectedPlayers[player.Name] = nil
+    task.wait(0.1)
+    refreshPlayerList()
+end)
+
+refreshPlayerList()
 local p8 = tabPages["SETTINGS"]
 
 addLabel(p8, "INTERFACE", 1)
@@ -1227,7 +1416,24 @@ end
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
-    for _, player in ipairs(Players:GetPlayers()) do
+    
+    -- Mod'a göre oyuncu listesi seç
+    local playersToCheck = {}
+    if Settings.LockMode == "Selected" then
+        -- Sadece seçili oyuncular
+        for name, plr in pairs(Settings.SelectedPlayers) do
+            if plr and plr.Parent and plr.Character then
+                table.insert(playersToCheck, plr)
+            end
+        end
+        -- Seçili yoksa hiç kimseye kilitlenme
+        if #playersToCheck == 0 then return nil end
+    else
+        -- Tüm oyuncular (Normal mod)
+        playersToCheck = Players:GetPlayers()
+    end
+    
+    for _, player in ipairs(playersToCheck) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
             local hum = player.Character:FindFirstChildOfClass("Humanoid")
