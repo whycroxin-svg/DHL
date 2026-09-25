@@ -1657,32 +1657,45 @@ RunService.RenderStepped:Connect(function()
         if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
     end
 
+    -- TRIGGER BOT (camlock'tan bağımsız)
+    if getTriggerBot() then
+        local target = Settings.CurrentTarget
+        if not target or not target.Character then
+            target = getClosestFromSelected()
+        end
+        if target and target.Character then
+            local wasTarget = Settings.CurrentTarget
+            Settings.CurrentTarget = target
+            
+            local part = target.Character:FindFirstChild(Settings.TargetPart)
+            if part then
+                local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local triggerRange = getTriggerRange()
+                    local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                    if dist < triggerRange then
+                        pcall(function()
+                            local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                            if tool then 
+                                tool:Activate() 
+                            end
+                        end)
+                    end
+                end
+            end
+            
+            if not wasTarget then
+                Settings.CurrentTarget = nil
+            end
+        end
+    end
+
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
     if getAlwaysOn() then
         if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
             Settings.CurrentTarget = getClosestFromSelected()
             locked = Settings.CurrentTarget ~= nil
-        end
-    end
-
-    -- Trigger Bot (bağımsız)
-    if getTriggerBot() and locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
-        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
-        if part then
-            local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
-            if onScreen then
-                local triggerRange = getTriggerRange()
-                local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
-                if dist < triggerRange then
-                    pcall(function()
-                        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
-                        if tool then 
-                            tool:Activate() 
-                        end
-                    end)
-                end
-            end
         end
     end
 
