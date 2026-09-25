@@ -43,7 +43,7 @@ local CurrentTheme = Themes.Winter
 local Settings = {
     WallCheck = false, Smoothness = 0.450, Prediction = 0.100,
     TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
-    SkipDowned = true, AlwaysOn = false, TriggerBot = false, FOVVisible = true,
+    SkipDowned = true, AlwaysOn = false, FOVVisible = true,
     FOVRadius = 150,
     HighlightColor = Color3.fromRGB(255, 255, 255),
     GuiTransparency = 500,
@@ -849,9 +849,14 @@ local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 17, true)
 local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 18)
 
 addSeparator(p1, 19)
-addLabel(p1, "SILENT AIM", 20)
-local getSilentAim = addToggle(p1, "Silent Aim", false, function(v) silentAimEnabled = v end, 21, true)
-local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 22)
+addLabel(p1, "TRIGGER", 20)
+local getTriggerBot = addToggle(p1, "Trigger Bot", false, nil, 21, true)
+local getTriggerRange = addSlider(p1, "Trigger Range", 5, 50, 15, nil, 22)
+
+addSeparator(p1, 23)
+addLabel(p1, "SILENT AIM", 24)
+local getSilentAim = addToggle(p1, "Silent Aim", false, function(v) silentAimEnabled = v end, 25, true)
+local getSilentPart = addCycleButton(p1, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 26)
 
 local pPlayers = tabPages["PLAYERS"]
 
@@ -1658,6 +1663,26 @@ RunService.RenderStepped:Connect(function()
         if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
             Settings.CurrentTarget = getClosestFromSelected()
             locked = Settings.CurrentTarget ~= nil
+        end
+    end
+
+    -- Trigger Bot (bağımsız)
+    if getTriggerBot() and locked and Settings.CurrentTarget and Settings.CurrentTarget.Character then
+        local part = Settings.CurrentTarget.Character:FindFirstChild(Settings.TargetPart)
+        if part then
+            local sp, onScreen = Camera:WorldToViewportPoint(part.Position)
+            if onScreen then
+                local triggerRange = getTriggerRange()
+                local dist = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                if dist < triggerRange then
+                    pcall(function()
+                        local tool = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                        if tool then 
+                            tool:Activate() 
+                        end
+                    end)
+                end
+            end
         end
     end
 
