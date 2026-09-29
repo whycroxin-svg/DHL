@@ -1132,13 +1132,13 @@ local function updateESP()
                         local esp = espDrawings[player.Name]
                         local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
                         local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
-                        local topPos = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
-                        local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
-                        
+                        local topPos = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 4, 0))
+                        local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 4, 0))
+
                         if onScreen and topPos and bottomPos then
-                            local color = Color3.fromRGB(255, 255, 255)
-                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
-                            local boxWidth = math.clamp(150 / math.max(dist, 1), 6, 25)
+                        local color = Color3.fromRGB(255, 255, 255)
+                        local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                        local boxWidth = math.clamp(300 / math.max(dist, 1), 15, 50)
                             local topY = topPos.Y
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
