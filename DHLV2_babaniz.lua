@@ -51,7 +51,6 @@ local Settings = {
     TargetPart = "Head", Mode = "RightMouseClick", StickyAim = true, AutoSwitch = true,
     SkipDowned = true, AlwaysOn = false, FOVVisible = true,
     FOVRadius = 150,
-    GuiTransparency = 250,
     CurrentTarget = nil,
     KillAura = false, KillAuraRange = 12, KillAuraDelay = 100,
     Spinbot = false, SpinbotSpeed = 30, SpinbotRadius = 3,
@@ -90,7 +89,7 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SOUHUB_Rage"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
-local InitialTransparency = 1 - (Settings.GuiTransparency / 500)
+local InitialTransparency = 0.15
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -182,9 +181,23 @@ local logoImg = Instance.new("ImageLabel")
 logoImg.Size = UDim2.new(0, 70, 0, 70)
 logoImg.Position = UDim2.new(0.5, -35, 0, 10)
 logoImg.BackgroundTransparency = 1
-logoImg.Image = LOGO_URL
 logoImg.ZIndex = 6
 logoImg.Parent = logoFrame
+
+-- Logo'yu indir (executor destekliyorsa)
+pcall(function()
+    local fileName = "souhub_logo.png"
+    local logoURL = "https://raw.githubusercontent.com/whycroxin-svg/logo/main/3a51ccbf-3a34-4037-af47-0489047fa126.png"
+    
+    if writefile and isfile and getcustomasset then
+        if not isfile(fileName) then
+            writefile(fileName, game:HttpGet(logoURL))
+        end
+        logoImg.Image = getcustomasset(fileName)
+    else
+        logoImg.Image = logoURL
+    end
+end)
 
 -- Sidebar scroll
 local SideScroll = Instance.new("ScrollingFrame")
@@ -1031,10 +1044,6 @@ local getNoclip = addToggle(pLocal, "Noclip", false, nil, 16, true)
 -- =============================================
 local pSet = tabPages["SETTINGS"]
 addLabel(pSet, "INTERFACE", 1)
-local getGuiTransparency = addSlider(pSet, "Gui Transparency", 0, 500, Settings.GuiTransparency, function(v)
-    Settings.GuiTransparency = v
-    MainFrame.BackgroundTransparency = 1 - (v / 500)
-end, 2)
 
 addSeparator(pSet, 3)
 addLabel(pSet, "OVERLAY", 4)
