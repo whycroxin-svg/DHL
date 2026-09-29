@@ -1131,27 +1131,33 @@ local function updateESP()
                     if usingDrawing and espDrawings[player.Name] then
                         local esp = espDrawings[player.Name]
                         local headPos = head and head.Position or rootPart.Position + Vector3.new(0,2,0)
-                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
-                        local topPos = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 4, 0))
-                        local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 4, 0))
+local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
 
-                        if onScreen and topPos and bottomPos then
-                        local color = Color3.fromRGB(255, 255, 255)
-                        local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
-                        local boxWidth = math.clamp(300 / math.max(dist, 1), 15, 50)
-                            local topY = topPos.Y
-                            local bottomY = bottomPos.Y
-                            local centerX = topPos.X
+-- Karakterin gerçek boyutunu kullan
+local leftShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(-2, 3, 0))
+local rightShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(2, 3, 0))
+local topPos = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3.5, 0))
+local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3.5, 0))
+
+if onScreen and topPos and bottomPos and leftShoulder and rightShoulder then
+    local color = Color3.fromRGB(255, 255, 255)
+    local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+    local topY = topPos.Y
+    local bottomY = bottomPos.Y
+    local leftX = leftShoulder.X
+    local rightX = rightShoulder.X
+    local centerX = (leftX + rightX) / 2
+    local boxWidth = math.abs(rightX - leftX) / 2
                             
                             if dist < 300 then
                                 esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
-                                esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
-                                esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
-                                esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
-                                esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
-                                esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
-                                esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
-                                esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
+esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
+esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
+esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
+esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
+esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
+esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
+esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
                                 
                                 esp.boxTop.Color = color
                                 esp.boxBottom.Color = color
