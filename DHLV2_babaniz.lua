@@ -89,7 +89,7 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SOUHUB_Rage"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
-local InitialTransparency = 0.15
+local InitialTransparency = 0
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
