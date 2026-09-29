@@ -32,7 +32,6 @@ local function getGuiParent()
     return LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- RAGE THEME (Kırmızı + Siyah)
 local CurrentTheme = {
     Name = "Rage",
     Primary = Color3.fromRGB(200, 30, 30),
@@ -89,14 +88,12 @@ if guiParent:IsA("ScreenGui") then
     ScreenGui = guiParent; ScreenGui.Name = "SOUHUB_Rage"; ScreenGui.ResetOnSpawn = false; ScreenGui.DisplayOrder = 999
 else ScreenGui.Parent = guiParent end
 
-local InitialTransparency = 0
-
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 700, 0, 480)
 MainFrame.Position = UDim2.new(0.5, -350, 0.5, -240)
 MainFrame.BackgroundColor3 = CurrentTheme.Bg
-MainFrame.BackgroundTransparency = InitialTransparency
+MainFrame.BackgroundTransparency = 0
 MainFrame.BorderSizePixel = 0
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
@@ -108,7 +105,6 @@ mainStroke.Color = CurrentTheme.Primary
 mainStroke.Thickness = 1
 mainStroke.Transparency = 0.5
 
--- Drag handle (üst bar)
 local DragHandle = Instance.new("TextButton")
 DragHandle.Size = UDim2.new(1, 0, 0, 40)
 DragHandle.BackgroundTransparency = 1
@@ -138,7 +134,6 @@ local function makeDraggable(frame, handle)
 end
 makeDraggable(MainFrame, DragHandle)
 
--- Close button
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 28, 0, 28)
 closeBtn.Position = UDim2.new(1, -36, 0, 8)
@@ -157,19 +152,17 @@ closeBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
 end)
 
--- SIDEBAR (sol, dikey)
 local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.new(0, 160, 1, 0)
 Sidebar.Position = UDim2.new(0, 0, 0, 0)
 Sidebar.BackgroundColor3 = CurrentTheme.Panel
-Sidebar.BackgroundTransparency = InitialTransparency
+Sidebar.BackgroundTransparency = 0
 Sidebar.BorderSizePixel = 0
 Sidebar.ZIndex = 4
 Sidebar.Parent = MainFrame
 Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 6)
 
--- LOGO (sidebar üstü)
 local logoFrame = Instance.new("Frame")
 logoFrame.Size = UDim2.new(1, 0, 0, 90)
 logoFrame.Position = UDim2.new(0, 0, 0, 0)
@@ -184,11 +177,9 @@ logoImg.BackgroundTransparency = 1
 logoImg.ZIndex = 6
 logoImg.Parent = logoFrame
 
--- Logo'yu indir (executor destekliyorsa)
 pcall(function()
     local fileName = "souhub_logo.png"
     local logoURL = "https://raw.githubusercontent.com/whycroxin-svg/logo/main/3a51ccbf-3a34-4037-af47-0489047fa126.png"
-    
     if writefile and isfile and getcustomasset then
         if not isfile(fileName) then
             writefile(fileName, game:HttpGet(logoURL))
@@ -199,7 +190,6 @@ pcall(function()
     end
 end)
 
--- Sidebar scroll
 local SideScroll = Instance.new("ScrollingFrame")
 SideScroll.Size = UDim2.new(1, 0, 1, -90)
 SideScroll.Position = UDim2.new(0, 0, 0, 90)
@@ -218,7 +208,6 @@ sideLayout.Padding = UDim.new(0, 2)
 local sidePad = Instance.new("UIPadding", SideScroll)
 sidePad.PaddingTop = UDim.new(0, 6)
 
--- CONTENT AREA (sağ)
 local ContentArea = Instance.new("Frame")
 ContentArea.Name = "ContentArea"
 ContentArea.Size = UDim2.new(1, -170, 1, -20)
@@ -228,7 +217,6 @@ ContentArea.ClipsDescendants = true
 ContentArea.ZIndex = 3
 ContentArea.Parent = MainFrame
 
--- TAB SYSTEM
 local tabConfig = {
     {Name = "AIMLOCK",       Sub = "Aimbot"},
     {Name = "SILENT",        Sub = "Silent Aim"},
@@ -318,7 +306,6 @@ for i, config in ipairs(tabConfig) do
 
     tabPages[name] = page
 
-    -- İlk sekmeyi aktif yap
     if i == 1 then
         btn.BackgroundTransparency = 0.3
         btn.BackgroundColor3 = CurrentTheme.Button
@@ -366,9 +353,8 @@ for i, config in ipairs(tabConfig) do
         page.Visible = true
     end)
 end
--- =============================================
+
 -- UI BUILDERS
--- =============================================
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -8, 0, 26)
@@ -653,55 +639,12 @@ local function addButton(page, name, callback, order, color)
     return btn
 end
 
-local function addTextbox(page, name, default, callback, order)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1,-8,0,44)
-    container.BackgroundTransparency = 1
-    container.LayoutOrder = order or 0
-    container.ZIndex = 3
-    container.Parent = page
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.5, 0, 0, 16)
-    label.BackgroundTransparency = 1
-    label.Text = name
-    label.TextColor3 = CurrentTheme.Text
-    label.TextSize = 11
-    label.Font = Enum.Font.GothamMedium
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.ZIndex = 3
-    label.Parent = container
-
-    local tb = Instance.new("TextBox")
-    tb.Size = UDim2.new(1, 0, 0, 22)
-    tb.Position = UDim2.new(0, 0, 0, 20)
-    tb.BackgroundColor3 = CurrentTheme.Button
-    tb.BackgroundTransparency = 0.4
-    tb.BorderSizePixel = 0
-    tb.Text = default or ""
-    tb.TextColor3 = CurrentTheme.Text
-    tb.TextSize = 10
-    tb.Font = Enum.Font.Gotham
-    tb.ClearTextOnFocus = false
-    tb.ZIndex = 3
-    tb.Parent = container
-    Instance.new("UICorner", tb).CornerRadius = UDim.new(0, 4)
-
-    tb.FocusLost:Connect(function()
-        if callback then callback(tb.Text) end
-    end)
-    return function() return tb.Text end
-end
-
--- =============================================
--- AIMLOCK PAGE
--- =============================================
+-- AIMLOCK
 local p1 = tabPages["AIMLOCK"]
 addLabel(p1, "LOCK MODE", 1)
 local getLockMode = addCycleButton(p1, "Lock Mode", {"Normal", "Selected"}, "Normal", function(v) 
     Settings.LockMode = v 
 end, 2)
-
 addSeparator(p1, 3)
 addLabel(p1, "AIMBOT", 4)
 local getCamlock = addToggle(p1, "Aimbot", true, nil, 5, true)
@@ -710,116 +653,63 @@ local getStickyAim = addToggle(p1, "Sticky Aim", true, nil, 7, true)
 local getAutoSwitch = addToggle(p1, "Auto Switch", true, nil, 8, false)
 local getSkipDowned = addToggle(p1, "Skip Downed", true, nil, 9, true)
 local getAlwaysOn = addToggle(p1, "Always On", false, nil, 10, true)
-
 addSeparator(p1, 11)
 addLabel(p1, "PARAMETERS", 12)
 local getMode = addCycleButton(p1, "Mode", {"Right Mouse Click", "Nearest Cursor", "Toggle Q"}, "Right Mouse Click", function(v) Settings.Mode = v:gsub(" ", "") end, 13)
 local getTargetPart = addCycleButton(p1, "Target Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) Settings.TargetPart = v end, 14)
 local getSmoothness = addSlider(p1, "Smoothness", 0.05, 1.0, 0.450, nil, 15)
 local getPrediction = addSlider(p1, "Prediction", 0.0, 0.5, 0.100, nil, 16)
-
 addSeparator(p1, 17)
 addLabel(p1, "FOV", 18)
 local getFOVVisible = addToggle(p1, "FOV Circle", true, nil, 19, true)
 local getFOVRadius = addSlider(p1, "FOV Radius", 20, 500, 150, nil, 20)
 
--- =============================================
--- SILENT PAGE
--- =============================================
+-- SILENT
 local pSilent = tabPages["SILENT"]
 addLabel(pSilent, "SILENT AIM", 1)
 local getSilentAim = addToggle(pSilent, "Silent Aim", false, function(v) silentAimEnabled = v end, 2, true)
 local getSilentPart = addCycleButton(pSilent, "Silent Part", {"Head", "HumanoidRootPart", "UpperTorso"}, "Head", function(v) silentAimTargetPart = v end, 3)
 
-addSeparator(pSilent, 4)
-addLabel(pSilent, "INFO", 5)
-local silentInfo = Instance.new("TextLabel")
-silentInfo.Size = UDim2.new(1,-8,0,50)
-silentInfo.BackgroundColor3 = CurrentTheme.Button
-silentInfo.BackgroundTransparency = 0.5
-silentInfo.BorderSizePixel = 0
-silentInfo.Text = "  Silent Aim: Mermiler hedefe gider\n  Camlock gerekmez\n  Trigger Bot ile uyumlu"
-silentInfo.TextColor3 = CurrentTheme.SubText
-silentInfo.TextSize = 10
-silentInfo.Font = Enum.Font.Gotham
-silentInfo.TextXAlignment = Enum.TextXAlignment.Left
-silentInfo.TextYAlignment = Enum.TextYAlignment.Top
-silentInfo.LayoutOrder = 6
-silentInfo.ZIndex = 3
-silentInfo.Parent = pSilent
-Instance.new("UICorner", silentInfo).CornerRadius = UDim.new(0, 4)
-
--- =============================================
--- TRIGGER PAGE
--- =============================================
+-- TRIGGER
 local pTrigger = tabPages["TRIGGER"]
 addLabel(pTrigger, "TRIGGER BOT", 1)
 local getTriggerBot = addToggle(pTrigger, "Trigger Bot", false, nil, 2, true)
 local getTriggerRange = addSlider(pTrigger, "Trigger Range", 5, 50, 15, nil, 3)
 
-addSeparator(pTrigger, 4)
-addLabel(pTrigger, "INFO", 5)
-local triggerInfo = Instance.new("TextLabel")
-triggerInfo.Size = UDim2.new(1,-8,0,60)
-triggerInfo.BackgroundColor3 = CurrentTheme.Button
-triggerInfo.BackgroundTransparency = 0.5
-triggerInfo.BorderSizePixel = 0
-triggerInfo.Text = "  Trigger Bot: Hedef ekran ortasına\n  yakınsa otomatik ateş eder\n  Camlock gerekmez\n  Silent Aim ile uyumlu"
-triggerInfo.TextColor3 = CurrentTheme.SubText
-triggerInfo.TextSize = 10
-triggerInfo.Font = Enum.Font.Gotham
-triggerInfo.TextXAlignment = Enum.TextXAlignment.Left
-triggerInfo.TextYAlignment = Enum.TextYAlignment.Top
-triggerInfo.LayoutOrder = 6
-triggerInfo.ZIndex = 3
-triggerInfo.Parent = pTrigger
-Instance.new("UICorner", triggerInfo).CornerRadius = UDim.new(0, 4)
-
--- =============================================
--- VISUALS PAGE (ESP)
--- =============================================
+-- VISUALS
 local pVis = tabPages["VISUALS"]
 addLabel(pVis, "ESP MODE", 1)
 local getESPMode = addCycleButton(pVis, "ESP Mode", {"All", "Selected"}, "All", function(v) 
     Settings.ESPMode = v 
 end, 2)
-
 addSeparator(pVis, 3)
 addLabel(pVis, "BOX ESP", 4)
 local getESP = addToggle(pVis, "Box ESP", true, nil, 5, true)
-
 addSeparator(pVis, 6)
 addLabel(pVis, "INFO OVERLAY", 7)
 local getESPNames = addToggle(pVis, "Name Tags", true, nil, 8, true)
 local getESPHealth = addToggle(pVis, "Health Display", true, nil, 9, false)
 local getESPDistance = addToggle(pVis, "Distance Display", true, nil, 10, false)
 
--- =============================================
--- RAGE PAGE
--- =============================================
+-- RAGE
 local pRage = tabPages["RAGE"]
 addLabel(pRage, "KILL AURA", 1)
 local getKillAura = addToggle(pRage, "Kill Aura", false, nil, 2, true)
 local getKillAuraRange = addSlider(pRage, "Aura Range", 5, 30, 12, nil, 3)
 local getKillAuraDelay = addSlider(pRage, "Aura Delay (ms)", 10, 500, 100, nil, 4)
-
 addSeparator(pRage, 5)
 addLabel(pRage, "SPINBOT", 6)
 local getSpinbot = addToggle(pRage, "Orbit Spinbot", false, nil, 7, true)
 local getSpinbotSpeed = addSlider(pRage, "Orbit Speed", 5, 60, 30, nil, 8)
 local getSpinbotRadius = addSlider(pRage, "Orbit Radius", 1, 10, 3, nil, 9)
-
 addSeparator(pRage, 10)
 addLabel(pRage, "AUTO ATTACK", 11)
 local getAutoAttack = addToggle(pRage, "Auto Attack Nearest", false, nil, 12, true)
 local getAutoAttackRange = addSlider(pRage, "Auto Attack Range", 3, 20, 8, nil, 13)
 
--- =============================================
--- PLAYER PAGE
--- =============================================
+-- PLAYER
 local pPlayer = tabPages["PLAYER"]
 addLabel(pPlayer, "SELECTED PLAYERS", 1)
-
 local selectCountLabel = Instance.new("TextLabel")
 selectCountLabel.Size = UDim2.new(1, -8, 0, 20)
 selectCountLabel.BackgroundTransparency = 1
@@ -945,10 +835,8 @@ local function createPlayerButton(player)
     btn.ZIndex = 3
     btn.Parent = playerScroll
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
-    
     local textPad = Instance.new("UIPadding", btn)
     textPad.PaddingLeft = UDim.new(0, 12)
-    
     btn.MouseButton1Click:Connect(function() toggleSelect(player, btn) end)
     playerButtons[player.Name] = btn
 end
@@ -998,54 +886,32 @@ end)
 
 refreshPlayerList()
 
-addSeparator(pPlayer, 6)
-addLabel(pPlayer, "ACTIONS", 7)
-addButton(pPlayer, "Teleport to Target", function()
-    if Settings.CurrentTarget and Settings.CurrentTarget.Character then
-        local thrp = Settings.CurrentTarget.Character:FindFirstChild("HumanoidRootPart")
-        local lhrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if thrp and lhrp then
-            lhrp.CFrame = thrp.CFrame * CFrame.new(0, 0, 3)
-            showToast("Teleport", "Moved to target", "success")
-        end
-    end
-end, 8, CurrentTheme.Button)
-
--- =============================================
--- LOCAL PLAYERS PAGE
--- =============================================
+-- LOCAL PLAYERS
 local pLocal = tabPages["LOCAL_PLAYERS"]
 addLabel(pLocal, "SPEED", 1)
 local getSpeed = addToggle(pLocal, "Speed Hack", false, nil, 2, true)
 local getSpeedValue = addSlider(pLocal, "Walk Speed", 16, 500, 16, nil, 3)
-
 addSeparator(pLocal, 4)
 addLabel(pLocal, "JUMP", 5)
 local getJumpPower = addToggle(pLocal, "Jump Power", false, nil, 6, true)
 local getJumpValue = addSlider(pLocal, "Jump Value", 50, 500, 50, nil, 7)
 local getInfJump = addToggle(pLocal, "Infinite Jump", false, nil, 8, true)
-
 addSeparator(pLocal, 9)
 addLabel(pLocal, "FLIGHT", 10)
 local getFly = addToggle(pLocal, "Fly", false, nil, 11, true)
 local getFlySpeed = addSlider(pLocal, "Fly Speed", 10, 500, 50, nil, 12)
 local getNoclipFly = addToggle(pLocal, "Noclip Fly", false, nil, 13, true)
-
 addSeparator(pLocal, 14)
 addLabel(pLocal, "NOCLIP", 15)
 local getNoclip = addToggle(pLocal, "Noclip", false, nil, 16, true)
 
--- =============================================
--- SETTINGS PAGE
--- =============================================
+-- SETTINGS
 local pSet = tabPages["SETTINGS"]
 addLabel(pSet, "INTERFACE", 1)
-
 addSeparator(pSet, 3)
 addLabel(pSet, "OVERLAY", 4)
 local getFPSDisplay = addToggle(pSet, "FPS Display", true, nil, 5, false)
 local getPingDisplay = addToggle(pSet, "Ping Display", true, nil, 6, false)
-
 addSeparator(pSet, 7)
 addLabel(pSet, "KEYBIND WINDOW", 8)
 local getKeybindVisible = addToggle(pSet, "Show Keybind Panel", false, function(v)
@@ -1056,7 +922,6 @@ local getKeybindVisible = addToggle(pSet, "Show Keybind Panel", false, function(
         keybindPanel.Visible = false
     end
 end, 9, false)
-
 addSeparator(pSet, 10)
 addLabel(pSet, "SERVER", 11)
 addButton(pSet, "Server Rejoin", function()
@@ -1067,17 +932,13 @@ addButton(pSet, "Server Rejoin", function()
     end)
 end, 12, CurrentTheme.Button)
 
--- =============================================
--- CONFIG PAGE
--- =============================================
+-- CONFIG
 local pConfig = tabPages["CONFIG"]
 addLabel(pConfig, "CONFIGURATION", 1)
-
 local CONFIG_FILE = "SOUHUB_config.json"
 local function hasFileSupport()
     return writefile ~= nil and readfile ~= nil and isfile ~= nil
 end
-
 addButton(pConfig, "Save Config", function()
     if not hasFileSupport() then
         showToast("Config Error", "Executor desteklemiyor", "error")
@@ -1085,9 +946,7 @@ addButton(pConfig, "Save Config", function()
     end
     local data = {
         Theme = CurrentTheme.Name,
-        SpeedValue = Settings.SpeedValue,
         FOVRadius = Settings.FOVRadius,
-        GuiTransparency = Settings.GuiTransparency,
         Smoothness = Settings.Smoothness,
         Prediction = Settings.Prediction,
         Version = "2.0",
@@ -1097,7 +956,6 @@ addButton(pConfig, "Save Config", function()
         showToast("Config Saved", "Ayarlar kaydedildi", "success")
     end)
 end, 2, CurrentTheme.Button)
-
 addButton(pConfig, "Load Config", function()
     if not hasFileSupport() then
         showToast("Config Error", "Executor desteklemiyor", "error")
@@ -1112,78 +970,43 @@ addButton(pConfig, "Load Config", function()
     pcall(function()
         local data = HttpService:JSONDecode(readfile(CONFIG_FILE))
         if data.FOVRadius then getFOVRadius(data.FOVRadius) end
-        if data.GuiTransparency then getGuiTransparency(data.GuiTransparency) end
         if data.Smoothness then getSmoothness(data.Smoothness) end
         if data.Prediction then getPrediction(data.Prediction) end
         showToast("Config Loaded", "Ayarlar yuklendi", "success")
     end)
 end, 3, CurrentTheme.Button)
 
--- =============================================
--- DEX PAGE
--- =============================================
+-- DEX
 local pDex = tabPages["DEX"]
 addLabel(pDex, "DEX EXPLORER", 1)
-
 local getDexEnabled = addToggle(pDex, "Dex Enabled", false, function(v)
-    if v then
-        showToast("Dex", "Dex aktif (harici gerekli)", "info")
-    end
+    if v then showToast("Dex", "Dex aktif (harici gerekli)", "info") end
 end, 2, true)
 
-addSeparator(pDex, 3)
-addLabel(pDex, "INFO", 4)
-local dexInfo = Instance.new("TextLabel")
-dexInfo.Size = UDim2.new(1,-8,0,60)
-dexInfo.BackgroundColor3 = CurrentTheme.Button
-dexInfo.BackgroundTransparency = 0.5
-dexInfo.BorderSizePixel = 0
-dexInfo.Text = "  Dex Explorer: Harici executor gerekir\n  Bu sekme sadece placeholder\n  Gerçek Dex için loadstring kullan"
-dexInfo.TextColor3 = CurrentTheme.SubText
-dexInfo.TextSize = 10
-dexInfo.Font = Enum.Font.Gotham
-dexInfo.TextXAlignment = Enum.TextXAlignment.Left
-dexInfo.TextYAlignment = Enum.TextYAlignment.Top
-dexInfo.LayoutOrder = 5
-dexInfo.ZIndex = 3
-dexInfo.Parent = pDex
-Instance.new("UICorner", dexInfo).CornerRadius = UDim.new(0, 4)
-
--- =============================================
--- COLORS PAGE
--- =============================================
+-- COLORS
 local pColors = tabPages["COLORS"]
 addLabel(pColors, "PRIMARY COLOR", 1)
 local getColorR = addSlider(pColors, "Red", 0, 255, 200, function(v)
     CurrentTheme.Primary = Color3.fromRGB(v, CurrentTheme.Primary.G*255, CurrentTheme.Primary.B*255)
     mainStroke.Color = CurrentTheme.Primary
-    for _, page in pairs(tabPages) do
-        page.ScrollBarImageColor3 = CurrentTheme.Primary
-    end
+    for _, page in pairs(tabPages) do page.ScrollBarImageColor3 = CurrentTheme.Primary end
 end, 2)
 local getColorG = addSlider(pColors, "Green", 0, 255, 30, function(v)
     CurrentTheme.Primary = Color3.fromRGB(CurrentTheme.Primary.R*255, v, CurrentTheme.Primary.B*255)
     mainStroke.Color = CurrentTheme.Primary
-    for _, page in pairs(tabPages) do
-        page.ScrollBarImageColor3 = CurrentTheme.Primary
-    end
+    for _, page in pairs(tabPages) do page.ScrollBarImageColor3 = CurrentTheme.Primary end
 end, 3)
 local getColorB = addSlider(pColors, "Blue", 0, 255, 30, function(v)
     CurrentTheme.Primary = Color3.fromRGB(CurrentTheme.Primary.R*255, CurrentTheme.Primary.G*255, v)
     mainStroke.Color = CurrentTheme.Primary
-    for _, page in pairs(tabPages) do
-        page.ScrollBarImageColor3 = CurrentTheme.Primary
-    end
+    for _, page in pairs(tabPages) do page.ScrollBarImageColor3 = CurrentTheme.Primary end
 end, 4)
 
--- =============================================
--- FOV CIRCLE
--- =============================================
+-- FOV
 local fovFrame = Instance.new("Frame")
 fovFrame.Name = "FOVCircle"
 fovFrame.Size = UDim2.new(0, 300, 0, 300)
 fovFrame.BackgroundTransparency = 1
-fovFrame.BorderSizePixel = 0
 fovFrame.ZIndex = 999
 fovFrame.Visible = false
 fovFrame.Parent = ScreenGui
@@ -1211,15 +1034,12 @@ RunService.RenderStepped:Connect(function(dt)
     fovFrame.Position = UDim2.new(0.5, -radius, 0.5, -radius)
 end)
 
--- =============================================
--- FPS/PING
--- =============================================
+-- FPS
 local fpsFrame = Instance.new("Frame")
 fpsFrame.Size = UDim2.new(0, 100, 0, 20)
 fpsFrame.Position = UDim2.new(0, 15, 0, 15)
 fpsFrame.BackgroundColor3 = CurrentTheme.Panel
 fpsFrame.BackgroundTransparency = 0.4
-fpsFrame.BorderSizePixel = 0
 fpsFrame.ZIndex = 500
 fpsFrame.Parent = ScreenGui
 Instance.new("UICorner", fpsFrame).CornerRadius = UDim.new(0, 4)
@@ -1249,9 +1069,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- =============================================
 -- ESP
--- =============================================
 local usingDrawing = pcall(function() 
     local test = Drawing.new("Line"); test:Remove() 
 end)
@@ -1318,34 +1136,41 @@ local function updateESP()
                         local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
                         
                         if onScreen and topPos and bottomPos then
-                            local color = Color3.fromRGB(255, 255, 255) 
+                            local color = Color3.fromRGB(255, 255, 255)
                             local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
-                            local boxWidth = math.clamp(200 / math.max(dist, 1), 8, 40)
+                            local boxWidth = math.clamp(150 / math.max(dist, 1), 6, 25)
                             local topY = topPos.Y
                             local bottomY = bottomPos.Y
                             local centerX = topPos.X
                             
-                            esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
-                            esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
-                            esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
-                            esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
-                            esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
-                            esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
-                            esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
-                            esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
-                            
-                            esp.boxTop.Color = color
-                            esp.boxBottom.Color = color
-                            esp.boxLeft.Color = color
-                            esp.boxRight.Color = color
-                            esp.boxTop.Thickness = 1
-                            esp.boxBottom.Thickness = 1
-                            esp.boxLeft.Thickness = 1
-                            esp.boxRight.Thickness = 1
-                            esp.boxTop.Visible = true
-                            esp.boxBottom.Visible = true
-                            esp.boxLeft.Visible = true
-                            esp.boxRight.Visible = true
+                            if dist < 300 then
+                                esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
+                                esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
+                                esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
+                                esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
+                                esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
+                                esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
+                                esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
+                                esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
+                                
+                                esp.boxTop.Color = color
+                                esp.boxBottom.Color = color
+                                esp.boxLeft.Color = color
+                                esp.boxRight.Color = color
+                                esp.boxTop.Thickness = 1
+                                esp.boxBottom.Thickness = 1
+                                esp.boxLeft.Thickness = 1
+                                esp.boxRight.Thickness = 1
+                                esp.boxTop.Visible = true
+                                esp.boxBottom.Visible = true
+                                esp.boxLeft.Visible = true
+                                esp.boxRight.Visible = true
+                            else
+                                esp.boxTop.Visible = false
+                                esp.boxBottom.Visible = false
+                                esp.boxLeft.Visible = false
+                                esp.boxRight.Visible = false
+                            end
                             
                             local hp = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
                             local yOff = topY - 20
@@ -1399,9 +1224,7 @@ local function updateESP()
     end
 end
 
--- =============================================
 -- UTILS
--- =============================================
 local function isVisible(targetPart)
     if not getWallCheck() then return true end
     if not targetPart or not targetPart.Parent then return false end
@@ -1444,7 +1267,6 @@ end
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
-    
     local playersToCheck = {}
     if Settings.LockMode == "Selected" then
         for name, plr in pairs(Settings.SelectedPlayers) do
@@ -1456,7 +1278,6 @@ local function getClosestFromSelected()
     else
         playersToCheck = Players:GetPlayers()
     end
-    
     for _, player in ipairs(playersToCheck) do
         if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(Settings.TargetPart) then
             local part = player.Character[Settings.TargetPart]
@@ -1479,9 +1300,7 @@ local function getClosestFromSelected()
     return closest
 end
 
--- =============================================
 -- KEYBIND PANEL
--- =============================================
 local keybindPanel = Instance.new("Frame")
 keybindPanel.Name = "KeybindPanel"
 keybindPanel.Size = UDim2.new(0, 200, 0, 0)
@@ -1572,7 +1391,8 @@ function updateKeybindPanel()
         lbl.ZIndex = 553
         lbl.Parent = kpScroll
         Instance.new("UICorner", lbl).CornerRadius = UDim.new(0, 3)
-    end    if count == 0 then
+    end
+    if count == 0 then
         local empty = Instance.new("TextLabel")
         empty.Size = UDim2.new(1, -4, 0, 22)
         empty.BackgroundTransparency = 1
@@ -1609,9 +1429,7 @@ local function makeDraggable2(frame, handle)
 end
 makeDraggable2(keybindPanel, kpHeader)
 
--- =============================================
--- TOAST + INPUT
--- =============================================
+-- TOAST
 local toastContainer = Instance.new("Frame")
 toastContainer.Name = "ToastContainer"
 toastContainer.Size = UDim2.new(0, 320, 1, -20)
@@ -1685,6 +1503,7 @@ function showToast(title, message, toastType)
     end)
 end
 
+-- SILENT AIM HOOK
 local silentAimEnabled = false
 local silentAimTargetPart = "Head"
 
@@ -1729,17 +1548,15 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             if assignFunc then assignFunc(input.KeyCode) end
             return
         else
-            activeKeybindBtn.Text = "—"
+            activeKeybindBtn.Text = "[unbound]"
             activeKeybindBtn.TextColor3 = CurrentTheme.SubText
             activeKeybindBtn = nil
             return
         end
     end
-
     if input.UserInputType == Enum.UserInputType.Keyboard and keybindCallbacks[input.KeyCode] then
         keybindCallbacks[input.KeyCode]()
     end
-
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
         if getCamlock() then
             Settings.CurrentTarget = getClosestFromSelected()
@@ -1779,9 +1596,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 
--- =============================================
--- MAIN LOOPS
--- =============================================
+-- LOOPS
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -1821,7 +1636,6 @@ RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
-
     if getSpinbot() then
         local target = nil
         local shortest = getKillAuraRange()
@@ -1849,7 +1663,6 @@ RunService.Heartbeat:Connect(function()
             end
         end
     end
-
     if getKillAura() then
         local now = tick()
         local delay = getKillAuraDelay() / 1000
@@ -1873,7 +1686,6 @@ RunService.Heartbeat:Connect(function()
             end
         end
     end
-
     if getAutoAttack() then
         local now = tick()
         if now - lastAutoAttack >= 0.15 then
@@ -2015,7 +1827,6 @@ pcall(function()
         locked = false
         Settings.CurrentTarget = nil
     end)
-
     GuiService.MenuClosed:Connect(function()
         menuOpen = false
         MainFrame.Visible = true
