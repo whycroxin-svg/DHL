@@ -1130,14 +1130,14 @@ local function updateESP()
 
                     if usingDrawing and espDrawings[player.Name] then
                         local esp = espDrawings[player.Name]
-                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0, 2, 0)
+                       local headPos = head and head.Position or rootPart.Position + Vector3.new(0, 2, 0)
 local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
 
--- Karakterin gerçek boyutunu kullan
 local leftShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(-1, 1, 0))
 local rightShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(1, 1, 0))
 local topPos = Camera:WorldToViewportPoint(headPos + Vector3.new(0, 1, 0))
-local topPos = Camera:WorldToViewportPoint(headPos + Vector3.new(0, 1, 0))
+local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
+
 if onScreen and topPos and bottomPos and leftShoulder and rightShoulder then
     local color = Color3.fromRGB(255, 255, 255)
     local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
