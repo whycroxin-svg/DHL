@@ -371,79 +371,80 @@ end
 -- =============================================
 local function addToggle(page, name, default, callback, order, withKeybind)
     local row = Instance.new("Frame")
-    row.Size = UDim2.new(1, -8, 0, 32)
+    row.Size = UDim2.new(1, -8, 0, 26)
     row.BackgroundTransparency = 1
     row.LayoutOrder = order or 0
     row.ZIndex = 3
     row.Parent = page
 
-    local toggleWidth = withKeybind and UDim2.new(1, -76, 1, 0) or UDim2.new(1, 0, 1, 0)
+    local cb = Instance.new("TextButton")
+    cb.Size = UDim2.new(0, 14, 0, 14)
+    cb.Position = UDim2.new(0, 0, 0.5, -7)
+    cb.BackgroundColor3 = default and CurrentTheme.Primary or Color3.fromRGB(40, 40, 45)
+    cb.BorderSizePixel = 0
+    cb.Text = ""
+    cb.AutoButtonColor = false
+    cb.ZIndex = 4
+    cb.Parent = row
+    Instance.new("UICorner", cb).CornerRadius = UDim.new(0, 2)
 
-    local btn = Instance.new("TextButton")
-    btn.Size = toggleWidth
-    btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = 0.4
-    btn.BorderSizePixel = 0
-    btn.Text = name
-    btn.TextColor3 = CurrentTheme.Text
-    btn.TextSize = 11
-    btn.Font = Enum.Font.GothamMedium
-    btn.AutoButtonColor = false
-    btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.ZIndex = 3
-    btn.Parent = row
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+    local check = Instance.new("TextLabel")
+    check.Size = UDim2.new(1, 0, 1, 0)
+    check.BackgroundTransparency = 1
+    check.Text = default and "✓" or ""
+    check.TextColor3 = Color3.fromRGB(255, 255, 255)
+    check.TextSize = 12
+    check.Font = Enum.Font.GothamBold
+    check.ZIndex = 5
+    check.Parent = cb
 
-    local textPad = Instance.new("UIPadding", btn)
-    textPad.PaddingLeft = UDim.new(0, 14)
-
-    local stateLbl = Instance.new("TextLabel")
-    stateLbl.Size = UDim2.new(0, 40, 1, 0)
-    stateLbl.Position = UDim2.new(1, -48, 0, 0)
-    stateLbl.BackgroundTransparency = 1
-    stateLbl.Text = default and "ON" or "OFF"
-    stateLbl.TextColor3 = default and CurrentTheme.Accent or CurrentTheme.SubText
-    stateLbl.TextSize = 10
-    stateLbl.Font = Enum.Font.GothamBold
-    stateLbl.TextXAlignment = Enum.TextXAlignment.Right
-    stateLbl.ZIndex = 4
-    stateLbl.Parent = btn
+    local nameLbl = Instance.new("TextLabel")
+    nameLbl.Size = UDim2.new(1, -80, 1, 0)
+    nameLbl.Position = UDim2.new(0, 22, 0, 0)
+    nameLbl.BackgroundTransparency = 1
+    nameLbl.Text = name
+    nameLbl.TextColor3 = default and CurrentTheme.Text or CurrentTheme.SubText
+    nameLbl.TextSize = 11
+    nameLbl.Font = Enum.Font.GothamMedium
+    nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+    nameLbl.ZIndex = 3
+    nameLbl.Parent = row
 
     local state = default
     local function doToggle()
         state = not state
-        tween(btn, 0.2, {BackgroundTransparency = state and 0.25 or 0.4})
-        tween(stateLbl, 0.2, {TextColor3 = state and CurrentTheme.Accent or CurrentTheme.SubText})
-        stateLbl.Text = state and "ON" or "OFF"
+        cb.BackgroundColor3 = state and CurrentTheme.Primary or Color3.fromRGB(40, 40, 45)
+        check.Text = state and "✓" or ""
+        tween(nameLbl, 0.15, {TextColor3 = state and CurrentTheme.Text or CurrentTheme.SubText})
         if callback then callback(state) end
     end
-    btn.MouseButton1Click:Connect(doToggle)
+    cb.MouseButton1Click:Connect(doToggle)
 
     if withKeybind then
         local kbBtn = Instance.new("TextButton")
-        kbBtn.Size = UDim2.new(0, 68, 1, 0)
-        kbBtn.Position = UDim2.new(1, -68, 0, 0)
-        kbBtn.BackgroundColor3 = CurrentTheme.Button
-        kbBtn.BackgroundTransparency = 0.6
+        kbBtn.Size = UDim2.new(0, 60, 1, 0)
+        kbBtn.Position = UDim2.new(1, -60, 0, 0)
+        kbBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+        kbBtn.BackgroundTransparency = 0.3
         kbBtn.BorderSizePixel = 0
-        kbBtn.Text = "—"
+        kbBtn.Text = "[unbound]"
         kbBtn.TextColor3 = CurrentTheme.SubText
-        kbBtn.TextSize = 10
-        kbBtn.Font = Enum.Font.GothamBold
+        kbBtn.TextSize = 9
+        kbBtn.Font = Enum.Font.Gotham
         kbBtn.AutoButtonColor = false
         kbBtn.ZIndex = 4
         kbBtn.Parent = row
-        Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 4)
+        Instance.new("UICorner", kbBtn).CornerRadius = UDim.new(0, 2)
 
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
-                kbBtn.Text = "—"
+                kbBtn.Text = "[unbound]"
                 kbBtn.TextColor3 = CurrentTheme.SubText
                 return
             end
             if activeKeybindBtn then
-                activeKeybindBtn.Text = "—"
+                activeKeybindBtn.Text = "[unbound]"
                 activeKeybindBtn.TextColor3 = CurrentTheme.SubText
             end
             activeKeybindBtn = kbBtn
@@ -458,7 +459,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
                     keybindNames[k] = nil
                 end
             end
-            kbBtn.Text = keyCode.Name
+            kbBtn.Text = "[" .. keyCode.Name .. "]"
             kbBtn.TextColor3 = CurrentTheme.Text
             keybindCallbacks[keyCode] = doToggle
             keybindNames[keyCode] = name
@@ -475,7 +476,7 @@ end
 
 local function addSlider(page, name, min, max, default, callback, order)
     local container = Instance.new("Frame")
-    container.Size = UDim2.new(1,-8,0,44)
+    container.Size = UDim2.new(1,-8,0,40)
     container.BackgroundTransparency = 1
     container.LayoutOrder = order or 0
     container.ZIndex = 3
@@ -497,7 +498,7 @@ local function addSlider(page, name, min, max, default, callback, order)
     valueLbl.Position = UDim2.new(0.6, 0, 0, 0)
     valueLbl.BackgroundTransparency = 1
     valueLbl.Text = tostring(math.floor(default))
-    valueLbl.TextColor3 = CurrentTheme.Accent
+    valueLbl.TextColor3 = CurrentTheme.Text
     valueLbl.TextSize = 11
     valueLbl.Font = Enum.Font.GothamBold
     valueLbl.TextXAlignment = Enum.TextXAlignment.Right
@@ -505,16 +506,14 @@ local function addSlider(page, name, min, max, default, callback, order)
     valueLbl.Parent = container
 
     local bg = Instance.new("TextButton")
-    bg.Size = UDim2.new(1,0,0,5)
-    bg.Position = UDim2.new(0,0,0,26)
-    bg.BackgroundColor3 = CurrentTheme.Button
-    bg.BackgroundTransparency = 0.4
+    bg.Size = UDim2.new(1,0,0,2)
+    bg.Position = UDim2.new(0,0,0,24)
+    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     bg.BorderSizePixel = 0
     bg.Text = ""
     bg.AutoButtonColor = false
     bg.ZIndex = 3
     bg.Parent = container
-    Instance.new("UICorner", bg).CornerRadius = UDim.new(1, 0)
 
     local fill = Instance.new("Frame")
     fill.Size = UDim2.new((default-min)/(max-min),0,1,0)
@@ -522,7 +521,6 @@ local function addSlider(page, name, min, max, default, callback, order)
     fill.BorderSizePixel = 0
     fill.ZIndex = 3
     fill.Parent = bg
-    Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0,10,0,10)
@@ -560,40 +558,38 @@ local function addCycleButton(page, name, options, default, callback, order)
     local idx = 1
     for i,v in ipairs(options) do if v == default then idx = i; break end end
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1,-8,0,32)
-    btn.BackgroundColor3 = CurrentTheme.Button
-    btn.BackgroundTransparency = 0.4
+    btn.Size = UDim2.new(1,-8,0,26)
+    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
     btn.BorderSizePixel = 0
     btn.Text = ""
     btn.AutoButtonColor = false
     btn.LayoutOrder = order or 0
     btn.ZIndex = 3
     btn.Parent = page
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,4)
-
-    local nameLbl = Instance.new("TextLabel")
-    nameLbl.Size = UDim2.new(0.5, 0, 1, 0)
-    nameLbl.Position = UDim2.new(0, 14, 0, 0)
-    nameLbl.BackgroundTransparency = 1
-    nameLbl.Text = name
-    nameLbl.TextColor3 = CurrentTheme.Text
-    nameLbl.TextSize = 11
-    nameLbl.Font = Enum.Font.GothamMedium
-    nameLbl.TextXAlignment = Enum.TextXAlignment.Left
-    nameLbl.ZIndex = 4
-    nameLbl.Parent = btn
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,2)
 
     local valueLbl = Instance.new("TextLabel")
-    valueLbl.Size = UDim2.new(0.5, -14, 1, 0)
-    valueLbl.Position = UDim2.new(0.5, 0, 0, 0)
+    valueLbl.Size = UDim2.new(1, -30, 1, 0)
+    valueLbl.Position = UDim2.new(0, 10, 0, 0)
     valueLbl.BackgroundTransparency = 1
     valueLbl.Text = options[idx]
-    valueLbl.TextColor3 = CurrentTheme.Accent
+    valueLbl.TextColor3 = CurrentTheme.Text
     valueLbl.TextSize = 11
-    valueLbl.Font = Enum.Font.GothamBold
-    valueLbl.TextXAlignment = Enum.TextXAlignment.Right
+    valueLbl.Font = Enum.Font.GothamMedium
+    valueLbl.TextXAlignment = Enum.TextXAlignment.Left
     valueLbl.ZIndex = 4
     valueLbl.Parent = btn
+
+    local arrow = Instance.new("TextLabel")
+    arrow.Size = UDim2.new(0, 20, 1, 0)
+    arrow.Position = UDim2.new(1, -22, 0, 0)
+    arrow.BackgroundTransparency = 1
+    arrow.Text = "▼"
+    arrow.TextColor3 = CurrentTheme.SubText
+    arrow.TextSize = 8
+    arrow.Font = Enum.Font.GothamBold
+    arrow.ZIndex = 4
+    arrow.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
         idx = idx % #options + 1
