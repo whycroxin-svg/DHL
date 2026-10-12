@@ -1,5 +1,6 @@
 --[[
     SOU HUB - RAGE EDITION (Da Hood)
+    v3.1 - bug fixes applied
 ]]
 
 print("[SOU HUB] Yukleniyor...")
@@ -140,7 +141,7 @@ closeBtn.Position = UDim2.new(1, -36, 0, 8)
 closeBtn.BackgroundColor3 = CurrentTheme.Button
 closeBtn.BackgroundTransparency = 0.5
 closeBtn.BorderSizePixel = 0
-closeBtn.Text = "×"
+closeBtn.Text = "x"
 closeBtn.TextColor3 = CurrentTheme.SubText
 closeBtn.TextSize = 20
 closeBtn.Font = Enum.Font.Gotham
@@ -377,7 +378,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local check = Instance.new("TextLabel")
     check.Size = UDim2.new(1, 0, 1, 0)
     check.BackgroundTransparency = 1
-    check.Text = default and "✓" or ""
+    check.Text = default and "v" or ""
     check.TextColor3 = Color3.fromRGB(255, 255, 255)
     check.TextSize = 12
     check.Font = Enum.Font.GothamBold
@@ -400,7 +401,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
     local function doToggle()
         state = not state
         cb.BackgroundColor3 = state and CurrentTheme.Primary or Color3.fromRGB(40, 40, 45)
-        check.Text = state and "✓" or ""
+        check.Text = state and "v" or ""
         tween(nameLbl, 0.15, {TextColor3 = state and CurrentTheme.Text or CurrentTheme.SubText})
         if callback then callback(state) end
     end
@@ -413,7 +414,7 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
         kbBtn.BackgroundTransparency = 0.3
         kbBtn.BorderSizePixel = 0
-        kbBtn.Text = "[unbound]"
+        kbBtn.Text = "[none]"
         kbBtn.TextColor3 = CurrentTheme.SubText
         kbBtn.TextSize = 9
         kbBtn.Font = Enum.Font.Gotham
@@ -425,12 +426,12 @@ local function addToggle(page, name, default, callback, order, withKeybind)
         kbBtn.MouseButton1Click:Connect(function()
             if activeKeybindBtn == kbBtn then
                 activeKeybindBtn = nil
-                kbBtn.Text = "[unbound]"
+                kbBtn.Text = "[none]"
                 kbBtn.TextColor3 = CurrentTheme.SubText
                 return
             end
             if activeKeybindBtn then
-                activeKeybindBtn.Text = "[unbound]"
+                activeKeybindBtn.Text = "[none]"
                 activeKeybindBtn.TextColor3 = CurrentTheme.SubText
             end
             activeKeybindBtn = kbBtn
@@ -570,7 +571,7 @@ local function addCycleButton(page, name, options, default, callback, order)
     arrow.Size = UDim2.new(0, 20, 1, 0)
     arrow.Position = UDim2.new(1, -22, 0, 0)
     arrow.BackgroundTransparency = 1
-    arrow.Text = "▼"
+    arrow.Text = "v"
     arrow.TextColor3 = CurrentTheme.SubText
     arrow.TextSize = 8
     arrow.Font = Enum.Font.GothamBold
@@ -878,12 +879,6 @@ Players.PlayerAdded:Connect(function()
     refreshPlayerList() 
 end)
 
-Players.PlayerRemoving:Connect(function(player)
-    Settings.SelectedPlayers[player.Name] = nil
-    task.wait(0.1)
-    refreshPlayerList()
-end)
-
 refreshPlayerList()
 
 -- LOCAL PLAYERS
@@ -900,10 +895,9 @@ addSeparator(pLocal, 9)
 addLabel(pLocal, "FLIGHT", 10)
 local getFly = addToggle(pLocal, "Fly", false, nil, 11, true)
 local getFlySpeed = addSlider(pLocal, "Fly Speed", 10, 500, 50, nil, 12)
-local getNoclipFly = addToggle(pLocal, "Noclip Fly", false, nil, 13, true)
-addSeparator(pLocal, 14)
-addLabel(pLocal, "NOCLIP", 15)
-local getNoclip = addToggle(pLocal, "Noclip", false, nil, 16, true)
+addSeparator(pLocal, 13)
+addLabel(pLocal, "NOCLIP", 14)
+local getNoclip = addToggle(pLocal, "Noclip", false, nil, 15, true)
 
 -- SETTINGS
 local pSet = tabPages["SETTINGS"]
@@ -949,7 +943,7 @@ addButton(pConfig, "Save Config", function()
         FOVRadius = Settings.FOVRadius,
         Smoothness = Settings.Smoothness,
         Prediction = Settings.Prediction,
-        Version = "2.0",
+        Version = "3.1",
     }
     pcall(function()
         writefile(CONFIG_FILE, HttpService:JSONEncode(data))
@@ -969,9 +963,6 @@ addButton(pConfig, "Load Config", function()
     end
     pcall(function()
         local data = HttpService:JSONDecode(readfile(CONFIG_FILE))
-        if data.FOVRadius then getFOVRadius(data.FOVRadius) end
-        if data.Smoothness then getSmoothness(data.Smoothness) end
-        if data.Prediction then getPrediction(data.Prediction) end
         showToast("Config Loaded", "Ayarlar yuklendi", "success")
     end)
 end, 3, CurrentTheme.Button)
@@ -1023,17 +1014,6 @@ fovStroke.Color = Color3.fromRGB(255, 255, 255)
 fovStroke.Thickness = 1.5
 fovStroke.Transparency = 0.2
 
-RunService.RenderStepped:Connect(function(dt)
-    if not getFOVVisible() then
-        fovFrame.Visible = false
-        return
-    end
-    fovFrame.Visible = true
-    local radius = getFOVRadius()
-    fovFrame.Size = UDim2.new(0, radius*2, 0, radius*2)
-    fovFrame.Position = UDim2.new(0.5, -radius, 0.5, -radius)
-end)
-
 -- FPS
 local fpsFrame = Instance.new("Frame")
 fpsFrame.Size = UDim2.new(0, 100, 0, 20)
@@ -1054,35 +1034,26 @@ fpsText.Font = Enum.Font.Code
 fpsText.ZIndex = 501
 fpsText.Parent = fpsFrame
 
-local fpsCount, fpsTime = 0, tick()
-RunService.RenderStepped:Connect(function()
-    fpsCount = fpsCount + 1
-    if tick() - fpsTime >= 1 then
-        local fps = fpsCount
-        local ping = 0
-        pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
-        fpsText.Text = fps .. " FPS | " .. ping .. " MS"
-        fpsText.Visible = getFPSDisplay() or getPingDisplay()
-        fpsFrame.Visible = getFPSDisplay() or getPingDisplay()
-        fpsCount = 0
-        fpsTime = tick()
-    end
-end)
-
 -- ESP
 local usingDrawing = pcall(function() 
     local test = Drawing.new("Line"); test:Remove() 
 end)
 local espDrawings = {}
 
+local function removeESPForPlayer(playerName)
+    if espDrawings[playerName] then
+        for _, obj in pairs(espDrawings[playerName]) do
+            pcall(function() obj:Remove() end)
+        end
+        espDrawings[playerName] = nil
+    end
+end
+
 local function updateESP()
     for name, esp in pairs(espDrawings) do
         local plr = Players:FindFirstChild(name)
         if not plr or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
-            for _, obj in pairs(esp) do
-                pcall(function() obj:Remove() end)
-            end
-            espDrawings[name] = nil
+            removeESPForPlayer(name)
         end
     end
     
@@ -1130,33 +1101,32 @@ local function updateESP()
 
                     if usingDrawing and espDrawings[player.Name] then
                         local esp = espDrawings[player.Name]
-                       local headPos = head and head.Position or rootPart.Position + Vector3.new(0, 2, 0)
-local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+                        local headPos = head and head.Position or rootPart.Position + Vector3.new(0, 2, 0)
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+                        local leftShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(-1, 1, 0))
+                        local rightShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(1, 1, 0))
+                        local topPos = Camera:WorldToViewportPoint(headPos + Vector3.new(0, 1, 0))
+                        local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
 
-local leftShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(-1, 1, 0))
-local rightShoulder = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(1, 1, 0))
-local topPos = Camera:WorldToViewportPoint(headPos + Vector3.new(0, 1, 0))
-local bottomPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
-
-if onScreen and topPos and bottomPos and leftShoulder and rightShoulder then
-    local color = Color3.fromRGB(255, 255, 255)
-    local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
-    local topY = topPos.Y
-    local bottomY = bottomPos.Y
-    local leftX = leftShoulder.X
-    local rightX = rightShoulder.X
-    local centerX = (leftX + rightX) / 2
-    local boxWidth = math.abs(rightX - leftX) / 2
+                        if onScreen and topPos and bottomPos and leftShoulder and rightShoulder then
+                            local color = Color3.fromRGB(255, 255, 255)
+                            local dist = math.floor((Camera.CFrame.Position - rootPart.Position).Magnitude)
+                            local topY = topPos.Y
+                            local bottomY = bottomPos.Y
+                            local leftX = leftShoulder.X
+                            local rightX = rightShoulder.X
+                            local centerX = (leftX + rightX) / 2
+                            local boxWidth = math.abs(rightX - leftX) / 2
                             
                             if dist < 300 then
                                 esp.boxTop.From = Vector2.new(centerX - boxWidth, topY)
-esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
-esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
-esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
-esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
-esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
-esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
-esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
+                                esp.boxTop.To = Vector2.new(centerX + boxWidth, topY)
+                                esp.boxBottom.From = Vector2.new(centerX - boxWidth, bottomY)
+                                esp.boxBottom.To = Vector2.new(centerX + boxWidth, bottomY)
+                                esp.boxLeft.From = Vector2.new(centerX - boxWidth, topY)
+                                esp.boxLeft.To = Vector2.new(centerX - boxWidth, bottomY)
+                                esp.boxRight.From = Vector2.new(centerX + boxWidth, topY)
+                                esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
                                 
                                 esp.boxTop.Color = color
                                 esp.boxBottom.Color = color
@@ -1218,12 +1188,7 @@ esp.boxRight.To = Vector2.new(centerX + boxWidth, bottomY)
                     end
                 end
             else
-                if espDrawings[player.Name] then
-                    for _, obj in pairs(espDrawings[player.Name]) do
-                        pcall(function() obj:Remove() end)
-                    end
-                    espDrawings[player.Name] = nil
-                end
+                removeESPForPlayer(player.Name)
             end
         end
     end
@@ -1231,7 +1196,7 @@ end
 
 -- UTILS
 local function isVisible(targetPart)
-    if not getWallCheck() then return true end
+    if not Settings.WallCheck then return true end
     if not targetPart or not targetPart.Parent then return false end
     local origin = Camera.CFrame.Position
     local direction = targetPart.Position - origin
@@ -1269,6 +1234,7 @@ local function getPredictedPosition(part)
     return part.Position + (vel * totalTime)
 end
 
+-- FIX: StickyAim artik getClosest icinde calisiyor
 local function getClosestFromSelected()
     local closest, shortest = nil, math.huge
     local fov = getFOVRadius()
@@ -1293,7 +1259,8 @@ local function getClosestFromSelected()
                 if onScreen then
                     local d = (Vector2.new(sp.X, sp.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
                     if d < fov and d < shortest then
-                        if isVisible(part) then
+                        -- FIX: StickyAim aciksa wall check atla
+                        if getStickyAim() or isVisible(part) then
                             shortest = d
                             closest = player
                         end
@@ -1345,7 +1312,7 @@ local kpClose = Instance.new("TextButton")
 kpClose.Size = UDim2.new(0, 20, 0, 20)
 kpClose.Position = UDim2.new(1, -24, 0, 3)
 kpClose.BackgroundTransparency = 1
-kpClose.Text = "×"
+kpClose.Text = "x"
 kpClose.TextColor3 = CurrentTheme.SubText
 kpClose.TextSize = 16
 kpClose.Font = Enum.Font.GothamBold
@@ -1386,7 +1353,7 @@ function updateKeybindPanel()
         lbl.BackgroundColor3 = CurrentTheme.Button
         lbl.BackgroundTransparency = 0.4
         lbl.BorderSizePixel = 0
-        lbl.Text = "  " .. keyCode.Name .. "  →  " .. name
+        lbl.Text = "  " .. keyCode.Name .. " -> " .. name
         lbl.TextColor3 = CurrentTheme.Text
         lbl.TextSize = 10
         lbl.Font = Enum.Font.Code
@@ -1413,26 +1380,7 @@ function updateKeybindPanel()
     keybindPanel.Size = UDim2.new(0, 200, 0, targetHeight)
 end
 
-local function makeDraggable2(frame, handle)
-    local dragging, dragInput, dragStart, startPos
-    handle = handle or frame
-    handle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = input.Position; startPos = frame.Position
-            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
-        end
-    end)
-    handle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
-    end)
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local d = input.Position - dragStart
-            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
-        end
-    end)
-end
-makeDraggable2(keybindPanel, kpHeader)
+makeDraggable(keybindPanel, kpHeader)
 
 -- TOAST
 local toastContainer = Instance.new("Frame")
@@ -1533,19 +1481,6 @@ end)
 local locked = false
 local menuOpen = false
 
-local function resetInput()
-    pcall(function()
-        if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
-            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-        end
-        if not UserInputService.MouseIconEnabled then
-            UserInputService.MouseIconEnabled = true
-        end
-        locked = false
-        Settings.CurrentTarget = nil
-    end)
-end
-
 UserInputService.InputBegan:Connect(function(input, gpe)
     if activeKeybindBtn and input.UserInputType == Enum.UserInputType.Keyboard then
         if input.KeyCode ~= Enum.KeyCode.Escape and input.KeyCode ~= Enum.KeyCode.Unknown then
@@ -1553,7 +1488,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             if assignFunc then assignFunc(input.KeyCode) end
             return
         else
-            activeKeybindBtn.Text = "[unbound]"
+            activeKeybindBtn.Text = "[none]"
             activeKeybindBtn.TextColor3 = CurrentTheme.SubText
             activeKeybindBtn = nil
             return
@@ -1568,7 +1503,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
             locked = Settings.CurrentTarget ~= nil
         end
     end
-    if Settings.Mode == "ToggleQ" and input.KeyCode == Enum.KeyCode.Q then
+    if Settings.Mode == "ToggleQ" and input.KeyCode == Enum.KeyCode.Q and not gpe then
         if getCamlock() then
             if locked then locked = false; Settings.CurrentTarget = nil
             else Settings.CurrentTarget = getClosestFromSelected(); locked = Settings.CurrentTarget ~= nil end
@@ -1577,7 +1512,7 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     if input.KeyCode == Enum.KeyCode.RightShift then
         MainFrame.Visible = not MainFrame.Visible
     end
-    if input.KeyCode == Enum.KeyCode.Space and getInfJump() then
+    if input.KeyCode == Enum.KeyCode.Space and getInfJump() and not gpe then
         pcall(function()
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
                 LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
@@ -1597,7 +1532,10 @@ end)
 
 UserInputService.InputEnded:Connect(function(input)
     if Settings.Mode == "RightMouseClick" and input.UserInputType == Enum.UserInputType.MouseButton2 then
-        locked = false; Settings.CurrentTarget = nil
+        -- FIX: AlwaysOn aciksa birakma
+        if not getAlwaysOn() then
+            locked = false; Settings.CurrentTarget = nil
+        end
     end
 end)
 
@@ -1605,8 +1543,23 @@ end)
 RunService.Heartbeat:Connect(function()
     if not LocalPlayer.Character then return end
     local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not hum then return end
-    if getSpeed() then hum.WalkSpeed = getSpeedValue() end
+    -- FIX: Speed hack Da Hood icin velocity boost
+    if getSpeed() then
+        local spd = getSpeedValue()
+        hum.WalkSpeed = spd
+        if root and spd > 16 then
+            local moveDir = hum.MoveDirection
+            if moveDir.Magnitude > 0 then
+                root.Velocity = Vector3.new(
+                    moveDir.X * spd,
+                    root.Velocity.Y,
+                    moveDir.Z * spd
+                )
+            end
+        end
+    end
     if getJumpPower() then
         local jp = getJumpValue()
         hum.JumpPower = jp
@@ -1720,16 +1673,49 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
+-- FLY (BodyVelocity - executor uyumlu)
 local flyBV = nil
+
+local function cleanFly()
+    if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
+end
+
 RunService.RenderStepped:Connect(function()
-    if menuOpen then return end
+    -- FIX: menuOpen iken fly durdur
+    if menuOpen then cleanFly(); return end
+
+    -- FOV
+    if not getFOVVisible() then
+        fovFrame.Visible = false
+    else
+        fovFrame.Visible = true
+        local radius = getFOVRadius()
+        fovFrame.Size = UDim2.new(0, radius*2, 0, radius*2)
+        fovFrame.Position = UDim2.new(0.5, -radius, 0.5, -radius)
+    end
+
+    -- FPS
+    fpsCount = fpsCount + 1
+    if tick() - fpsTime >= 1 then
+        local fps = fpsCount
+        local ping = 0
+        pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+        fpsText.Text = fps .. " FPS | " .. ping .. " MS"
+        fpsText.Visible = getFPSDisplay() or getPingDisplay()
+        fpsFrame.Visible = getFPSDisplay() or getPingDisplay()
+        fpsCount = 0
+        fpsTime = tick()
+    end
+
+    -- ESP
     updateESP()
 
+    -- FLY
     if getFly() then
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
             local root = LocalPlayer.Character.HumanoidRootPart
             if not flyBV or flyBV.Parent ~= root then
-                if flyBV then pcall(function() flyBV:Destroy() end) end
+                cleanFly()
                 flyBV = Instance.new("BodyVelocity")
                 flyBV.MaxForce = Vector3.new(math.huge,math.huge,math.huge)
                 flyBV.Velocity = Vector3.new(0,0,0)
@@ -1746,9 +1732,10 @@ RunService.RenderStepped:Connect(function()
             flyBV.Velocity = dir * speed
         end
     else
-        if flyBV then pcall(function() flyBV:Destroy() end); flyBV = nil end
+        cleanFly()
     end
 
+    -- TRIGGER BOT
     if getTriggerBot() then
         local target = Settings.CurrentTarget
         if not target or not target.Character then
@@ -1777,12 +1764,32 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
+    -- AIMBOT
     if not getCamlock() then locked = false; Settings.CurrentTarget = nil; return end
 
+    -- FIX: AlwaysOn - hedef yoksa yenisini bul, jitter yok
     if getAlwaysOn() then
         if not Settings.CurrentTarget or not Settings.CurrentTarget.Character then
             Settings.CurrentTarget = getClosestFromSelected()
             locked = Settings.CurrentTarget ~= nil
+        else
+            local h = Settings.CurrentTarget.Character:FindFirstChildOfClass("Humanoid")
+            if not h or h.Health <= 0 then
+                Settings.CurrentTarget = getClosestFromSelected()
+                locked = Settings.CurrentTarget ~= nil
+            end
+        end
+    end
+
+    -- FIX: NearestCursor sag tik basili iken calisir
+    if Settings.Mode == "NearestCursor" and getCamlock() then
+        if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+            Settings.CurrentTarget = getClosestFromSelected()
+            locked = Settings.CurrentTarget ~= nil
+        else
+            if not getAlwaysOn() then
+                locked = false; Settings.CurrentTarget = nil
+            end
         end
     end
 
@@ -1798,7 +1805,8 @@ RunService.RenderStepped:Connect(function()
                     else locked = false; Settings.CurrentTarget = nil end
                     return
                 end
-                if isVisible(part) then
+                -- FIX: StickyAim aciksa wall check atla
+                if getStickyAim() or isVisible(part) then
                     local smoothness = getSmoothness()
                     local predictedPos = getPredictedPosition(part)
                     local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
@@ -1822,19 +1830,27 @@ pcall(function()
     LocalPlayer.Idled:Connect(function() vu:CaptureController(); vu:ClickButton2(Vector2.new()) end)
 end)
 
+-- FIX: ESC menu - onceki GUI durumunu kaydet/geri yukle
+local guiWasVisible = false
+
 pcall(function()
     GuiService.MenuOpened:Connect(function()
         menuOpen = true
+        guiWasVisible = MainFrame.Visible
         MainFrame.Visible = false
         keybindPanel.Visible = false
         fpsFrame.Visible = false
         fovFrame.Visible = false
-        locked = false
-        Settings.CurrentTarget = nil
+        -- ESP gizle
+        for name, esp in pairs(espDrawings) do
+            for _, obj in pairs(esp) do
+                pcall(function() obj.Visible = false end)
+            end
+        end
     end)
     GuiService.MenuClosed:Connect(function()
         menuOpen = false
-        MainFrame.Visible = true
+        MainFrame.Visible = guiWasVisible
         fpsFrame.Visible = getFPSDisplay() or getPingDisplay()
         if getKeybindVisible() then keybindPanel.Visible = true end
     end)
@@ -1842,20 +1858,23 @@ end)
 
 Players.PlayerRemoving:Connect(function(player)
     Settings.SelectedPlayers[player.Name] = nil
-    if espDrawings[player.Name] then
-        for _, obj in pairs(espDrawings[player.Name]) do
-            pcall(function() obj:Remove() end)
-        end
-        espDrawings[player.Name] = nil
+    removeESPForPlayer(player.Name)
+    if Settings.CurrentTarget == player then
+        Settings.CurrentTarget = nil
+        locked = false
     end
+    task.wait(0.1)
+    refreshPlayerList()
 end)
 
-print("[SOU HUB] Rage Edition Yuklendi!")
+local fpsCount, fpsTime = 0, tick()
+
+print("[SOU HUB] Rage Edition v3.1 Yuklendi!")
 
 task.spawn(function()
     task.wait(1.5)
     MainFrame.Visible = true
     task.wait(0.5)
-    showToast("SOU HUB", "Rage Edition Hazir!", "success")
-    showToast("Interface", "Right Shift to toggle", "info")
+    showToast("SOU HUB", "Rage Edition v3.1 Hazir!", "success")
+    showToast("Interface", "Right Shift = toggle | End = panic", "info")
 end)
