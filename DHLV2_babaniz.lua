@@ -1807,11 +1807,12 @@ end)
 
 -- ─── BOOT ────────────────────────────────────────────────────────────────────
 print("[SOU HUB] Rage Edition v3.1 yuklendi!")
+print("[SOU HUB] Right Shift = menu ac/kapa | End = panic")
+
+MainFrame.Visible = true
 
 task.spawn(function()
-    task.wait(1.5)
-    MainFrame.Visible = true
-    task.wait(0.3)
+    task.wait(0.5)
     showNotice("SOU HUB", "Rage Edition v3.1 hazir!", "success")
     showNotice("Interface", "Right Shift = toggle menu | End = panic", "info")
 end)
